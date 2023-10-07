@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:go_router/go_router.dart';
+import 'package:ywda_dashboard/screens/home_screen.dart';
+import 'package:ywda_dashboard/screens/log_in_screen.dart';
+import 'package:ywda_dashboard/screens/register_screen.dart';
+import 'package:ywda_dashboard/screens/welcome_screen.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -7,38 +12,102 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
+// ignore: must_be_immutable
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({super.key});
+
+  final GoRouter _routes = GoRouter(initialLocation: '/', routes: [
+    GoRoute(
+        path: '/',
+        builder: (context, state) => const WelcomeScreen(),
+        routes: [
+          GoRoute(
+            path: 'register',
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                  fullscreenDialog: true,
+                  key: state.pageKey,
+                  child: const RegisterScreen(),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(
+                        opacity: CurveTween(curve: Curves.easeInOutCirc)
+                            .animate(animation),
+                        child: child);
+                  });
+            },
+          ),
+          GoRoute(
+            path: 'login',
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                  fullscreenDialog: true,
+                  key: state.pageKey,
+                  child: const LogInScreen(),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(
+                        opacity: CurveTween(curve: Curves.easeInOutCirc)
+                            .animate(animation),
+                        child: child);
+                  });
+            },
+          ),
+          GoRoute(
+            path: 'home',
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                  fullscreenDialog: true,
+                  key: state.pageKey,
+                  child: const HomeScreen(),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(
+                        opacity: CurveTween(curve: Curves.easeInOutCirc)
+                            .animate(animation),
+                        child: child);
+                  });
+            },
+          )
+        ])
+  ]);
+
+  final ThemeData _themeData = ThemeData(
+      colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color.fromARGB(255, 21, 57, 119)),
+      scaffoldBackgroundColor: const Color.fromARGB(255, 227, 236, 244),
+      snackBarTheme: const SnackBarThemeData(
+          backgroundColor: Color.fromARGB(255, 53, 113, 217)),
+      appBarTheme: const AppBarTheme(
+          foregroundColor: Colors.black,
+          backgroundColor: Color.fromARGB(255, 227, 236, 244)),
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+          backgroundColor: Color.fromARGB(255, 217, 217, 217),
+          unselectedItemColor: Colors.black,
+          selectedItemColor: Color.fromARGB(255, 53, 113, 217)),
+      listTileTheme: const ListTileThemeData(
+          iconColor: Colors.white,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10)))),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ButtonStyle(
+              shape: MaterialStateProperty.all<OutlinedBorder>(
+                  const RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadiusDirectional.all(Radius.circular(10)))),
+              backgroundColor: MaterialStateProperty.all<Color>(
+                  const Color.fromARGB(255, 53, 113, 217)))));
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a blue toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
+    return MaterialApp.router(
+        routerConfig: _routes,
+        title: 'Youth Welfare Development Affairs Admin Dashboard',
+        theme: _themeData);
   }
 }
 
