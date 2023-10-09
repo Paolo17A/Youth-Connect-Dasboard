@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ywda_dashboard/screens/add_announcement_screen.dart';
+import 'package:ywda_dashboard/screens/add_project_screen.dart';
+import 'package:ywda_dashboard/screens/edit_announcement_screen.dart';
+import 'package:ywda_dashboard/screens/edit_project_screen.dart';
 import 'package:ywda_dashboard/screens/home_screen.dart';
 import 'package:ywda_dashboard/screens/log_in_screen.dart';
 import 'package:ywda_dashboard/screens/register_screen.dart';
+import 'package:ywda_dashboard/screens/view_announcement_screen.dart';
+import 'package:ywda_dashboard/screens/view_projects_screen.dart';
 import 'package:ywda_dashboard/screens/welcome_screen.dart';
 import 'firebase_options.dart';
 
@@ -15,7 +21,6 @@ void main() async {
   runApp(MyApp());
 }
 
-// ignore: must_be_immutable
 class MyApp extends StatelessWidget {
   MyApp({super.key});
 
@@ -71,6 +76,106 @@ class MyApp extends StatelessWidget {
                         child: child);
                   });
             },
+          ),
+          GoRoute(
+            path: 'project',
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                  fullscreenDialog: true,
+                  key: state.pageKey,
+                  child: const ViewProjectsScreen(),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(
+                        opacity: CurveTween(curve: Curves.easeInOutCirc)
+                            .animate(animation),
+                        child: child);
+                  });
+            },
+          ),
+          GoRoute(
+            path: 'project/addProject',
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                  fullscreenDialog: true,
+                  key: state.pageKey,
+                  child: const AddProjectScreen(),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(
+                        opacity: CurveTween(curve: Curves.easeInOutCirc)
+                            .animate(animation),
+                        child: child);
+                  });
+            },
+          ),
+          GoRoute(
+            name: 'editProject',
+            path: 'project/edit/:projectID',
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                  fullscreenDialog: true,
+                  key: state.pageKey,
+                  child: EditProjectScreen(
+                      projectID: state.pathParameters['projectID']!),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(
+                        opacity: CurveTween(curve: Curves.easeInOutCirc)
+                            .animate(animation),
+                        child: child);
+                  });
+            },
+          ),
+          GoRoute(
+            path: 'announcement',
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                  fullscreenDialog: true,
+                  key: state.pageKey,
+                  child: const ViewAnnouncementScreen(),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(
+                        opacity: CurveTween(curve: Curves.easeInOutCirc)
+                            .animate(animation),
+                        child: child);
+                  });
+            },
+          ),
+          GoRoute(
+            path: 'announcement/addAnnouncement',
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                  fullscreenDialog: true,
+                  key: state.pageKey,
+                  child: const AddAnnouncementScreen(),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(
+                        opacity: CurveTween(curve: Curves.easeInOutCirc)
+                            .animate(animation),
+                        child: child);
+                  });
+            },
+          ),
+          GoRoute(
+            name: 'editAnnouncement',
+            path: 'announcement/edit/:announcementID',
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                  fullscreenDialog: true,
+                  key: state.pageKey,
+                  child: EditAnnouncementScreen(
+                      announcementID: state.pathParameters['announcementID']!),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(
+                        opacity: CurveTween(curve: Curves.easeInOutCirc)
+                            .animate(animation),
+                        child: child);
+                  });
+            },
           )
         ])
   ]);
@@ -82,8 +187,9 @@ class MyApp extends StatelessWidget {
       snackBarTheme: const SnackBarThemeData(
           backgroundColor: Color.fromARGB(255, 53, 113, 217)),
       appBarTheme: const AppBarTheme(
-          foregroundColor: Colors.black,
-          backgroundColor: Color.fromARGB(255, 227, 236, 244)),
+        foregroundColor: Colors.black,
+        backgroundColor: Color.fromARGB(255, 217, 217, 217),
+      ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           backgroundColor: Color.fromARGB(255, 217, 217, 217),
           unselectedItemColor: Colors.black,

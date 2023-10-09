@@ -56,7 +56,7 @@ class _LogInScreenState extends State<LogInScreen> {
         }
         //  Username does not exist.
         else {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          scaffoldState.showSnackBar(SnackBar(
               content: Text(
                   'No account with username \'${_emailController.text}\' found.')));
           setState(() {
@@ -122,7 +122,7 @@ class _LogInScreenState extends State<LogInScreen> {
             child: Image.asset('assets/images/icons/Design.png', scale: 2.75),
           ),
           Padding(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 130),
             child: Center(
               child: Container(
                 width: MediaQuery.of(context).size.width * 0.45,
