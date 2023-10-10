@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ywda_dashboard/widgets/app_bar_widget.dart';
@@ -13,6 +14,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool _isLoading = true;
+  List<DocumentSnapshot> allUsers = [];
 
   @override
   void initState() {
@@ -22,6 +24,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void initializeHome() async {
     try {
+      final users = await FirebaseFirestore.instance
+          .collection('users')
+          .where('userType', isEqualTo: 'CLIENT')
+          .get();
+      allUsers = users.docs;
+      print('CLIENTS FOUND: ${allUsers.length}');
       setState(() {
         _isLoading = false;
       });

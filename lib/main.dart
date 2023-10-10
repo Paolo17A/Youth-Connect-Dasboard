@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ywda_dashboard/screens/add_announcement_screen.dart';
+import 'package:ywda_dashboard/screens/add_org_screen.dart';
 import 'package:ywda_dashboard/screens/add_project_screen.dart';
 import 'package:ywda_dashboard/screens/edit_announcement_screen.dart';
+import 'package:ywda_dashboard/screens/edit_org_screen.dart';
 import 'package:ywda_dashboard/screens/edit_project_screen.dart';
 import 'package:ywda_dashboard/screens/home_screen.dart';
 import 'package:ywda_dashboard/screens/log_in_screen.dart';
 import 'package:ywda_dashboard/screens/register_screen.dart';
 import 'package:ywda_dashboard/screens/view_announcement_screen.dart';
+import 'package:ywda_dashboard/screens/view_orgs_screen.dart';
 import 'package:ywda_dashboard/screens/view_projects_screen.dart';
 import 'package:ywda_dashboard/screens/welcome_screen.dart';
 import 'firebase_options.dart';
@@ -68,6 +71,55 @@ class MyApp extends StatelessWidget {
                   fullscreenDialog: true,
                   key: state.pageKey,
                   child: const HomeScreen(),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(
+                        opacity: CurveTween(curve: Curves.easeInOutCirc)
+                            .animate(animation),
+                        child: child);
+                  });
+            },
+          ),
+          GoRoute(
+            path: 'orgs',
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                  fullscreenDialog: true,
+                  key: state.pageKey,
+                  child: const ViewOrgsScreen(),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(
+                        opacity: CurveTween(curve: Curves.easeInOutCirc)
+                            .animate(animation),
+                        child: child);
+                  });
+            },
+          ),
+          GoRoute(
+            path: 'orgs/addOrg',
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                  fullscreenDialog: true,
+                  key: state.pageKey,
+                  child: const AddOrgScreen(),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(
+                        opacity: CurveTween(curve: Curves.easeInOutCirc)
+                            .animate(animation),
+                        child: child);
+                  });
+            },
+          ),
+          GoRoute(
+            name: 'editOrg',
+            path: 'orgs/edit/:orgID',
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                  fullscreenDialog: true,
+                  key: state.pageKey,
+                  child: EditOrgScreen(orgID: state.pathParameters['orgID']!),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
                     return FadeTransition(

@@ -133,40 +133,62 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
                           child: Column(
                             children: [
                               _announcementLabelRow(),
-                              allProjects.isNotEmpty
-                                  ? ListView.builder(
-                                      shrinkWrap: true,
-                                      itemCount: allProjects.length,
-                                      itemBuilder: (context, index) {
-                                        double rowHeight = 50;
-                                        Color entryColor = index % 2 == 0
-                                            ? Colors.black
-                                            : Colors.white;
-                                        Map<dynamic, dynamic> announcementData =
-                                            allProjects[index].data()
-                                                as Map<dynamic, dynamic>;
-                                        return Container(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.7,
-                                          height: 50,
-                                          decoration: BoxDecoration(
-                                              color: index % 2 == 0
-                                                  ? Colors.white
-                                                  : Colors.grey,
-                                              borderRadius: index ==
-                                                      allProjects.length - 1
-                                                  ? const BorderRadius.only(
-                                                      bottomLeft:
-                                                          Radius.circular(20),
-                                                      bottomRight:
-                                                          Radius.circular(20))
-                                                  : null),
-                                          child: Row(
-                                            children: [
-                                              Flexible(
-                                                  flex: 1,
+                              SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.65,
+                                child: allProjects.isNotEmpty
+                                    ? ListView.builder(
+                                        shrinkWrap: true,
+                                        itemCount: allProjects.length,
+                                        itemBuilder: (context, index) {
+                                          double rowHeight = 50;
+                                          Color entryColor = index % 2 == 0
+                                              ? Colors.black
+                                              : Colors.white;
+                                          Map<dynamic, dynamic>
+                                              announcementData =
+                                              allProjects[index].data()
+                                                  as Map<dynamic, dynamic>;
+                                          return Container(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.7,
+                                            height: 50,
+                                            decoration: BoxDecoration(
+                                                color: index % 2 == 0
+                                                    ? Colors.white
+                                                    : Colors.grey,
+                                                borderRadius: index ==
+                                                        allProjects.length - 1
+                                                    ? const BorderRadius.only(
+                                                        bottomLeft:
+                                                            Radius.circular(20),
+                                                        bottomRight:
+                                                            Radius.circular(20))
+                                                    : null),
+                                            child: Row(
+                                              children: [
+                                                Flexible(
+                                                    flex: 1,
+                                                    child: Container(
+                                                      height: rowHeight,
+                                                      decoration: BoxDecoration(
+                                                          border: Border.all(
+                                                              color: index %
+                                                                          2 !=
+                                                                      0
+                                                                  ? Colors.white
+                                                                  : Colors
+                                                                      .grey)),
+                                                      child: Center(
+                                                          child: AutoSizeText(
+                                                              '${index + 1}',
+                                                              style: _projectEntryStyle(
+                                                                  entryColor))),
+                                                    )),
+                                                Flexible(
+                                                  flex: 2,
                                                   child: Container(
                                                     height: rowHeight,
                                                     decoration: BoxDecoration(
@@ -177,169 +199,151 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
                                                                 : Colors.grey)),
                                                     child: Center(
                                                         child: AutoSizeText(
-                                                            '${index + 1}',
+                                                            announcementData[
+                                                                'title'],
+                                                            maxLines: 1,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
                                                             style:
                                                                 _projectEntryStyle(
                                                                     entryColor))),
-                                                  )),
-                                              Flexible(
-                                                flex: 2,
-                                                child: Container(
-                                                  height: rowHeight,
-                                                  decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                          color: index % 2 != 0
-                                                              ? Colors.white
-                                                              : Colors.grey)),
-                                                  child: Center(
-                                                      child: AutoSizeText(
-                                                          announcementData[
-                                                              'title'],
-                                                          maxLines: 1,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          style:
-                                                              _projectEntryStyle(
-                                                                  entryColor))),
+                                                  ),
                                                 ),
-                                              ),
-                                              Flexible(
-                                                flex: 5,
-                                                child: Container(
-                                                  height: rowHeight,
-                                                  decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                          color: index % 2 != 0
-                                                              ? Colors.white
-                                                              : Colors.grey)),
-                                                  child: Center(
-                                                      child: AutoSizeText(
-                                                          announcementData[
-                                                              'content'],
-                                                          maxLines: 1,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          style:
-                                                              _projectEntryStyle(
-                                                                  entryColor))),
+                                                Flexible(
+                                                  flex: 5,
+                                                  child: Container(
+                                                    height: rowHeight,
+                                                    decoration: BoxDecoration(
+                                                        border: Border.all(
+                                                            color: index % 2 !=
+                                                                    0
+                                                                ? Colors.white
+                                                                : Colors.grey)),
+                                                    child: Center(
+                                                        child: AutoSizeText(
+                                                            announcementData[
+                                                                'content'],
+                                                            maxLines: 1,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            style:
+                                                                _projectEntryStyle(
+                                                                    entryColor))),
+                                                  ),
                                                 ),
-                                              ),
-                                              Flexible(
-                                                flex: 2,
-                                                child: Container(
-                                                  height: rowHeight,
-                                                  decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                          color: index % 2 != 0
-                                                              ? Colors.white
-                                                              : Colors.grey)),
-                                                  child: Center(
-                                                      child: AutoSizeText(
-                                                          DateFormat(
-                                                                  'dd MMM yyyy')
-                                                              .format((announcementData[
-                                                                          'dateAdded']
-                                                                      as Timestamp)
-                                                                  .toDate()),
-                                                          style:
-                                                              _projectEntryStyle(
-                                                                  entryColor))),
+                                                Flexible(
+                                                  flex: 2,
+                                                  child: Container(
+                                                    height: rowHeight,
+                                                    decoration: BoxDecoration(
+                                                        border: Border.all(
+                                                            color: index % 2 !=
+                                                                    0
+                                                                ? Colors.white
+                                                                : Colors.grey)),
+                                                    child: Center(
+                                                        child: AutoSizeText(
+                                                            DateFormat(
+                                                                    'dd MMM yyyy')
+                                                                .format((announcementData[
+                                                                            'projectDate']
+                                                                        as Timestamp)
+                                                                    .toDate()),
+                                                            style:
+                                                                _projectEntryStyle(
+                                                                    entryColor))),
+                                                  ),
                                                 ),
-                                              ),
-                                              Flexible(
-                                                flex: 2,
-                                                child: Container(
-                                                  height: rowHeight,
-                                                  decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                          color: index % 2 != 0
-                                                              ? Colors.white
-                                                              : Colors.grey)),
-                                                  child: Center(
-                                                      child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceEvenly,
-                                                    children: [
-                                                      ElevatedButton(
-                                                          onPressed: () {
-                                                            GoRouter.of(context)
-                                                                .goNamed(
-                                                                    'editProject',
-                                                                    pathParameters: {
-                                                                  'projectID':
-                                                                      allProjects[
-                                                                              index]
-                                                                          .id
-                                                                });
-                                                          },
-                                                          style: ElevatedButton
-                                                              .styleFrom(
-                                                                  backgroundColor:
-                                                                      Colors
-                                                                          .yellow),
-                                                          child: const Icon(
-                                                              Icons.edit,
-                                                              color: Colors
-                                                                  .white)),
-                                                      ElevatedButton(
-                                                          onPressed: () {
-                                                            showDialog(
-                                                                context:
-                                                                    context,
-                                                                builder:
-                                                                    (context) {
-                                                                  return AlertDialog(
-                                                                    content:
-                                                                        const Text(
-                                                                            'Are you sure you want to delete this project?'),
-                                                                    actions: <Widget>[
-                                                                      TextButton(
-                                                                        onPressed:
-                                                                            () {
-                                                                          GoRouter.of(context)
-                                                                              .pop();
-                                                                        },
-                                                                        child: const Text(
-                                                                            'Cancel'),
-                                                                      ),
-                                                                      TextButton(
-                                                                        onPressed:
-                                                                            () {
-                                                                          GoRouter.of(context)
-                                                                              .pop();
-                                                                          deleteThisProject(
-                                                                              allProjects[index]);
-                                                                        },
-                                                                        child: const Text(
-                                                                            'Delete'),
-                                                                      ),
-                                                                    ],
-                                                                  );
-                                                                });
-                                                          },
-                                                          style: ElevatedButton
-                                                              .styleFrom(
-                                                                  backgroundColor:
-                                                                      Colors
-                                                                          .red),
-                                                          child: const Icon(
-                                                              Icons.delete,
-                                                              color:
-                                                                  Colors.white))
-                                                    ],
-                                                  )),
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        );
-                                      })
-                                  : SizedBox(
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.65,
-                                      child: Center(
+                                                Flexible(
+                                                  flex: 2,
+                                                  child: Container(
+                                                    height: rowHeight,
+                                                    decoration: BoxDecoration(
+                                                        border: Border.all(
+                                                            color: index % 2 !=
+                                                                    0
+                                                                ? Colors.white
+                                                                : Colors.grey)),
+                                                    child: Center(
+                                                        child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceEvenly,
+                                                      children: [
+                                                        ElevatedButton(
+                                                            onPressed: () {
+                                                              GoRouter.of(
+                                                                      context)
+                                                                  .goNamed(
+                                                                      'editProject',
+                                                                      pathParameters: {
+                                                                    'projectID':
+                                                                        allProjects[index]
+                                                                            .id
+                                                                  });
+                                                            },
+                                                            style: ElevatedButton
+                                                                .styleFrom(
+                                                                    backgroundColor:
+                                                                        Colors
+                                                                            .yellow),
+                                                            child: const Icon(
+                                                                Icons.edit,
+                                                                color: Colors
+                                                                    .white)),
+                                                        ElevatedButton(
+                                                            onPressed: () {
+                                                              showDialog(
+                                                                  context:
+                                                                      context,
+                                                                  builder:
+                                                                      (context) {
+                                                                    return AlertDialog(
+                                                                      content:
+                                                                          const Text(
+                                                                              'Are you sure you want to delete this project?'),
+                                                                      actions: <Widget>[
+                                                                        TextButton(
+                                                                          onPressed:
+                                                                              () {
+                                                                            GoRouter.of(context).pop();
+                                                                          },
+                                                                          child:
+                                                                              const Text('Cancel'),
+                                                                        ),
+                                                                        TextButton(
+                                                                          onPressed:
+                                                                              () {
+                                                                            GoRouter.of(context).pop();
+                                                                            deleteThisProject(allProjects[index]);
+                                                                          },
+                                                                          child:
+                                                                              const Text('Delete'),
+                                                                        ),
+                                                                      ],
+                                                                    );
+                                                                  });
+                                                            },
+                                                            style: ElevatedButton
+                                                                .styleFrom(
+                                                                    backgroundColor:
+                                                                        Colors
+                                                                            .red),
+                                                            child: const Icon(
+                                                                Icons.delete,
+                                                                color: Colors
+                                                                    .white))
+                                                      ],
+                                                    )),
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          );
+                                        })
+                                    : Center(
                                         child: Text(
                                           'NO PROJECTS AVAILABLE',
                                           style: GoogleFonts.poppins(
@@ -349,7 +353,7 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
                                                   fontWeight: FontWeight.bold)),
                                         ),
                                       ),
-                                    )
+                              )
                             ],
                           ),
                         ),

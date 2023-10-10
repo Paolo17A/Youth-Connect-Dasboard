@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker_web/image_picker_web.dart';
 import 'package:intl/intl.dart';
+import 'package:ywda_dashboard/utils/custom_widgets.dart';
 import 'package:ywda_dashboard/widgets/app_bar_widget.dart';
 import 'package:ywda_dashboard/widgets/custom_textfield_widget.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
@@ -190,226 +191,218 @@ class _EditProjectScreenState extends State<EditProjectScreen> {
         body: Row(
           children: [
             leftNavigator(context, 5),
-            Container(
-              width: MediaQuery.of(context).size.width * 0.8,
-              height: MediaQuery.of(context).size.height,
-              color: Colors.white,
-              child: Stack(children: [
-                Padding(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: MediaQuery.of(context).size.width * 0.05),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 50),
-                            child: AutoSizeText(
-                              'EDIT PROJECT',
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.poppins(
-                                  textStyle: const TextStyle(
-                                      fontSize: 38,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black)),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 4),
-                            child: Row(
-                              children: [
-                                AutoSizeText('Project Title',
-                                    style: GoogleFonts.inter(
-                                        textStyle:
-                                            const TextStyle(fontSize: 19))),
-                              ],
-                            ),
-                          ),
-                          YouthConnectTextField(
-                              text: 'Project Title',
-                              controller: _titleController,
-                              textInputType: TextInputType.text,
-                              displayPrefixIcon: null),
-                          const SizedBox(height: 50),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 4),
-                            child: Row(
-                              children: [
-                                AutoSizeText('Project Content',
-                                    style: GoogleFonts.inter(
-                                        textStyle:
-                                            const TextStyle(fontSize: 19))),
-                              ],
-                            ),
-                          ),
-                          YouthConnectTextField(
-                              text: 'Project Content',
-                              controller: _contentController,
-                              textInputType: TextInputType.multiline,
-                              displayPrefixIcon: null),
-                          Row(
+            bodyWidgetWhiteBG(
+                context,
+                stackedLoadingContainer(
+                    context,
+                    _isLoading,
+                    horizontalPadding5Percent(
+                        context,
+                        SingleChildScrollView(
+                          child: Column(
                             children: [
+                              _editProjectHeaderWidget(),
+                              _projectTitleWidget(),
+                              const SizedBox(height: 50),
+                              _projectContentWidget(),
                               Padding(
                                 padding: const EdgeInsets.all(22),
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    ElevatedButton(
-                                        onPressed: () => _selectDate(context),
-                                        style: ElevatedButton.styleFrom(
-                                            backgroundColor:
-                                                const Color.fromARGB(
-                                                    255, 51, 86, 119),
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(30))),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(7),
-                                          child: AutoSizeText(
-                                              _selectedDate != null
-                                                  ? DateFormat('MMM dd, yyyy')
-                                                      .format(_selectedDate!)
-                                                  : 'SELECT DATE',
-                                              style: GoogleFonts.poppins(
-                                                  textStyle: const TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 15,
-                                                      fontWeight:
-                                                          FontWeight.bold))),
-                                        )),
+                                    _projectDatePickerWidget(),
+                                    _projectImageHandlerWidgets()
                                   ],
                                 ),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.all(22),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    ElevatedButton(
-                                        onPressed: _pickImage,
-                                        style: ElevatedButton.styleFrom(
-                                            backgroundColor:
-                                                const Color.fromARGB(
-                                                    255, 51, 86, 119),
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(30))),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(7),
-                                          child: AutoSizeText('UPLOAD IMAGE',
-                                              style: GoogleFonts.poppins(
-                                                  textStyle: const TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 15,
-                                                      fontWeight:
-                                                          FontWeight.bold))),
-                                        )),
-                                  ],
-                                ),
-                              ),
+                              const SizedBox(height: 60),
+                              _projectSubmitButtonWidget()
                             ],
                           ),
-                          if (currentSelectedFile != null)
-                            Container(
-                              decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.black)),
-                              child: Padding(
-                                padding: const EdgeInsets.all(10),
-                                child: Column(
-                                  children: [
-                                    SizedBox(
-                                        width: 150,
-                                        height: 150,
-                                        child:
-                                            Image.memory(currentSelectedFile!)),
-                                    const SizedBox(height: 5),
-                                    SizedBox(
-                                      width: 90,
-                                      child: ElevatedButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              currentSelectedFile = null;
-                                            });
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor:
-                                                const Color.fromARGB(
-                                                    255, 24, 44, 63),
-                                          ),
-                                          child: const Icon(Icons.delete)),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                          if (currentSelectedFile == null &&
-                              imageURLs.isNotEmpty)
-                            Container(
-                              decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.black)),
-                              child: Padding(
-                                padding: const EdgeInsets.all(10),
-                                child: Column(
-                                  children: [
-                                    SizedBox(
-                                        width: 150,
-                                        height: 150,
-                                        child: Image.network(imageURLs[0])),
-                                    const SizedBox(height: 5),
-                                    SizedBox(
-                                      width: 90,
-                                      child: ElevatedButton(
-                                          onPressed: () => _deleteImage(
-                                              widget.projectID,
-                                              imageURLs[0],
-                                              0),
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor:
-                                                const Color.fromARGB(
-                                                    255, 24, 44, 63),
-                                          ),
-                                          child: const Icon(Icons.delete)),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                          const SizedBox(height: 60),
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                ElevatedButton(
-                                    onPressed: uploadChangesToProject,
-                                    style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color.fromARGB(
-                                            255, 88, 147, 201),
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(20))),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(11),
-                                      child: AutoSizeText('SUBMIT',
-                                          style: GoogleFonts.poppins(
-                                              textStyle: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 18,
-                                                  fontWeight:
-                                                      FontWeight.bold))),
-                                    ))
-                              ]),
-                        ],
-                      ),
-                    )),
-                if (_isLoading)
-                  Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height,
-                      color: Colors.black.withOpacity(0.5),
-                      child: const Center(child: CircularProgressIndicator()))
-              ]),
-            )
+                        ))))
           ],
         ));
   }
+
+  //  COMPONENT WIDGETS
+  //============================================================================
+  Widget _editProjectHeaderWidget() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 50),
+      child: AutoSizeText(
+        'EDIT PROJECT',
+        textAlign: TextAlign.center,
+        style: GoogleFonts.poppins(
+            textStyle: const TextStyle(
+                fontSize: 38,
+                fontWeight: FontWeight.bold,
+                color: Colors.black)),
+      ),
+    );
+  }
+
+  Widget _projectTitleWidget() {
+    return Column(children: [
+      Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+        child: Row(
+          children: [
+            AutoSizeText('Project Title',
+                style: GoogleFonts.inter(
+                    textStyle: const TextStyle(fontSize: 19))),
+          ],
+        ),
+      ),
+      YouthConnectTextField(
+          text: 'Project Title',
+          controller: _titleController,
+          textInputType: TextInputType.text,
+          displayPrefixIcon: null),
+    ]);
+  }
+
+  Widget _projectContentWidget() {
+    return Column(children: [
+      Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+        child: Row(
+          children: [
+            AutoSizeText('Project Content',
+                style: GoogleFonts.inter(
+                    textStyle: const TextStyle(fontSize: 19))),
+          ],
+        ),
+      ),
+      YouthConnectTextField(
+          text: 'Project Content',
+          controller: _contentController,
+          textInputType: TextInputType.multiline,
+          displayPrefixIcon: null),
+    ]);
+  }
+
+  Widget _projectDatePickerWidget() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: ElevatedButton(
+          onPressed: () => _selectDate(context),
+          style: ElevatedButton.styleFrom(
+              backgroundColor: const Color.fromARGB(255, 51, 86, 119),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30))),
+          child: Padding(
+            padding: const EdgeInsets.all(7),
+            child: AutoSizeText(
+                _selectedDate != null
+                    ? DateFormat('MMM dd, yyyy').format(_selectedDate!)
+                    : 'SELECT DATE',
+                style: GoogleFonts.poppins(
+                    textStyle: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold))),
+          )),
+    );
+  }
+
+  Widget _projectImageHandlerWidgets() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ElevatedButton(
+                onPressed: _pickImage,
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 51, 86, 119),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30))),
+                child: Padding(
+                  padding: const EdgeInsets.all(7),
+                  child: AutoSizeText('UPLOAD IMAGE',
+                      style: GoogleFonts.poppins(
+                          textStyle: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold))),
+                )),
+          ],
+        ),
+        const SizedBox(height: 30),
+        if (currentSelectedFile != null)
+          Container(
+            decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                children: [
+                  squareBox150(Image.memory(currentSelectedFile!)),
+                  const SizedBox(height: 5),
+                  SizedBox(
+                    width: 90,
+                    child: ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            currentSelectedFile = null;
+                          });
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color.fromARGB(255, 24, 44, 63),
+                        ),
+                        child: const Icon(Icons.delete)),
+                  )
+                ],
+              ),
+            ),
+          ),
+        if (currentSelectedFile == null && imageURLs.isNotEmpty)
+          Container(
+            decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                children: [
+                  squareBox150(Image.network(imageURLs[0])),
+                  const SizedBox(height: 5),
+                  SizedBox(
+                    width: 90,
+                    child: ElevatedButton(
+                        onPressed: () =>
+                            _deleteImage(widget.projectID, imageURLs[0], 0),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color.fromARGB(255, 24, 44, 63),
+                        ),
+                        child: const Icon(Icons.delete)),
+                  )
+                ],
+              ),
+            ),
+          )
+      ]),
+    );
+  }
+
+  Widget _projectSubmitButtonWidget() {
+    return Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+      ElevatedButton(
+          onPressed: uploadChangesToProject,
+          style: ElevatedButton.styleFrom(
+              backgroundColor: const Color.fromARGB(255, 88, 147, 201),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20))),
+          child: Padding(
+            padding: const EdgeInsets.all(11),
+            child: AutoSizeText('SUBMIT',
+                style: GoogleFonts.poppins(
+                    textStyle: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold))),
+          ))
+    ]);
+  }
+  //============================================================================
 }

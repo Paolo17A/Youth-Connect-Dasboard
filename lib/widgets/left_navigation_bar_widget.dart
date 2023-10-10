@@ -39,7 +39,7 @@ Widget leftNavigator(BuildContext context, int index) {
                 child: ListTile(
                   title: Text('Organizations', style: _textStyle()),
                   onTap: () {
-                    //GoRouter.of(context).go('/instructors');
+                    GoRouter.of(context).go('/orgs');
                   },
                 ),
               ),

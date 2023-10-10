@@ -163,11 +163,11 @@ class _EditAnnouncementScreenState extends State<EditAnnouncementScreen> {
       });
 
       scaffoldMessenger.showSnackBar(const SnackBar(
-          content: Text('Successfully created new announcement!')));
+          content: Text('Successfully edited this announcement!')));
       goRouter.go('/announcement');
     } catch (error) {
       scaffoldMessenger.showSnackBar(
-          SnackBar(content: Text('Error uploading new announcement: $error')));
+          SnackBar(content: Text('Error editing this announcement: $error')));
       setState(() {
         _isLoading = false;
       });
