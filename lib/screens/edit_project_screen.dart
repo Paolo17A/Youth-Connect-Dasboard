@@ -11,7 +11,7 @@ import 'package:intl/intl.dart';
 import 'package:ywda_dashboard/widgets/custom_container_widgets.dart';
 import 'package:ywda_dashboard/widgets/custom_widgets.dart';
 import 'package:ywda_dashboard/widgets/app_bar_widget.dart';
-import 'package:ywda_dashboard/widgets/custom_textfield_widget.dart';
+import 'package:ywda_dashboard/widgets/youth_connect_textfield_widget.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
 class EditProjectScreen extends StatefulWidget {

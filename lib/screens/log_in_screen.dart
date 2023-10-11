@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../widgets/custom_textfield_widget.dart';
+import '../widgets/youth_connect_textfield_widget.dart';
 import '../widgets/submit_button_widget.dart';
 
 class LogInScreen extends StatefulWidget {
