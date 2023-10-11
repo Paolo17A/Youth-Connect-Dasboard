@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-AppBar appBarWidget() {
+AppBar appBarWidget(BuildContext context) {
   return AppBar(
     automaticallyImplyLeading: false,
     title: Row(
@@ -19,7 +20,9 @@ AppBar appBarWidget() {
       Padding(
         padding: const EdgeInsets.all(10),
         child: ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              GoRouter.of(context).go('/adminSettings');
+            },
             style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromARGB(255, 88, 147, 201),
                 shape: RoundedRectangleBorder(

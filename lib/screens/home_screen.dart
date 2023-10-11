@@ -42,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: appBarWidget(),
+        appBar: appBarWidget(context),
         body: _isLoading
             ? const Center(child: CircularProgressIndicator())
             : Row(

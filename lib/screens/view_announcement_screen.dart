@@ -82,7 +82,7 @@ class _ViewAnnouncementScreenState extends State<ViewAnnouncementScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: appBarWidget(),
+        appBar: appBarWidget(context),
         body: Row(children: [
           leftNavigator(context, 6),
           Container(

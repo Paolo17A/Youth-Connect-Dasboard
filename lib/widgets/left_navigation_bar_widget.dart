@@ -48,7 +48,7 @@ Widget leftNavigator(BuildContext context, int index) {
                 child: ListTile(
                   title: Text('Forms', style: _textStyle()),
                   onTap: () {
-                    //GoRouter.of(context).go('/lessons');
+                    GoRouter.of(context).go('/forms');
                   },
                 ),
               ),
@@ -76,6 +76,15 @@ Widget leftNavigator(BuildContext context, int index) {
                   title: Text('Announcements', style: _textStyle()),
                   onTap: () {
                     GoRouter.of(context).go('/announcement');
+                  },
+                ),
+              ),
+              Container(
+                color: index == 7 ? Colors.white : null,
+                child: ListTile(
+                  title: Text('Submissions', style: _textStyle()),
+                  onTap: () {
+                    //GoRouter.of(context).go('/announcement');
                   },
                 ),
               ),

@@ -9,7 +9,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker_web/image_picker_web.dart';
 import 'package:intl/intl.dart';
 import 'package:ywda_dashboard/widgets/app_bar_widget.dart';
-import 'package:ywda_dashboard/widgets/custom_textfield_widget.dart';
+import 'package:ywda_dashboard/widgets/youth_connect_textfield_widget.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
 class AddProjectScreen extends StatefulWidget {
@@ -135,7 +135,7 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: appBarWidget(),
+        appBar: appBarWidget(context),
         body: Row(
           children: [
             leftNavigator(context, 5),

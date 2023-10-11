@@ -79,6 +79,14 @@ class _LogInScreenState extends State<LogInScreen> {
           .doc(FirebaseAuth.instance.currentUser!.uid)
           .get();
 
+      //  reset the password in firebase in case admin forgot their password and reset it using an email link.
+      if (currentUserData.data()!['password'] != _passwordController.text) {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .update({'password': _passwordController.text});
+      }
+
       //  Check if the account has a userType parameter and create it if it doesn't.
       if (!currentUserData.data()!.containsKey('userType')) {
         FirebaseFirestore.instance

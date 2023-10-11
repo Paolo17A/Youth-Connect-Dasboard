@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ywda_dashboard/screens/add_announcement_screen.dart';
+import 'package:ywda_dashboard/screens/add_form_screen.dart';
 import 'package:ywda_dashboard/screens/add_org_screen.dart';
 import 'package:ywda_dashboard/screens/add_project_screen.dart';
+import 'package:ywda_dashboard/screens/admin_settings_screen.dart';
 import 'package:ywda_dashboard/screens/edit_announcement_screen.dart';
 import 'package:ywda_dashboard/screens/edit_org_screen.dart';
 import 'package:ywda_dashboard/screens/edit_project_screen.dart';
@@ -11,6 +13,7 @@ import 'package:ywda_dashboard/screens/home_screen.dart';
 import 'package:ywda_dashboard/screens/log_in_screen.dart';
 import 'package:ywda_dashboard/screens/register_screen.dart';
 import 'package:ywda_dashboard/screens/view_announcement_screen.dart';
+import 'package:ywda_dashboard/screens/view_forms_screen.dart';
 import 'package:ywda_dashboard/screens/view_orgs_screen.dart';
 import 'package:ywda_dashboard/screens/view_projects_screen.dart';
 import 'package:ywda_dashboard/screens/welcome_screen.dart';
@@ -130,6 +133,38 @@ class MyApp extends StatelessWidget {
             },
           ),
           GoRoute(
+            path: 'forms',
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                  fullscreenDialog: true,
+                  key: state.pageKey,
+                  child: const ViewFormsScreen(),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(
+                        opacity: CurveTween(curve: Curves.easeInOutCirc)
+                            .animate(animation),
+                        child: child);
+                  });
+            },
+          ),
+          GoRoute(
+            path: 'forms/addForm',
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                  fullscreenDialog: true,
+                  key: state.pageKey,
+                  child: const AddFormScreen(),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(
+                        opacity: CurveTween(curve: Curves.easeInOutCirc)
+                            .animate(animation),
+                        child: child);
+                  });
+            },
+          ),
+          GoRoute(
             path: 'project',
             pageBuilder: (context, state) {
               return CustomTransitionPage(
@@ -228,7 +263,23 @@ class MyApp extends StatelessWidget {
                         child: child);
                   });
             },
-          )
+          ),
+          GoRoute(
+            path: 'adminSettings',
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                  fullscreenDialog: true,
+                  key: state.pageKey,
+                  child: const AdminSettingsScreen(),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(
+                        opacity: CurveTween(curve: Curves.easeInOutCirc)
+                            .animate(animation),
+                        child: child);
+                  });
+            },
+          ),
         ])
   ]);
 
