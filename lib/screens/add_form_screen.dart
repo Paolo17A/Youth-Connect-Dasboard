@@ -169,7 +169,8 @@ class _AddFormScreenState extends State<AddFormScreen> {
           children: [
             _uploadFormButton('SELECT FILE', pickFormFile),
             if (selectedFileName != null)
-              Text(selectedFileName!, style: TextStyle(color: Colors.black))
+              Text(selectedFileName!,
+                  style: const TextStyle(color: Colors.black))
           ]),
     );
   }

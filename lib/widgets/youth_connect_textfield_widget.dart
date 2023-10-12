@@ -5,12 +5,14 @@ class YouthConnectTextField extends StatefulWidget {
   final TextEditingController controller;
   final TextInputType textInputType;
   final Icon? displayPrefixIcon;
+  final bool enabled;
   const YouthConnectTextField(
       {super.key,
       required this.text,
       required this.controller,
       required this.textInputType,
-      required this.displayPrefixIcon});
+      required this.displayPrefixIcon,
+      this.enabled = true});
 
   @override
   State<YouthConnectTextField> createState() => _YouthConnectTextFieldState();
@@ -28,6 +30,7 @@ class _YouthConnectTextFieldState extends State<YouthConnectTextField> {
   @override
   Widget build(BuildContext context) {
     return TextField(
+        enabled: widget.enabled,
         controller: widget.controller,
         obscureText: isObscured,
         cursorColor: Colors.black,

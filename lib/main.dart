@@ -9,6 +9,7 @@ import 'package:ywda_dashboard/screens/admin_settings_screen.dart';
 import 'package:ywda_dashboard/screens/edit_announcement_screen.dart';
 import 'package:ywda_dashboard/screens/edit_org_screen.dart';
 import 'package:ywda_dashboard/screens/edit_project_screen.dart';
+import 'package:ywda_dashboard/screens/grade_submission_screen.dart';
 import 'package:ywda_dashboard/screens/home_screen.dart';
 import 'package:ywda_dashboard/screens/log_in_screen.dart';
 import 'package:ywda_dashboard/screens/register_screen.dart';
@@ -16,6 +17,7 @@ import 'package:ywda_dashboard/screens/view_announcement_screen.dart';
 import 'package:ywda_dashboard/screens/view_forms_screen.dart';
 import 'package:ywda_dashboard/screens/view_orgs_screen.dart';
 import 'package:ywda_dashboard/screens/view_projects_screen.dart';
+import 'package:ywda_dashboard/screens/view_submissions_screen.dart';
 import 'package:ywda_dashboard/screens/welcome_screen.dart';
 import 'firebase_options.dart';
 
@@ -255,6 +257,43 @@ class MyApp extends StatelessWidget {
                   key: state.pageKey,
                   child: EditAnnouncementScreen(
                       announcementID: state.pathParameters['announcementID']!),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(
+                        opacity: CurveTween(curve: Curves.easeInOutCirc)
+                            .animate(animation),
+                        child: child);
+                  });
+            },
+          ),
+          GoRoute(
+            path: 'submissions',
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                  fullscreenDialog: true,
+                  key: state.pageKey,
+                  child: const ViewSubmissionsScreen(),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(
+                        opacity: CurveTween(curve: Curves.easeInOutCirc)
+                            .animate(animation),
+                        child: child);
+                  });
+            },
+          ),
+          GoRoute(
+            name: 'gradeSubmissions',
+            path: 'submissions/gradeSubmission/:skill/:subskill/:clientID',
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                  fullscreenDialog: true,
+                  key: state.pageKey,
+                  child: GradeSubmissionScreen(
+                    skill: state.pathParameters['skill']!,
+                    subSkill: state.pathParameters['subskill']!,
+                    clientID: state.pathParameters['clientID']!,
+                  ),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
                     return FadeTransition(

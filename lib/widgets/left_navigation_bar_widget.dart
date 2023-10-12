@@ -84,7 +84,7 @@ Widget leftNavigator(BuildContext context, int index) {
                 child: ListTile(
                   title: Text('Submissions', style: _textStyle()),
                   onTap: () {
-                    //GoRouter.of(context).go('/announcement');
+                    GoRouter.of(context).go('/submissions');
                   },
                 ),
               ),
