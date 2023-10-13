@@ -8,6 +8,8 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker_web/image_picker_web.dart';
 import 'package:ywda_dashboard/widgets/app_bar_widget.dart';
+import 'package:ywda_dashboard/widgets/custom_container_widgets.dart';
+import 'package:ywda_dashboard/widgets/custom_widgets.dart';
 import 'package:ywda_dashboard/widgets/youth_connect_textfield_widget.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
@@ -125,157 +127,145 @@ class _AddAnnouncementScreenState extends State<AddAnnouncementScreen> {
         body: Row(
           children: [
             leftNavigator(context, 6),
-            Container(
-              width: MediaQuery.of(context).size.width * 0.8,
-              height: MediaQuery.of(context).size.height,
-              color: Colors.white,
-              child: Stack(children: [
-                Padding(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: MediaQuery.of(context).size.width * 0.05),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 50),
-                            child: AutoSizeText(
-                              'NEW ANNOUNCEMENT',
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.poppins(
-                                  textStyle: const TextStyle(
-                                      fontSize: 38,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black)),
+            bodyWidgetWhiteBG(
+                context,
+                stackedLoadingContainer(
+                  context,
+                  _isLoading,
+                  horizontalPadding5Percent(
+                      context,
+                      SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 50),
+                              child: AutoSizeText(
+                                'NEW ANNOUNCEMENT',
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.poppins(
+                                    textStyle: const TextStyle(
+                                        fontSize: 38,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black)),
+                              ),
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 4),
-                            child: Row(
+                            vertical10horizontal4(Row(
                               children: [
                                 AutoSizeText('Announcement Title',
                                     style: GoogleFonts.inter(
                                         textStyle:
                                             const TextStyle(fontSize: 19))),
                               ],
-                            ),
-                          ),
-                          YouthConnectTextField(
-                              text: 'Announcement Title',
-                              controller: _titleController,
-                              textInputType: TextInputType.text,
-                              displayPrefixIcon: null),
-                          const SizedBox(height: 50),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 4),
-                            child: Row(
-                              children: [
-                                AutoSizeText('Announcement Content',
-                                    style: GoogleFonts.inter(
-                                        textStyle:
-                                            const TextStyle(fontSize: 19))),
-                              ],
-                            ),
-                          ),
-                          YouthConnectTextField(
-                              text: 'Announcement Content',
-                              controller: _contentController,
-                              textInputType: TextInputType.multiline,
-                              displayPrefixIcon: null),
-                          Padding(
-                            padding: const EdgeInsets.all(22),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                ElevatedButton(
-                                    onPressed: _pickImage,
-                                    style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color.fromARGB(
-                                            255, 51, 86, 119),
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(30))),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(7),
-                                      child: AutoSizeText('UPLOAD IMAGE',
-                                          style: GoogleFonts.poppins(
-                                              textStyle: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 15,
-                                                  fontWeight:
-                                                      FontWeight.bold))),
-                                    )),
-                              ],
-                            ),
-                          ),
-                          if (currentSelectedFile != null)
-                            Container(
-                              decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.black)),
-                              child: Padding(
-                                padding: const EdgeInsets.all(10),
-                                child: Column(
-                                  children: [
-                                    SizedBox(
-                                        width: 150,
-                                        height: 150,
-                                        child:
-                                            Image.memory(currentSelectedFile!)),
-                                    const SizedBox(height: 5),
-                                    SizedBox(
-                                      width: 90,
-                                      child: ElevatedButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              currentSelectedFile = null;
-                                            });
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor:
-                                                const Color.fromARGB(
-                                                    255, 24, 44, 63),
-                                          ),
-                                          child: const Icon(Icons.delete)),
-                                    )
-                                  ],
-                                ),
+                            )),
+                            YouthConnectTextField(
+                                text: 'Announcement Title',
+                                controller: _titleController,
+                                textInputType: TextInputType.text,
+                                displayPrefixIcon: null),
+                            const SizedBox(height: 50),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 4),
+                              child: Row(
+                                children: [
+                                  AutoSizeText('Announcement Content',
+                                      style: GoogleFonts.inter(
+                                          textStyle:
+                                              const TextStyle(fontSize: 19))),
+                                ],
                               ),
                             ),
-                          const SizedBox(height: 60),
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                ElevatedButton(
-                                    onPressed: uploadNewAnnouncement,
-                                    style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color.fromARGB(
-                                            255, 88, 147, 201),
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(20))),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(11),
-                                      child: AutoSizeText('SUBMIT',
-                                          style: GoogleFonts.poppins(
-                                              textStyle: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 18,
-                                                  fontWeight:
-                                                      FontWeight.bold))),
-                                    ))
-                              ]),
-                        ],
-                      ),
-                    )),
-                if (_isLoading)
-                  Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height,
-                      color: Colors.black.withOpacity(0.5),
-                      child: const Center(child: CircularProgressIndicator()))
-              ]),
-            )
+                            YouthConnectTextField(
+                                text: 'Announcement Content',
+                                controller: _contentController,
+                                textInputType: TextInputType.multiline,
+                                displayPrefixIcon: null),
+                            Padding(
+                              padding: const EdgeInsets.all(22),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ElevatedButton(
+                                      onPressed: _pickImage,
+                                      style: ElevatedButton.styleFrom(
+                                          backgroundColor: const Color.fromARGB(
+                                              255, 51, 86, 119),
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(30))),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(7),
+                                        child: AutoSizeText('UPLOAD IMAGE',
+                                            style: GoogleFonts.poppins(
+                                                textStyle: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 15,
+                                                    fontWeight:
+                                                        FontWeight.bold))),
+                                      )),
+                                ],
+                              ),
+                            ),
+                            if (currentSelectedFile != null)
+                              Container(
+                                decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.black)),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10),
+                                  child: Column(
+                                    children: [
+                                      SizedBox(
+                                          width: 150,
+                                          height: 150,
+                                          child: Image.memory(
+                                              currentSelectedFile!)),
+                                      const SizedBox(height: 5),
+                                      SizedBox(
+                                        width: 90,
+                                        child: ElevatedButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                currentSelectedFile = null;
+                                              });
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor:
+                                                  const Color.fromARGB(
+                                                      255, 24, 44, 63),
+                                            ),
+                                            child: const Icon(Icons.delete)),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            const SizedBox(height: 60),
+                            Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  ElevatedButton(
+                                      onPressed: uploadNewAnnouncement,
+                                      style: ElevatedButton.styleFrom(
+                                          backgroundColor: const Color.fromARGB(
+                                              255, 88, 147, 201),
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(20))),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(11),
+                                        child: AutoSizeText('SUBMIT',
+                                            style: GoogleFonts.poppins(
+                                                textStyle: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 18,
+                                                    fontWeight:
+                                                        FontWeight.bold))),
+                                      ))
+                                ]),
+                          ],
+                        ),
+                      )),
+                ))
           ],
         ));
   }

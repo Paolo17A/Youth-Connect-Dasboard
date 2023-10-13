@@ -17,6 +17,7 @@ class ViewOrgsScreen extends StatefulWidget {
 
 class _ViewOrgsScreenState extends State<ViewOrgsScreen> {
   bool _isLoading = true;
+  bool _isInitialized = false;
   List<DocumentSnapshot> allOrgs = [];
 
   @override
@@ -26,12 +27,16 @@ class _ViewOrgsScreenState extends State<ViewOrgsScreen> {
   }
 
   void getAllOrgs() async {
+    if (_isInitialized) {
+      return;
+    }
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     try {
       final orgs = await FirebaseFirestore.instance.collection('orgs').get();
       allOrgs = orgs.docs;
       setState(() {
         _isLoading = false;
+        _isInitialized = true;
       });
     } catch (error) {
       scaffoldMessenger.showSnackBar(
@@ -53,7 +58,6 @@ class _ViewOrgsScreenState extends State<ViewOrgsScreen> {
                       context,
                       Column(
                         children: [
-                          const SizedBox(height: 20),
                           _newOrganizationHeaderWidget(),
                           _organizationsContainerWidget()
                         ],

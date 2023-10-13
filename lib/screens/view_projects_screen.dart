@@ -96,7 +96,6 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
                         horizontal: MediaQuery.of(context).size.width * 0.05),
                     child: Column(
                       children: [
-                        const SizedBox(height: 50),
                         Padding(
                           padding: const EdgeInsets.all(25),
                           child: Row(

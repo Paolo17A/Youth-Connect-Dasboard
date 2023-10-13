@@ -9,100 +9,79 @@ Widget leftNavigator(BuildContext context, int index) {
       color: const Color.fromARGB(255, 217, 217, 217),
       child: Column(children: [
         Flexible(
-          flex: 1,
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
+            flex: 1,
+            child: ListView(padding: EdgeInsets.zero, children: [
               Container(
-                color: index == 0 ? Colors.white : null,
-                child: ListTile(
-                  title: Text('Dashboard', style: _textStyle()),
-                  onTap: () {
-                    GoRouter.of(context).go('/home');
-                  },
-                ),
-              ),
+                  color: index == 0 ? Colors.white : null,
+                  child: ListTile(
+                      title: Text('Dashboard', style: _textStyle()),
+                      onTap: () {
+                        GoRouter.of(context).go('/home');
+                      })),
               Container(
-                color: index == 1 ? Colors.white : null,
-                child: ListTile(
-                  title: Text(
-                    'Youth Information',
-                    style: _textStyle(),
-                  ),
-                  onTap: () {
-                    //GoRouter.of(context).go('/sections');
-                  },
-                ),
-              ),
+                  color: index == 1 ? Colors.white : null,
+                  child: ListTile(
+                      title: Text(
+                        'Youth Information',
+                        style: _textStyle(),
+                      ),
+                      onTap: () {
+                        //GoRouter.of(context).go('/sections');
+                      })),
               Container(
-                color: index == 2 ? Colors.white : null,
-                child: ListTile(
-                  title: Text('Organizations', style: _textStyle()),
-                  onTap: () {
-                    GoRouter.of(context).go('/orgs');
-                  },
-                ),
-              ),
+                  color: index == 2 ? Colors.white : null,
+                  child: ListTile(
+                      title: Text('Organizations', style: _textStyle()),
+                      onTap: () {
+                        GoRouter.of(context).go('/orgs');
+                      })),
               Container(
-                color: index == 3 ? Colors.white : null,
-                child: ListTile(
-                  title: Text('Forms', style: _textStyle()),
-                  onTap: () {
-                    GoRouter.of(context).go('/forms');
-                  },
-                ),
-              ),
+                  color: index == 3 ? Colors.white : null,
+                  child: ListTile(
+                      title: Text('Forms', style: _textStyle()),
+                      onTap: () {
+                        GoRouter.of(context).go('/forms');
+                      })),
               Container(
-                color: index == 4 ? Colors.white : null,
-                child: ListTile(
-                  title: Text('User Accounts', style: _textStyle()),
-                  onTap: () {
-                    //GoRouter.of(context).go('/lessons');
-                  },
-                ),
-              ),
+                  color: index == 4 ? Colors.white : null,
+                  child: ListTile(
+                      title: Text('User Accounts', style: _textStyle()),
+                      onTap: () {
+                        //GoRouter.of(context).go('/lessons');
+                      })),
               Container(
-                color: index == 5 ? Colors.white : null,
-                child: ListTile(
-                  title: Text('Projects', style: _textStyle()),
-                  onTap: () {
-                    GoRouter.of(context).go('/project');
-                  },
-                ),
-              ),
+                  color: index == 5 ? Colors.white : null,
+                  child: ListTile(
+                      title: Text('Projects', style: _textStyle()),
+                      onTap: () {
+                        GoRouter.of(context).go('/project');
+                      })),
               Container(
-                color: index == 6 ? Colors.white : null,
-                child: ListTile(
-                  title: Text('Announcements', style: _textStyle()),
-                  onTap: () {
-                    GoRouter.of(context).go('/announcement');
-                  },
-                ),
-              ),
+                  color: index == 6 ? Colors.white : null,
+                  child: ListTile(
+                      title: Text('Announcements', style: _textStyle()),
+                      onTap: () {
+                        GoRouter.of(context).go('/announcement');
+                      })),
               Container(
-                color: index == 7 ? Colors.white : null,
-                child: ListTile(
-                  title: Text('Submissions', style: _textStyle()),
-                  onTap: () {
-                    GoRouter.of(context).go('/submissions');
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
+                  color: index == 7 ? Colors.white : null,
+                  child: ListTile(
+                      title: Text('Submissions', style: _textStyle()),
+                      onTap: () {
+                        GoRouter.of(context).go('/submissions');
+                      }))
+            ])),
         ListTile(
-          leading: const Icon(
-            Icons.exit_to_app,
-            color: Colors.black,
-          ),
-          title: Text('Log Out', style: _textStyle()),
-          onTap: () {
-            FirebaseAuth.instance.signOut().then((value) {
-              GoRouter.of(context).go('/');
-            });
-          },
-        ),
+            leading: const Icon(
+              Icons.exit_to_app,
+              color: Colors.black,
+            ),
+            title: Text('Log Out', style: _textStyle()),
+            onTap: () {
+              FirebaseAuth.instance.signOut().then((value) {
+                GoRouter.of(context).go('/');
+              });
+            })
       ]));
 }
 

@@ -363,7 +363,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Center(
                       child: AutoSizeText(demographic,
                           textAlign: TextAlign.center,
-                          maxLines: 1,
+                          maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: GoogleFonts.inter(
                               color: Colors.white,
@@ -385,7 +385,7 @@ class _HomeScreenState extends State<HomeScreen> {
       BuildContext context, Color barColor, double percentage, String label) {
     double baseBarWidth = MediaQuery.of(context).size.width * 0.1;
     return Padding(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(6),
         child:
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           SizedBox(
