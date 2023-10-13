@@ -1,1 +1,0 @@
-Map<dynamic, dynamic> NextScreenParameters = {};

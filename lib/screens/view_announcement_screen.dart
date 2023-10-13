@@ -1,11 +1,14 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:ywda_dashboard/utils/delete_entry_dialog_util.dart';
 import 'package:ywda_dashboard/widgets/app_bar_widget.dart';
+import 'package:ywda_dashboard/widgets/custom_button_widgets.dart';
+import 'package:ywda_dashboard/widgets/custom_container_widgets.dart';
+import 'package:ywda_dashboard/widgets/custom_miscellaneous_widgets.dart';
+import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
 class ViewAnnouncementScreen extends StatefulWidget {
@@ -85,354 +88,132 @@ class _ViewAnnouncementScreenState extends State<ViewAnnouncementScreen> {
         appBar: appBarWidget(context),
         body: Row(children: [
           leftNavigator(context, 6),
-          Container(
-            width: MediaQuery.of(context).size.width * 0.8,
-            height: MediaQuery.of(context).size.height,
-            color: Colors.white,
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : Padding(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: MediaQuery.of(context).size.width * 0.05),
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 50),
-                        Padding(
-                          padding: const EdgeInsets.all(25),
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                ElevatedButton(
-                                    onPressed: () {
-                                      GoRouter.of(context)
-                                          .go('/announcement/addAnnouncement');
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color.fromARGB(
-                                            255, 88, 147, 201),
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(30))),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(11),
-                                      child: AutoSizeText('NEW ANNOUNCEMENT',
-                                          style: GoogleFonts.poppins(
-                                              textStyle: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 18,
-                                                  fontWeight:
-                                                      FontWeight.bold))),
-                                    ))
-                              ]),
-                        ),
-                        Container(
-                          width: MediaQuery.of(context).size.width * 0.7,
-                          decoration: BoxDecoration(
-                              border: Border.all(color: Colors.black),
-                              borderRadius: BorderRadius.circular(20)),
-                          child: Column(
-                            children: [
-                              _announcementLabelRow(),
-                              allAnnouncements.isNotEmpty
-                                  ? ListView.builder(
-                                      shrinkWrap: true,
-                                      itemCount: allAnnouncements.length,
-                                      itemBuilder: (context, index) {
-                                        double rowHeight = 50;
-                                        Color entryColor = index % 2 == 0
-                                            ? Colors.black
-                                            : Colors.white;
-                                        Map<dynamic, dynamic> announcementData =
-                                            allAnnouncements[index].data()
-                                                as Map<dynamic, dynamic>;
-                                        return Container(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.7,
-                                          height: 50,
-                                          decoration: BoxDecoration(
-                                              color: index % 2 == 0
-                                                  ? Colors.white
-                                                  : Colors.grey,
-                                              borderRadius: index ==
-                                                      allAnnouncements.length -
-                                                          1
-                                                  ? const BorderRadius.only(
-                                                      bottomLeft:
-                                                          Radius.circular(20),
-                                                      bottomRight:
-                                                          Radius.circular(20))
-                                                  : null),
-                                          child: Row(
-                                            children: [
-                                              Flexible(
-                                                  flex: 1,
-                                                  child: Container(
-                                                    height: rowHeight,
-                                                    decoration: BoxDecoration(
-                                                        border: Border.all(
-                                                            color: index % 2 !=
-                                                                    0
-                                                                ? Colors.white
-                                                                : Colors.grey)),
-                                                    child: Center(
-                                                        child: AutoSizeText(
-                                                            '${index + 1}',
-                                                            style:
-                                                                _announcementEntryStyle(
-                                                                    entryColor))),
-                                                  )),
-                                              Flexible(
-                                                flex: 2,
-                                                child: Container(
-                                                  height: rowHeight,
-                                                  decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                          color: index % 2 != 0
-                                                              ? Colors.white
-                                                              : Colors.grey)),
-                                                  child: Center(
-                                                      child: AutoSizeText(
-                                                          announcementData[
-                                                              'title'],
-                                                          maxLines: 1,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          style:
-                                                              _announcementEntryStyle(
-                                                                  entryColor))),
-                                                ),
-                                              ),
-                                              Flexible(
-                                                flex: 5,
-                                                child: Container(
-                                                  height: rowHeight,
-                                                  decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                          color: index % 2 != 0
-                                                              ? Colors.white
-                                                              : Colors.grey)),
-                                                  child: Center(
-                                                      child: AutoSizeText(
-                                                          announcementData[
-                                                              'content'],
-                                                          maxLines: 1,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          style:
-                                                              _announcementEntryStyle(
-                                                                  entryColor))),
-                                                ),
-                                              ),
-                                              Flexible(
-                                                flex: 2,
-                                                child: Container(
-                                                  height: rowHeight,
-                                                  decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                          color: index % 2 != 0
-                                                              ? Colors.white
-                                                              : Colors.grey)),
-                                                  child: Center(
-                                                      child: AutoSizeText(
-                                                          DateFormat(
-                                                                  'dd MMM yyyy')
-                                                              .format((announcementData[
-                                                                          'dateAdded']
-                                                                      as Timestamp)
-                                                                  .toDate()),
-                                                          style:
-                                                              _announcementEntryStyle(
-                                                                  entryColor))),
-                                                ),
-                                              ),
-                                              Flexible(
-                                                flex: 2,
-                                                child: Container(
-                                                  height: rowHeight,
-                                                  decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                          color: index % 2 != 0
-                                                              ? Colors.white
-                                                              : Colors.grey)),
-                                                  child: Center(
-                                                      child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceEvenly,
-                                                    children: [
-                                                      ElevatedButton(
-                                                          onPressed: () {
-                                                            GoRouter.of(context)
-                                                                .goNamed(
-                                                                    'editAnnouncement',
-                                                                    pathParameters: {
-                                                                  'announcementID':
-                                                                      allAnnouncements[
-                                                                              index]
-                                                                          .id
-                                                                });
-                                                          },
-                                                          style: ElevatedButton
-                                                              .styleFrom(
-                                                                  backgroundColor:
-                                                                      Colors
-                                                                          .yellow),
-                                                          child: const Icon(
-                                                              Icons.edit,
-                                                              color: Colors
-                                                                  .white)),
-                                                      ElevatedButton(
-                                                          onPressed: () {
-                                                            showDialog(
-                                                                context:
-                                                                    context,
-                                                                builder:
-                                                                    (context) {
-                                                                  return AlertDialog(
-                                                                    content:
-                                                                        const Text(
-                                                                            'Are you sure you want to delete this announcement?'),
-                                                                    actions: <Widget>[
-                                                                      TextButton(
-                                                                        onPressed:
-                                                                            () {
-                                                                          GoRouter.of(context)
-                                                                              .pop();
-                                                                        },
-                                                                        child: const Text(
-                                                                            'Cancel'),
-                                                                      ),
-                                                                      TextButton(
-                                                                        onPressed:
-                                                                            () {
-                                                                          GoRouter.of(context)
-                                                                              .pop();
-                                                                          deleteThisAnnouncement(
-                                                                              allAnnouncements[index]);
-                                                                        },
-                                                                        child: const Text(
-                                                                            'Delete'),
-                                                                      ),
-                                                                    ],
-                                                                  );
-                                                                });
-                                                          },
-                                                          style: ElevatedButton
-                                                              .styleFrom(
-                                                                  backgroundColor:
-                                                                      Colors
-                                                                          .red),
-                                                          child: const Icon(
-                                                              Icons.delete,
-                                                              color:
-                                                                  Colors.white))
-                                                    ],
-                                                  )),
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        );
-                                      })
-                                  : SizedBox(
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.65,
-                                      child: Center(
-                                        child: Text(
-                                          'NO ANNOUNCEMENTS AVAILABLE',
-                                          style: GoogleFonts.poppins(
-                                              textStyle: const TextStyle(
-                                                  fontSize: 38,
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.bold)),
-                                        ),
-                                      ),
-                                    )
-                            ],
-                          ),
-                        ),
-                      ],
-                    )),
-          )
+          bodyWidgetWhiteBG(
+              context,
+              switchedLoadingContainer(
+                  _isLoading,
+                  horizontalPadding5Percent(
+                      context,
+                      Column(
+                        children: [
+                          _newAnnouncementHeaderWidget(),
+                          _announcementContainerWidget()
+                        ],
+                      ))))
         ]));
   }
 
-  Widget _announcementLabelRow() {
-    double rowHeight = 50;
-    return Container(
-      width: MediaQuery.of(context).size.width * 0.7,
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-        color: Colors.grey,
-      ),
-      child: Row(
+  Widget _newAnnouncementHeaderWidget() {
+    return viewHeaderAddButton(
+        addFunction: () {
+          GoRouter.of(context).go('/announcement/addAnnouncement');
+        },
+        addLabel: 'ADD ANNOUNCEMENT');
+  }
+
+  Widget _announcementContainerWidget() {
+    return viewContentContainer(
+      context,
+      child: Column(
         children: [
-          Flexible(
-              flex: 1,
-              child: Container(
-                height: rowHeight,
-                decoration:
-                    BoxDecoration(border: Border.all(color: Colors.white)),
-                child: Center(
-                    child: AutoSizeText('#',
-                        style: _announcementEntryStyle(Colors.white))),
-              )),
-          Flexible(
-            flex: 2,
-            child: Container(
-              height: rowHeight,
-              decoration:
-                  BoxDecoration(border: Border.all(color: Colors.white)),
-              child: Center(
-                  child: AutoSizeText('Title',
-                      style: _announcementEntryStyle(Colors.white))),
-            ),
-          ),
-          Flexible(
-            flex: 5,
-            child: Container(
-              height: rowHeight,
-              decoration:
-                  BoxDecoration(border: Border.all(color: Colors.white)),
-              child: Center(
-                  child: AutoSizeText('Content',
-                      style: _announcementEntryStyle(Colors.white))),
-            ),
-          ),
-          Flexible(
-            flex: 2,
-            child: Container(
-              height: rowHeight,
-              decoration:
-                  BoxDecoration(border: Border.all(color: Colors.white)),
-              child: Center(
-                  child: AutoSizeText('Date Created',
-                      style: _announcementEntryStyle(Colors.white))),
-            ),
-          ),
-          Flexible(
-            flex: 2,
-            child: Container(
-              height: rowHeight,
-              decoration:
-                  BoxDecoration(border: Border.all(color: Colors.white)),
-              child: Center(
-                  child: AutoSizeText('Actions',
-                      style: _announcementEntryStyle(Colors.white))),
-            ),
-          )
+          _announcementLabelRow(),
+          allAnnouncements.isNotEmpty
+              ? _announcementEntries()
+              : viewContentUnavailable(context,
+                  text: 'NO ANNOUNCEMENTS AVAILABLE')
         ],
       ),
     );
   }
 
-  TextStyle _announcementEntryStyle(Color thisColor) {
-    return GoogleFonts.inter(
-        textStyle: TextStyle(
-            color: thisColor, fontSize: 23, fontWeight: FontWeight.bold));
+  Widget _announcementLabelRow() {
+    return viewContentLabelRow(
+      context,
+      children: [
+        viewFlexTextCell('#',
+            flex: 1,
+            backgroundColor: Colors.grey,
+            borderColor: Colors.white,
+            textColor: Colors.white),
+        viewFlexTextCell('Title',
+            flex: 2,
+            backgroundColor: Colors.grey,
+            borderColor: Colors.white,
+            textColor: Colors.white),
+        viewFlexTextCell('Content',
+            flex: 5,
+            backgroundColor: Colors.grey,
+            borderColor: Colors.white,
+            textColor: Colors.white),
+        viewFlexTextCell('Date Created',
+            flex: 2,
+            backgroundColor: Colors.grey,
+            borderColor: Colors.white,
+            textColor: Colors.white),
+        viewFlexTextCell('Actions',
+            flex: 2,
+            backgroundColor: Colors.grey,
+            borderColor: Colors.white,
+            textColor: Colors.white),
+      ],
+    );
+  }
+
+  Widget _announcementEntries() {
+    return ListView.builder(
+        shrinkWrap: true,
+        itemCount: allAnnouncements.length,
+        itemBuilder: (context, index) {
+          Color entryColor = index % 2 == 0 ? Colors.black : Colors.white;
+          Color backgroundColor = index % 2 == 0 ? Colors.white : Colors.grey;
+          Color borderColor = index % 2 == 0 ? Colors.grey : Colors.white;
+          final announcementData =
+              allAnnouncements[index].data() as Map<dynamic, dynamic>;
+          String convertedDateAdded = DateFormat('dd MMM yyyy')
+              .format((announcementData['dateAdded'] as Timestamp).toDate());
+          return viewContentEntryRow(context,
+              borderColor: borderColor,
+              isLastEntry: index == allAnnouncements.length - 1,
+              children: [
+                viewFlexTextCell('${index + 1}',
+                    flex: 1,
+                    backgroundColor: backgroundColor,
+                    borderColor: borderColor,
+                    textColor: entryColor),
+                viewFlexTextCell(announcementData['title'],
+                    flex: 2,
+                    backgroundColor: backgroundColor,
+                    borderColor: borderColor,
+                    textColor: entryColor),
+                viewFlexTextCell(announcementData['content'],
+                    flex: 5,
+                    backgroundColor: backgroundColor,
+                    borderColor: borderColor,
+                    textColor: entryColor),
+                viewFlexTextCell(convertedDateAdded,
+                    flex: 2,
+                    backgroundColor: backgroundColor,
+                    borderColor: borderColor,
+                    textColor: entryColor),
+                viewFlexActionsCell([
+                  editEntryButton(context, onPress: () {
+                    GoRouter.of(context).goNamed('editAnnouncement',
+                        pathParameters: {
+                          'announcementID': allAnnouncements[index].id
+                        });
+                  }),
+                  deleteEntryButton(context, onPress: () {
+                    displayDeleteEntryDialog(context,
+                        message:
+                            'Are you sure you want to delete this announcement?',
+                        deleteEntry: () =>
+                            deleteThisAnnouncement(allAnnouncements[index]));
+                  })
+                ],
+                    flex: 2,
+                    backgroundColor: backgroundColor,
+                    borderColor: borderColor)
+              ]);
+        });
   }
 }

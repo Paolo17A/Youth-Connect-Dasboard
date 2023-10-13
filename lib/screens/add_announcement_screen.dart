@@ -9,7 +9,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker_web/image_picker_web.dart';
 import 'package:ywda_dashboard/widgets/app_bar_widget.dart';
 import 'package:ywda_dashboard/widgets/custom_container_widgets.dart';
-import 'package:ywda_dashboard/widgets/custom_widgets.dart';
+import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
+import 'package:ywda_dashboard/widgets/custom_text_widgets.dart';
 import 'package:ywda_dashboard/widgets/youth_connect_textfield_widget.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
@@ -149,96 +150,10 @@ class _AddAnnouncementScreenState extends State<AddAnnouncementScreen> {
                                         color: Colors.black)),
                               ),
                             ),
-                            vertical10horizontal4(Row(
-                              children: [
-                                AutoSizeText('Announcement Title',
-                                    style: GoogleFonts.inter(
-                                        textStyle:
-                                            const TextStyle(fontSize: 19))),
-                              ],
-                            )),
-                            YouthConnectTextField(
-                                text: 'Announcement Title',
-                                controller: _titleController,
-                                textInputType: TextInputType.text,
-                                displayPrefixIcon: null),
+                            _announcementTitle(),
                             const SizedBox(height: 50),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 4),
-                              child: Row(
-                                children: [
-                                  AutoSizeText('Announcement Content',
-                                      style: GoogleFonts.inter(
-                                          textStyle:
-                                              const TextStyle(fontSize: 19))),
-                                ],
-                              ),
-                            ),
-                            YouthConnectTextField(
-                                text: 'Announcement Content',
-                                controller: _contentController,
-                                textInputType: TextInputType.multiline,
-                                displayPrefixIcon: null),
-                            Padding(
-                              padding: const EdgeInsets.all(22),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  ElevatedButton(
-                                      onPressed: _pickImage,
-                                      style: ElevatedButton.styleFrom(
-                                          backgroundColor: const Color.fromARGB(
-                                              255, 51, 86, 119),
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(30))),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(7),
-                                        child: AutoSizeText('UPLOAD IMAGE',
-                                            style: GoogleFonts.poppins(
-                                                textStyle: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 15,
-                                                    fontWeight:
-                                                        FontWeight.bold))),
-                                      )),
-                                ],
-                              ),
-                            ),
-                            if (currentSelectedFile != null)
-                              Container(
-                                decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.black)),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10),
-                                  child: Column(
-                                    children: [
-                                      SizedBox(
-                                          width: 150,
-                                          height: 150,
-                                          child: Image.memory(
-                                              currentSelectedFile!)),
-                                      const SizedBox(height: 5),
-                                      SizedBox(
-                                        width: 90,
-                                        child: ElevatedButton(
-                                            onPressed: () {
-                                              setState(() {
-                                                currentSelectedFile = null;
-                                              });
-                                            },
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor:
-                                                  const Color.fromARGB(
-                                                      255, 24, 44, 63),
-                                            ),
-                                            child: const Icon(Icons.delete)),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
+                            _announcementContent(),
+                            _announcementImage(),
                             const SizedBox(height: 60),
                             Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
@@ -268,5 +183,92 @@ class _AddAnnouncementScreenState extends State<AddAnnouncementScreen> {
                 ))
           ],
         ));
+  }
+
+  Widget _announcementTitle() {
+    return Column(children: [
+      vertical10horizontal4(Row(
+        children: [
+          AutoSizeText('Announcement Title', style: interSize19()),
+        ],
+      )),
+      YouthConnectTextField(
+          text: 'Announcement Title',
+          controller: _titleController,
+          textInputType: TextInputType.text,
+          displayPrefixIcon: null),
+    ]);
+  }
+
+  Widget _announcementContent() {
+    return Column(children: [
+      vertical10horizontal4(Row(
+        children: [
+          AutoSizeText('Announcement Content', style: interSize19()),
+        ],
+      )),
+      YouthConnectTextField(
+          text: 'Announcement Content',
+          controller: _contentController,
+          textInputType: TextInputType.multiline,
+          displayPrefixIcon: null),
+    ]);
+  }
+
+  Widget _announcementImage() {
+    return Column(children: [
+      Padding(
+        padding: const EdgeInsets.all(22),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ElevatedButton(
+                onPressed: _pickImage,
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 51, 86, 119),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30))),
+                child: Padding(
+                  padding: const EdgeInsets.all(7),
+                  child: AutoSizeText('UPLOAD IMAGE',
+                      style: GoogleFonts.poppins(
+                          textStyle: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold))),
+                )),
+          ],
+        ),
+      ),
+      if (currentSelectedFile != null)
+        Container(
+          decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              children: [
+                SizedBox(
+                    width: 150,
+                    height: 150,
+                    child: Image.memory(currentSelectedFile!)),
+                const SizedBox(height: 5),
+                SizedBox(
+                  width: 90,
+                  child: ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          currentSelectedFile = null;
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(255, 24, 44, 63),
+                      ),
+                      child: const Icon(Icons.delete)),
+                )
+              ],
+            ),
+          ),
+        ),
+    ]);
   }
 }

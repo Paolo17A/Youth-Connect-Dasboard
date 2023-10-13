@@ -1,11 +1,11 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:ywda_dashboard/widgets/app_bar_widget.dart';
+import 'package:ywda_dashboard/widgets/custom_button_widgets.dart';
 import 'package:ywda_dashboard/widgets/custom_container_widgets.dart';
-import 'package:ywda_dashboard/widgets/custom_widgets.dart';
+import 'package:ywda_dashboard/widgets/custom_miscellaneous_widgets.dart';
+import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
 class ViewSubmissionsScreen extends StatefulWidget {
@@ -76,229 +76,105 @@ class _ViewSubmissionsScreenState extends State<ViewSubmissionsScreen> {
             leftNavigator(context, 7),
             bodyWidgetWhiteBG(
                 context,
-                switchedLoadingContainer(
-                    _isLoading,
-                    horizontalPadding5Percent(
-                        context,
-                        verticalPadding5Percent(
-                            context, _formsContainerWidget()))))
+                switchedLoadingContainer(_isLoading,
+                    allPadding5Percent(context, _formsContainerWidget())))
           ],
         ));
   }
 
   Widget _formsContainerWidget() {
-    return Container(
-      width: MediaQuery.of(context).size.width * 0.7,
-      decoration: BoxDecoration(
-          border: Border.all(color: Colors.black),
-          borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(20), topRight: Radius.circular(20))),
-      child: Column(children: [
-        _submissionLabelRow(),
-        SizedBox(
-            height: MediaQuery.of(context).size.height * 0.7,
-            child: allSubmissions.isNotEmpty
-                ? ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: allSubmissions.length,
-                    itemBuilder: (context, index) {
-                      double rowHeight = 50;
-                      Map<dynamic, dynamic> submissionData =
-                          allSubmissions[index];
-                      Color entryTextColor =
-                          index % 2 == 0 ? Colors.black : Colors.white;
-
-                      Color entryBackgroundColor =
-                          index % 2 == 0 ? Colors.white : Colors.grey;
-                      Color entryBorderColor =
-                          index % 2 != 0 ? Colors.white : Colors.grey;
-                      print('ENTRY $index: ${allSubmissions[index]}');
-                      return Container(
-                        width: MediaQuery.of(context).size.width * 0.7,
-                        decoration: BoxDecoration(
-                          color: entryBackgroundColor,
-                        ),
-                        child: Row(
-                          children: [
-                            Flexible(
-                                flex: 1,
-                                child: Container(
-                                  height: rowHeight,
-                                  decoration: BoxDecoration(
-                                      border:
-                                          Border.all(color: entryBorderColor)),
-                                  child: Center(
-                                      child: AutoSizeText('${index + 1}',
-                                          style: _submissionEntryStyle(
-                                              entryTextColor))),
-                                )),
-                            Flexible(
-                              flex: 2,
-                              child: Container(
-                                height: rowHeight,
-                                decoration: BoxDecoration(
-                                    border:
-                                        Border.all(color: entryBorderColor)),
-                                child: Center(
-                                    child: AutoSizeText(submissionData['name'],
-                                        style: _submissionEntryStyle(
-                                            entryTextColor))),
-                              ),
-                            ),
-                            Flexible(
-                              flex: 2,
-                              child: Container(
-                                height: rowHeight,
-                                decoration: BoxDecoration(
-                                    border:
-                                        Border.all(color: entryBorderColor)),
-                                child: Center(
-                                    child: AutoSizeText(submissionData['skill'],
-                                        textAlign: TextAlign.center,
-                                        maxLines: 2,
-                                        style: _submissionEntryStyle(
-                                            entryTextColor))),
-                              ),
-                            ),
-                            Flexible(
-                              flex: 2,
-                              child: Container(
-                                height: rowHeight,
-                                decoration: BoxDecoration(
-                                    border:
-                                        Border.all(color: entryBorderColor)),
-                                child: Center(
-                                    child: AutoSizeText(
-                                        submissionData['subskill'],
-                                        textAlign: TextAlign.center,
-                                        maxLines: 2,
-                                        style: _submissionEntryStyle(
-                                            entryTextColor))),
-                              ),
-                            ),
-                            Flexible(
-                              flex: 2,
-                              child: Container(
-                                height: rowHeight,
-                                decoration: BoxDecoration(
-                                    border:
-                                        Border.all(color: entryBorderColor)),
-                                child: Center(
-                                    child: ElevatedButton(
-                                  onPressed: () {
-                                    GoRouter.of(context).goNamed(
-                                        'gradeSubmissions',
-                                        pathParameters: {
-                                          'skill': submissionData['skill'],
-                                          'subskill':
-                                              submissionData['subskill'],
-                                          'clientID': submissionData['clientID']
-                                        });
-                                  },
-                                  child: AutoSizeText('VIEW ENTRY',
-                                      style: GoogleFonts.inter(
-                                          textStyle: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 23,
-                                              fontWeight: FontWeight.bold))),
-                                )),
-                              ),
-                            )
-                          ],
-                        ),
-                      );
-                    })
-                : _noSubmissionsAvailableWidget())
-      ]),
-    );
+    return viewContentContainer(context,
+        child: Column(
+          children: [
+            _submissionLabelRow(),
+            allSubmissions.isNotEmpty
+                ? _submissionEntries()
+                : viewContentUnavailable(context,
+                    text: 'NO SUBMISSIONS AVAILABLE')
+          ],
+        ));
   }
 
   Widget _submissionLabelRow() {
-    double rowHeight = 50;
-    return Container(
-      width: MediaQuery.of(context).size.width * 0.7,
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-        color: Colors.grey,
-      ),
-      child: Row(
-        children: [
-          Flexible(
-              flex: 1,
-              child: Container(
-                height: rowHeight,
-                decoration:
-                    BoxDecoration(border: Border.all(color: Colors.white)),
-                child: Center(
-                    child: AutoSizeText('#',
-                        style: _submissionEntryStyle(Colors.white))),
-              )),
-          Flexible(
+    return viewContentLabelRow(
+      context,
+      children: [
+        viewFlexTextCell('#',
+            flex: 1,
+            backgroundColor: Colors.grey,
+            borderColor: Colors.white,
+            textColor: Colors.white),
+        viewFlexTextCell('Name',
             flex: 2,
-            child: Container(
-              height: rowHeight,
-              decoration:
-                  BoxDecoration(border: Border.all(color: Colors.white)),
-              child: Center(
-                  child: AutoSizeText('Name',
-                      style: _submissionEntryStyle(Colors.white))),
-            ),
-          ),
-          Flexible(
+            backgroundColor: Colors.grey,
+            borderColor: Colors.white,
+            textColor: Colors.white),
+        viewFlexTextCell('Skill',
             flex: 2,
-            child: Container(
-              height: rowHeight,
-              decoration:
-                  BoxDecoration(border: Border.all(color: Colors.white)),
-              child: Center(
-                  child: AutoSizeText('Skill',
-                      style: _submissionEntryStyle(Colors.white))),
-            ),
-          ),
-          Flexible(
+            backgroundColor: Colors.grey,
+            borderColor: Colors.white,
+            textColor: Colors.white),
+        viewFlexTextCell('Subskill',
             flex: 2,
-            child: Container(
-              height: rowHeight,
-              decoration:
-                  BoxDecoration(border: Border.all(color: Colors.white)),
-              child: Center(
-                  child: AutoSizeText('Subskill',
-                      style: _submissionEntryStyle(Colors.white))),
-            ),
-          ),
-          Flexible(
+            backgroundColor: Colors.grey,
+            borderColor: Colors.white,
+            textColor: Colors.white),
+        viewFlexTextCell('View Entry',
             flex: 2,
-            child: Container(
-              height: rowHeight,
-              decoration:
-                  BoxDecoration(border: Border.all(color: Colors.white)),
-              child: Center(
-                  child: AutoSizeText('View Entry',
-                      style: _submissionEntryStyle(Colors.white))),
-            ),
-          )
-        ],
-      ),
+            backgroundColor: Colors.grey,
+            borderColor: Colors.white,
+            textColor: Colors.white)
+      ],
     );
   }
 
-  Widget _noSubmissionsAvailableWidget() {
-    return Center(
-      child: Text(
-        'NO FORMS AVAILABLE',
-        style: GoogleFonts.poppins(
-            textStyle: const TextStyle(
-                fontSize: 38,
-                color: Colors.black,
-                fontWeight: FontWeight.bold)),
-      ),
-    );
-  }
-
-  TextStyle _submissionEntryStyle(Color thisColor) {
-    return GoogleFonts.inter(
-        textStyle: TextStyle(
-            color: thisColor, fontSize: 23, fontWeight: FontWeight.w400));
+  Widget _submissionEntries() {
+    return ListView.builder(
+        shrinkWrap: true,
+        itemCount: allSubmissions.length,
+        itemBuilder: (context, index) {
+          Map<dynamic, dynamic> submissionData = allSubmissions[index];
+          Color entryColor = index % 2 == 0 ? Colors.black : Colors.white;
+          Color backgroundColor = index % 2 == 0 ? Colors.white : Colors.grey;
+          Color borderColor = index % 2 == 0 ? Colors.grey : Colors.white;
+          return viewContentEntryRow(context,
+              children: [
+                viewFlexTextCell('${index + 1}',
+                    flex: 1,
+                    backgroundColor: backgroundColor,
+                    borderColor: borderColor,
+                    textColor: entryColor),
+                viewFlexTextCell(submissionData['name'],
+                    flex: 2,
+                    backgroundColor: backgroundColor,
+                    borderColor: borderColor,
+                    textColor: entryColor),
+                viewFlexTextCell(submissionData['skill'],
+                    flex: 2,
+                    backgroundColor: backgroundColor,
+                    borderColor: borderColor,
+                    textColor: entryColor),
+                viewFlexTextCell(submissionData['subskill'],
+                    flex: 2,
+                    backgroundColor: backgroundColor,
+                    borderColor: borderColor,
+                    textColor: entryColor),
+                viewFlexActionsCell([
+                  Center(child: viewEntryButton(() {
+                    GoRouter.of(context)
+                        .goNamed('gradeSubmissions', pathParameters: {
+                      'skill': submissionData['skill'],
+                      'subskill': submissionData['subskill'],
+                      'clientID': submissionData['clientID']
+                    });
+                  }))
+                ],
+                    flex: 2,
+                    backgroundColor: backgroundColor,
+                    borderColor: borderColor)
+              ],
+              borderColor: borderColor,
+              isLastEntry: index == allSubmissions.length - 1);
+        });
   }
 }

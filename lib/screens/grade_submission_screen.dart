@@ -6,9 +6,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:ywda_dashboard/widgets/app_bar_widget.dart';
 import 'package:ywda_dashboard/widgets/custom_container_widgets.dart';
-import 'package:ywda_dashboard/widgets/custom_widgets.dart';
+import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 import 'package:ywda_dashboard/widgets/youth_connect_textfield_widget.dart';
+
+import '../widgets/custom_text_widgets.dart';
 
 class GradeSubmissionScreen extends StatefulWidget {
   final String skill;
@@ -134,7 +136,7 @@ class _GradeSubmissionScreenState extends State<GradeSubmissionScreen> {
           .doc(widget.clientID)
           .get();
       Map<dynamic, dynamic> skillsDeveloped = client.data()!['skillsDeveloped'];
-      skillsDeveloped[widget.skill][widget.subSkill]['status'] = 'APPROVED';
+      skillsDeveloped[widget.skill][widget.subSkill]['status'] = 'GRADED';
       skillsDeveloped[widget.skill][widget.subSkill]['grade'] = grade;
       if (_remarksController.text.isNotEmpty) {
         skillsDeveloped[widget.skill][widget.subSkill]['remarks'] =
@@ -359,7 +361,7 @@ class _GradeSubmissionScreenState extends State<GradeSubmissionScreen> {
       await launchUrl(url);
     } else {
       // Handle the case where the URL cannot be launched
-      print('Could not launch $url');
+      //  print('Could not launch $url');
     }
   }
 }
