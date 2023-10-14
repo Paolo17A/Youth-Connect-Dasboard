@@ -48,10 +48,16 @@ dependencies:
   file_picker: ^5.5.0
   url_launcher: ^6.1.14
   pie_chart: ^5.3.2
+  flutter_launcher_icons: ^0.13.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+flutter_launcher_icons:
+  web:
+    generate: true
+    image_path: "assets/images/ywda_logo.png"
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

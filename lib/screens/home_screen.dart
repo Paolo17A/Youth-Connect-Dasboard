@@ -149,38 +149,38 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: appBarWidget(context),
-        body: _isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : Row(
-                children: [
-                  leftNavigator(context, 0),
-                  bodyWidgetWhiteBG(
-                      context,
-                      SingleChildScrollView(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 13),
-                          child: Column(
-                            children: [
-                              _analyticsBreakdown(),
-                              SizedBox(
-                                  height: MediaQuery.of(context).size.height *
-                                      0.03),
-                              horizontalPadding3Percent(
-                                  context,
-                                  Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        _educationBreakdown(),
-                                        _youthBreakdown(),
-                                        _genderBreakdown()
-                                      ]))
-                            ],
-                          ),
+        body: Row(
+          children: [
+            leftNavigator(context, 0),
+            bodyWidgetWhiteBG(
+                context,
+                switchedLoadingContainer(
+                    _isLoading,
+                    SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 13),
+                        child: Column(
+                          children: [
+                            _analyticsBreakdown(),
+                            SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.03),
+                            horizontalPadding3Percent(
+                                context,
+                                Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      _educationBreakdown(),
+                                      _youthBreakdown(),
+                                      _genderBreakdown()
+                                    ]))
+                          ],
                         ),
-                      ))
-                ],
-              ));
+                      ),
+                    )))
+          ],
+        ));
   }
 
   Widget _analyticsBreakdown() {
