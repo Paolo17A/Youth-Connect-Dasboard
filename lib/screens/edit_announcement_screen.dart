@@ -193,146 +193,11 @@ class _EditAnnouncementScreenState extends State<EditAnnouncementScreen> {
                         SingleChildScrollView(
                           child: Column(
                             children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 50),
-                                child: AutoSizeText(
-                                  'EDIT ANNOUNCEMENT',
-                                  textAlign: TextAlign.center,
-                                  style: GoogleFonts.poppins(
-                                      textStyle: const TextStyle(
-                                          fontSize: 38,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black)),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 10, horizontal: 4),
-                                child: Row(
-                                  children: [
-                                    AutoSizeText('Announcement Title',
-                                        style: GoogleFonts.inter(
-                                            textStyle:
-                                                const TextStyle(fontSize: 19))),
-                                  ],
-                                ),
-                              ),
-                              YouthConnectTextField(
-                                  text: 'Announcement Title',
-                                  controller: _titleController,
-                                  textInputType: TextInputType.text,
-                                  displayPrefixIcon: null),
+                              _editAnnouncementHeader(),
+                              _announcementTitle(),
                               const SizedBox(height: 50),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 10, horizontal: 4),
-                                child: Row(
-                                  children: [
-                                    AutoSizeText('Announcement Content',
-                                        style: GoogleFonts.inter(
-                                            textStyle:
-                                                const TextStyle(fontSize: 19))),
-                                  ],
-                                ),
-                              ),
-                              YouthConnectTextField(
-                                  text: 'Announcement Content',
-                                  controller: _contentController,
-                                  textInputType: TextInputType.multiline,
-                                  displayPrefixIcon: null),
-                              Padding(
-                                padding: const EdgeInsets.all(22),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    ElevatedButton(
-                                        onPressed: _pickImage,
-                                        style: ElevatedButton.styleFrom(
-                                            backgroundColor:
-                                                const Color.fromARGB(
-                                                    255, 51, 86, 119),
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(30))),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(7),
-                                          child: AutoSizeText('UPLOAD IMAGE',
-                                              style: GoogleFonts.poppins(
-                                                  textStyle: const TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 15,
-                                                      fontWeight:
-                                                          FontWeight.bold))),
-                                        )),
-                                  ],
-                                ),
-                              ),
-                              if (currentSelectedFile != null)
-                                Container(
-                                  decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.black)),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(10),
-                                    child: Column(
-                                      children: [
-                                        SizedBox(
-                                            width: 150,
-                                            height: 150,
-                                            child: Image.memory(
-                                                currentSelectedFile!)),
-                                        const SizedBox(height: 5),
-                                        SizedBox(
-                                          width: 90,
-                                          child: ElevatedButton(
-                                              onPressed: () {
-                                                setState(() {
-                                                  currentSelectedFile = null;
-                                                });
-                                              },
-                                              style: ElevatedButton.styleFrom(
-                                                backgroundColor:
-                                                    const Color.fromARGB(
-                                                        255, 24, 44, 63),
-                                              ),
-                                              child: const Icon(Icons.delete)),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              if (currentSelectedFile == null &&
-                                  imageURLs.isNotEmpty)
-                                Container(
-                                  decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.black)),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(10),
-                                    child: Column(
-                                      children: [
-                                        SizedBox(
-                                            width: 150,
-                                            height: 150,
-                                            child: Image.network(imageURLs[0])),
-                                        const SizedBox(height: 5),
-                                        SizedBox(
-                                          width: 90,
-                                          child: ElevatedButton(
-                                              onPressed: () => _deleteImage(
-                                                  widget.announcementID,
-                                                  imageURLs[0],
-                                                  0),
-                                              style: ElevatedButton.styleFrom(
-                                                backgroundColor:
-                                                    const Color.fromARGB(
-                                                        255, 24, 44, 63),
-                                              ),
-                                              child: const Icon(Icons.delete)),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
+                              _announcementContent(),
+                              _announcementImageHandlers(),
                               const SizedBox(height: 60),
                               Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
@@ -362,5 +227,135 @@ class _EditAnnouncementScreenState extends State<EditAnnouncementScreen> {
                         ))))
           ],
         ));
+  }
+
+  Widget _editAnnouncementHeader() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 50),
+      child: AutoSizeText(
+        'EDIT ANNOUNCEMENT',
+        textAlign: TextAlign.center,
+        style: GoogleFonts.poppins(
+            textStyle: const TextStyle(
+                fontSize: 38,
+                fontWeight: FontWeight.bold,
+                color: Colors.black)),
+      ),
+    );
+  }
+
+  Widget _announcementTitle() {
+    return Column(children: [
+      vertical10horizontal4(Row(children: [
+        AutoSizeText('Announcement Title',
+            style: GoogleFonts.inter(textStyle: const TextStyle(fontSize: 19))),
+      ])),
+      YouthConnectTextField(
+          text: 'Announcement Title',
+          controller: _titleController,
+          textInputType: TextInputType.text,
+          displayPrefixIcon: null),
+    ]);
+  }
+
+  Widget _announcementContent() {
+    return Column(children: [
+      vertical10horizontal4(Row(children: [
+        AutoSizeText('Announcement Content',
+            style: GoogleFonts.inter(textStyle: const TextStyle(fontSize: 19)))
+      ])),
+      YouthConnectTextField(
+          text: 'Announcement Content',
+          controller: _contentController,
+          textInputType: TextInputType.multiline,
+          displayPrefixIcon: null)
+    ]);
+  }
+
+  Widget _announcementImageHandlers() {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(22),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ElevatedButton(
+                  onPressed: _pickImage,
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 51, 86, 119),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30))),
+                  child: Padding(
+                    padding: const EdgeInsets.all(7),
+                    child: AutoSizeText('UPLOAD IMAGE',
+                        style: GoogleFonts.poppins(
+                            textStyle: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold))),
+                  )),
+            ],
+          ),
+        ),
+        if (currentSelectedFile != null)
+          Container(
+            decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                children: [
+                  SizedBox(
+                      width: 150,
+                      height: 150,
+                      child: Image.memory(currentSelectedFile!)),
+                  const SizedBox(height: 5),
+                  SizedBox(
+                    width: 90,
+                    child: ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            currentSelectedFile = null;
+                          });
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color.fromARGB(255, 24, 44, 63),
+                        ),
+                        child: const Icon(Icons.delete)),
+                  )
+                ],
+              ),
+            ),
+          ),
+        if (currentSelectedFile == null && imageURLs.isNotEmpty)
+          Container(
+            decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                children: [
+                  SizedBox(
+                      width: 150,
+                      height: 150,
+                      child: Image.network(imageURLs[0])),
+                  const SizedBox(height: 5),
+                  SizedBox(
+                    width: 90,
+                    child: ElevatedButton(
+                        onPressed: () => _deleteImage(
+                            widget.announcementID, imageURLs[0], 0),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color.fromARGB(255, 24, 44, 63),
+                        ),
+                        child: const Icon(Icons.delete)),
+                  )
+                ],
+              ),
+            ),
+          ),
+      ],
+    );
   }
 }

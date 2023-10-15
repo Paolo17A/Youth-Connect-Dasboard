@@ -159,7 +159,7 @@ class _LogInScreenState extends State<LogInScreen> {
                                       backgroundColor: Colors.white,
                                       radius: 75,
                                       child: Image.asset(
-                                          'assets/images/ywda_logo.png')),
+                                          'assets/images/ywda_admin_logo.png')),
                                 ),
                                 Text('LOG IN',
                                     style: GoogleFonts.poppins(

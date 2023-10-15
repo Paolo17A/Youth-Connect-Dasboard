@@ -165,7 +165,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         backgroundColor: Colors.white,
                                         radius: 75,
                                         child: Image.asset(
-                                            'assets/images/ywda_logo.png')),
+                                            'assets/images/ywda_admin_logo.png')),
                                   ),
                                   Text('SIGN UP',
                                       style: GoogleFonts.poppins(

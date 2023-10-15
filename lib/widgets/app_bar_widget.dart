@@ -7,7 +7,7 @@ AppBar appBarWidget(BuildContext context) {
     automaticallyImplyLeading: false,
     title: Row(
       children: [
-        Image.asset('assets/images/ywda_logo.png', scale: 3.25),
+        Image.asset('assets/images/ywda_admin_logo.png', scale: 30),
         Text('YOUTH DEVELOPMENT AFFAIRS',
             style: GoogleFonts.poppins(
                 textStyle: const TextStyle(

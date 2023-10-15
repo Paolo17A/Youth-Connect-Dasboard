@@ -16,7 +16,10 @@ class WelcomeScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('assets/images/ywda_logo.png'),
+              Image.asset(
+                'assets/images/ywda_admin_logo.png',
+                height: MediaQuery.of(context).size.height * 0.2,
+              ),
               const SizedBox(height: 60),
               Text('Welcome to Youth Connect',
                   textAlign: TextAlign.center,
