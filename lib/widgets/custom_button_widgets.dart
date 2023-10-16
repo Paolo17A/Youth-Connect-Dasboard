@@ -29,6 +29,15 @@ Widget restoreEntryButton(BuildContext context, {required Function onPress}) {
       child: const Icon(Icons.restart_alt, color: Colors.white));
 }
 
+Widget downloadFileButton(BuildContext context, {required Function onPress}) {
+  return ElevatedButton(
+      onPressed: () {
+        onPress();
+      },
+      style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+      child: const Icon(Icons.download, color: Colors.white));
+}
+
 Widget viewEntryButton(Function onPress) {
   return ElevatedButton(
     onPressed: () {

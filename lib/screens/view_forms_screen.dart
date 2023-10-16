@@ -159,12 +159,12 @@ class _ViewFormsScreenState extends State<ViewFormsScreen> {
                     borderColor: borderColor,
                     textColor: entryColor),
                 viewFlexTextCell(formData['fileName'],
-                    flex: 1,
+                    flex: 3,
                     backgroundColor: backgroundColor,
                     borderColor: borderColor,
                     textColor: entryColor),
                 viewFlexActionsCell([
-                  editEntryButton(context, onPress: () {
+                  downloadFileButton(context, onPress: () {
                     downloadFile(formData['fileURL']);
                   }),
                   deleteEntryButton(context, onPress: () {
