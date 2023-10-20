@@ -226,22 +226,23 @@ class _EditOrgScreenState extends State<EditOrgScreen> {
               stackedLoadingContainer(
                   context,
                   _isLoading,
-                  horizontalPadding5Percent(
-                      context,
-                      SingleChildScrollView(
-                          child: Column(
-                        children: [
-                          _editOrganizationHeaderWidget(),
-                          _organizationNameWidget(),
-                          _organizationNatureWidget(),
-                          _organizationIntroWidget(),
-                          _organizationContactDetailsWidget(),
-                          _organizationSocMedWidget(),
-                          _orgImageSelectorWidgets(),
-                          const SizedBox(height: 30),
-                          _submitButtonWidget()
-                        ],
-                      )))),
+                  SingleChildScrollView(
+                    child: horizontalPadding5Percent(
+                        context,
+                        Column(
+                          children: [
+                            _editOrganizationHeaderWidget(),
+                            _organizationNameWidget(),
+                            _organizationNatureWidget(),
+                            _organizationIntroWidget(),
+                            _organizationContactDetailsWidget(),
+                            _organizationSocMedWidget(),
+                            _orgImageSelectorWidgets(),
+                            const SizedBox(height: 30),
+                            _submitButtonWidget()
+                          ],
+                        )),
+                  )),
             )
           ],
         ));

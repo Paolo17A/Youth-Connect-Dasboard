@@ -44,8 +44,11 @@ Widget viewHeaderAddButton(
   );
 }
 
-Widget analyticReportWidget(
-    BuildContext context, int count, String demographic, Icon displayIcon) {
+Widget analyticReportWidget(BuildContext context,
+    {required String count,
+    required String demographic,
+    required Widget displayIcon,
+    required Function onPress}) {
   return Padding(
     padding: const EdgeInsets.all(8),
     child: Container(
@@ -61,27 +64,32 @@ Widget analyticReportWidget(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                AutoSizeText(count.toString(),
+                AutoSizeText(count,
                     maxLines: 2,
                     style: GoogleFonts.inter(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
                         fontSize: 40)),
-                Container(
+                SizedBox(
                   width: MediaQuery.of(context).size.width * 0.07,
                   height: 45,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: Colors.green),
-                  child: Center(
-                    child: AutoSizeText(demographic,
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.inter(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 15)),
+                  child: ElevatedButton(
+                    onPressed: () => onPress(),
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        )),
+                    child: Center(
+                      child: AutoSizeText(demographic,
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.inter(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15)),
+                    ),
                   ),
                 )
               ],

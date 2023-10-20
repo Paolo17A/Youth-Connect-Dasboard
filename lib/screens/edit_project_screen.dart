@@ -197,10 +197,10 @@ class _EditProjectScreenState extends State<EditProjectScreen> {
                 stackedLoadingContainer(
                     context,
                     _isLoading,
-                    horizontalPadding5Percent(
-                        context,
-                        SingleChildScrollView(
-                          child: Column(
+                    SingleChildScrollView(
+                      child: horizontalPadding5Percent(
+                          context,
+                          Column(
                             children: [
                               _editProjectHeaderWidget(),
                               _projectTitleWidget(),
@@ -219,8 +219,8 @@ class _EditProjectScreenState extends State<EditProjectScreen> {
                               const SizedBox(height: 60),
                               _projectSubmitButtonWidget()
                             ],
-                          ),
-                        ))))
+                          )),
+                    )))
           ],
         ));
   }
@@ -387,23 +387,26 @@ class _EditProjectScreenState extends State<EditProjectScreen> {
   }
 
   Widget _projectSubmitButtonWidget() {
-    return Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-      ElevatedButton(
-          onPressed: uploadChangesToProject,
-          style: ElevatedButton.styleFrom(
-              backgroundColor: const Color.fromARGB(255, 88, 147, 201),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20))),
-          child: Padding(
-            padding: const EdgeInsets.all(11),
-            child: AutoSizeText('SUBMIT',
-                style: GoogleFonts.poppins(
-                    textStyle: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold))),
-          ))
-    ]);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+        ElevatedButton(
+            onPressed: uploadChangesToProject,
+            style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 88, 147, 201),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20))),
+            child: Padding(
+              padding: const EdgeInsets.all(11),
+              child: AutoSizeText('SUBMIT',
+                  style: GoogleFonts.poppins(
+                      textStyle: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold))),
+            ))
+      ]),
+    );
   }
   //============================================================================
 }

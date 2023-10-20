@@ -41,10 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
     'OTHERS': 0
   };
   List<DocumentSnapshot> allOrgs = [];
-  int suspendedOrgs = 0;
-  List<DocumentSnapshot> allProjects = [];
-  List<DocumentSnapshot> allAnnouncements = [];
-  List<DocumentSnapshot> allForms = [];
+  List<String> allTowns = [];
 
   @override
   void didChangeDependencies() {
@@ -115,25 +112,12 @@ class _HomeScreenState extends State<HomeScreen> {
             civilStatusMap['SEPARATE'] = civilStatusMap['SEPARATE']! + 1;
           }
         }
+
+        if (userData.containsKey('city') &&
+            !allTowns.contains(userData['city'].toString().trim())) {
+          allTowns.add(userData['city'].toString().trim());
+        }
       }
-
-      final orgs = await FirebaseFirestore.instance.collection('orgs').get();
-      allOrgs = orgs.docs;
-      suspendedOrgs = allOrgs
-          .where((element) => element['isActive'] == false)
-          .toList()
-          .length;
-
-      final projects =
-          await FirebaseFirestore.instance.collection('projects').get();
-      allProjects = projects.docs;
-
-      final announcements =
-          await FirebaseFirestore.instance.collection('announcements').get();
-      allAnnouncements = announcements.docs;
-
-      final forms = await FirebaseFirestore.instance.collection('forms').get();
-      allForms = forms.docs;
 
       setState(() {
         _isLoading = false;
@@ -201,24 +185,55 @@ class _HomeScreenState extends State<HomeScreen> {
           alignment: WrapAlignment.start,
           runAlignment: WrapAlignment.spaceEvenly,
           children: [
-            analyticReportWidget(context, allUsers.length, 'Total Users',
-                const Icon(Icons.person, color: Colors.black)),
-            analyticReportWidget(context, allOrgs.length, 'Total Organizations',
-                const Icon(Icons.people, color: Colors.black)),
-            analyticReportWidget(context, allProjects.length, 'Total Projects',
-                const Icon(Icons.local_activity, color: Colors.black)),
-            analyticReportWidget(
-                context,
-                allAnnouncements.length,
-                'Announcements Made',
-                const Icon(Icons.announcement_sharp, color: Colors.black)),
-            analyticReportWidget(context, allForms.length, 'Forms Uploaded',
-                const Icon(Icons.list_outlined, color: Colors.black)),
-            analyticReportWidget(
-                context,
-                suspendedOrgs,
-                'Suspended Organizations',
-                const Icon(Icons.warning, color: Colors.black))
+            analyticReportWidget(context,
+                count: inSchool.toString(),
+                demographic: 'In School',
+                displayIcon:
+                    Image.asset('assets/images/icons/in school.png', scale: 2),
+                onPress: () {}),
+            analyticReportWidget(context,
+                count: inSchool.toString(),
+                demographic: 'Out of School',
+                displayIcon: Image.asset(
+                    'assets/images/icons/out of school.png',
+                    scale: 2),
+                onPress: () {}),
+            analyticReportWidget(context,
+                count: laborForce.toString(),
+                demographic: 'Labor Force',
+                displayIcon: Image.asset('assets/images/icons/forced labor.png',
+                    scale: 2),
+                onPress: () {}),
+            analyticReportWidget(context,
+                count: allUsers.length.toString(),
+                demographic: 'Total Users',
+                displayIcon:
+                    Image.asset('assets/images/icons/user.png', scale: 2),
+                onPress: () {}),
+            analyticReportWidget(context,
+                count: allOrgs.length.toString(),
+                demographic: 'Total Organizations',
+                displayIcon: Image.asset('assets/images/icons/organization.png',
+                    scale: 2),
+                onPress: () {}),
+            analyticReportWidget(context,
+                count: allTowns.length.toString(),
+                demographic: 'Towns',
+                displayIcon:
+                    Image.asset('assets/images/icons/town.png', scale: 2),
+                onPress: () {}),
+            analyticReportWidget(context,
+                count: '',
+                demographic: 'Age Report',
+                displayIcon:
+                    Image.asset('assets/images/icons/age.png', scale: 2),
+                onPress: () {}),
+            analyticReportWidget(context,
+                count: '',
+                demographic: 'Gender Report',
+                displayIcon:
+                    Image.asset('assets/images/icons/gender.png', scale: 2),
+                onPress: () {}),
           ],
         ),
       ),

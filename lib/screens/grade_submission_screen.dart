@@ -171,10 +171,10 @@ class _GradeSubmissionScreenState extends State<GradeSubmissionScreen> {
                 stackedLoadingContainer(
                     context,
                     _isLoading,
-                    horizontalPadding5Percent(
-                        context,
-                        SingleChildScrollView(
-                          child: Column(
+                    SingleChildScrollView(
+                      child: horizontalPadding5Percent(
+                          context,
+                          Column(
                             children: [
                               _skillAndSubksillHeaderWidget(),
                               _entryTitleWidget(),
@@ -186,8 +186,8 @@ class _GradeSubmissionScreenState extends State<GradeSubmissionScreen> {
                               _remarksWidget(),
                               const SizedBox(height: 50)
                             ],
-                          ),
-                        ))))
+                          )),
+                    )))
           ],
         ));
   }
