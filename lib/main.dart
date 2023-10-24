@@ -18,6 +18,8 @@ import 'package:ywda_dashboard/screens/view_forms_screen.dart';
 import 'package:ywda_dashboard/screens/view_orgs_screen.dart';
 import 'package:ywda_dashboard/screens/view_projects_screen.dart';
 import 'package:ywda_dashboard/screens/view_submissions_screen.dart';
+import 'package:ywda_dashboard/screens/view_user_accounts_screen.dart';
+import 'package:ywda_dashboard/screens/view_youth_information.dart';
 import 'package:ywda_dashboard/screens/welcome_screen.dart';
 import 'firebase_options.dart';
 
@@ -76,6 +78,24 @@ class MyApp extends StatelessWidget {
                   fullscreenDialog: true,
                   key: state.pageKey,
                   child: const HomeScreen(),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(
+                        opacity: CurveTween(curve: Curves.easeInOutCirc)
+                            .animate(animation),
+                        child: child);
+                  });
+            },
+          ),
+          GoRoute(
+            path: 'youthInformation/:category',
+            name: 'youthInformation',
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                  fullscreenDialog: true,
+                  key: state.pageKey,
+                  child: ViewYouthInformationScreen(
+                      category: state.pathParameters['category']!),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
                     return FadeTransition(
@@ -303,6 +323,21 @@ class MyApp extends StatelessWidget {
                   });
             },
           ),
+          GoRoute(
+              path: 'users',
+              pageBuilder: (context, state) {
+                return CustomTransitionPage(
+                    fullscreenDialog: true,
+                    key: state.pageKey,
+                    child: ViewUserAccountsScreen(),
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      return FadeTransition(
+                          opacity: CurveTween(curve: Curves.easeInOutCirc)
+                              .animate(animation),
+                          child: child);
+                    });
+              }),
           GoRoute(
             path: 'adminSettings',
             pageBuilder: (context, state) {

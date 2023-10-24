@@ -26,7 +26,8 @@ Widget leftNavigator(BuildContext context, int index) {
                         style: _textStyle(),
                       ),
                       onTap: () {
-                        //GoRouter.of(context).go('/sections');
+                        GoRouter.of(context).goNamed('youthInformation',
+                            pathParameters: {'category': 'NO FILTER'});
                       })),
               Container(
                   color: index == 2 ? Colors.white : null,
@@ -47,7 +48,7 @@ Widget leftNavigator(BuildContext context, int index) {
                   child: ListTile(
                       title: Text('User Accounts', style: _textStyle()),
                       onTap: () {
-                        //GoRouter.of(context).go('/lessons');
+                        GoRouter.of(context).go('/users');
                       })),
               Container(
                   color: index == 5 ? Colors.white : null,

@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:ywda_dashboard/widgets/app_bar_widget.dart';
@@ -190,50 +191,69 @@ class _HomeScreenState extends State<HomeScreen> {
                 demographic: 'In School',
                 displayIcon:
                     Image.asset('assets/images/icons/in school.png', scale: 2),
-                onPress: () {}),
+                onPress: () {
+              GoRouter.of(context).goNamed('youthInformation',
+                  pathParameters: {'category': 'EDUCATION'});
+            }),
             analyticReportWidget(context,
                 count: inSchool.toString(),
                 demographic: 'Out of School',
                 displayIcon: Image.asset(
                     'assets/images/icons/out of school.png',
-                    scale: 2),
-                onPress: () {}),
+                    scale: 2), onPress: () {
+              GoRouter.of(context).goNamed('youthInformation',
+                  pathParameters: {'category': 'EDUCATION'});
+            }),
             analyticReportWidget(context,
                 count: laborForce.toString(),
                 demographic: 'Labor Force',
                 displayIcon: Image.asset('assets/images/icons/forced labor.png',
-                    scale: 2),
-                onPress: () {}),
+                    scale: 2), onPress: () {
+              GoRouter.of(context).goNamed('youthInformation',
+                  pathParameters: {'category': 'EDUCATION'});
+            }),
             analyticReportWidget(context,
                 count: allUsers.length.toString(),
                 demographic: 'Total Users',
                 displayIcon:
                     Image.asset('assets/images/icons/user.png', scale: 2),
-                onPress: () {}),
+                onPress: () {
+              GoRouter.of(context).go('/users');
+            }),
             analyticReportWidget(context,
                 count: allOrgs.length.toString(),
                 demographic: 'Total Organizations',
                 displayIcon: Image.asset('assets/images/icons/organization.png',
-                    scale: 2),
-                onPress: () {}),
+                    scale: 2), onPress: () {
+              GoRouter.of(context).go('/orgs');
+            }),
             analyticReportWidget(context,
                 count: allTowns.length.toString(),
                 demographic: 'Towns',
                 displayIcon:
                     Image.asset('assets/images/icons/town.png', scale: 2),
-                onPress: () {}),
+                onPress: () {
+              GoRouter.of(context).goNamed('youthInformation',
+                  pathParameters: {'category': 'TOWNS'});
+            }),
             analyticReportWidget(context,
                 count: '',
                 demographic: 'Age Report',
                 displayIcon:
                     Image.asset('assets/images/icons/age.png', scale: 2),
-                onPress: () {}),
+                onPress: () {
+              GoRouter.of(context).goNamed('youthInformation',
+                  pathParameters: {'category': 'AGE REPORT'});
+            }),
             analyticReportWidget(context,
                 count: '',
                 demographic: 'Gender Report',
                 displayIcon:
                     Image.asset('assets/images/icons/gender.png', scale: 2),
-                onPress: () {}),
+                onPress: () {
+              GoRouter.of(context).goNamed('youthInformation',
+                  pathParameters: {'category': 'GENDER REPORT'});
+            }),
           ],
         ),
       ),

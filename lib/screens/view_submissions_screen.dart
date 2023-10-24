@@ -77,12 +77,12 @@ class _ViewSubmissionsScreenState extends State<ViewSubmissionsScreen> {
             bodyWidgetWhiteBG(
                 context,
                 switchedLoadingContainer(_isLoading,
-                    allPadding5Percent(context, _formsContainerWidget())))
+                    allPadding5Percent(context, _submissionsContainerWidget())))
           ],
         ));
   }
 
-  Widget _formsContainerWidget() {
+  Widget _submissionsContainerWidget() {
     return viewContentContainer(context,
         child: Column(
           children: [
