@@ -12,6 +12,7 @@ import 'package:ywda_dashboard/screens/edit_project_screen.dart';
 import 'package:ywda_dashboard/screens/grade_submission_screen.dart';
 import 'package:ywda_dashboard/screens/home_screen.dart';
 import 'package:ywda_dashboard/screens/log_in_screen.dart';
+import 'package:ywda_dashboard/screens/org_home_screen.dart';
 import 'package:ywda_dashboard/screens/register_screen.dart';
 import 'package:ywda_dashboard/screens/view_announcement_screen.dart';
 import 'package:ywda_dashboard/screens/view_forms_screen.dart';
@@ -21,6 +22,7 @@ import 'package:ywda_dashboard/screens/view_submissions_screen.dart';
 import 'package:ywda_dashboard/screens/view_user_accounts_screen.dart';
 import 'package:ywda_dashboard/screens/view_youth_information.dart';
 import 'package:ywda_dashboard/screens/welcome_screen.dart';
+import 'package:ywda_dashboard/utils/color_util.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -31,10 +33,28 @@ void main() async {
   runApp(MyApp());
 }
 
+CustomTransitionPage customTransition(
+    BuildContext context, GoRouterState state, Widget widget) {
+  return CustomTransitionPage(
+      fullscreenDialog: true,
+      key: state.pageKey,
+      child: widget,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        return easeInOutCircTransition(animation, child);
+      });
+}
+
+FadeTransition easeInOutCircTransition(
+    Animation<double> animation, Widget child) {
+  return FadeTransition(
+      opacity: CurveTween(curve: Curves.easeInOutCirc).animate(animation),
+      child: child);
+}
+
 class MyApp extends StatelessWidget {
   MyApp({super.key});
 
-  final GoRouter _routes = GoRouter(initialLocation: '/', routes: [
+  final GoRouter _routes = GoRouter(initialLocation: '/login', routes: [
     GoRoute(
         path: '/',
         builder: (context, state) => const WelcomeScreen(),
@@ -48,10 +68,7 @@ class MyApp extends StatelessWidget {
                   child: const RegisterScreen(),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
-                    return FadeTransition(
-                        opacity: CurveTween(curve: Curves.easeInOutCirc)
-                            .animate(animation),
-                        child: child);
+                    return easeInOutCircTransition(animation, child);
                   });
             },
           ),
@@ -64,10 +81,7 @@ class MyApp extends StatelessWidget {
                   child: const LogInScreen(),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
-                    return FadeTransition(
-                        opacity: CurveTween(curve: Curves.easeInOutCirc)
-                            .animate(animation),
-                        child: child);
+                    return easeInOutCircTransition(animation, child);
                   });
             },
           ),
@@ -80,10 +94,20 @@ class MyApp extends StatelessWidget {
                   child: const HomeScreen(),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
-                    return FadeTransition(
-                        opacity: CurveTween(curve: Curves.easeInOutCirc)
-                            .animate(animation),
-                        child: child);
+                    return easeInOutCircTransition(animation, child);
+                  });
+            },
+          ),
+          GoRoute(
+            path: 'orgHome',
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                  fullscreenDialog: true,
+                  key: state.pageKey,
+                  child: const OrgHomeScreen(),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return easeInOutCircTransition(animation, child);
                   });
             },
           ),
@@ -98,10 +122,7 @@ class MyApp extends StatelessWidget {
                       category: state.pathParameters['category']!),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
-                    return FadeTransition(
-                        opacity: CurveTween(curve: Curves.easeInOutCirc)
-                            .animate(animation),
-                        child: child);
+                    return easeInOutCircTransition(animation, child);
                   });
             },
           ),
@@ -114,10 +135,7 @@ class MyApp extends StatelessWidget {
                   child: const ViewOrgsScreen(),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
-                    return FadeTransition(
-                        opacity: CurveTween(curve: Curves.easeInOutCirc)
-                            .animate(animation),
-                        child: child);
+                    return easeInOutCircTransition(animation, child);
                   });
             },
           ),
@@ -130,10 +148,7 @@ class MyApp extends StatelessWidget {
                   child: const AddOrgScreen(),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
-                    return FadeTransition(
-                        opacity: CurveTween(curve: Curves.easeInOutCirc)
-                            .animate(animation),
-                        child: child);
+                    return easeInOutCircTransition(animation, child);
                   });
             },
           ),
@@ -147,10 +162,7 @@ class MyApp extends StatelessWidget {
                   child: EditOrgScreen(orgID: state.pathParameters['orgID']!),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
-                    return FadeTransition(
-                        opacity: CurveTween(curve: Curves.easeInOutCirc)
-                            .animate(animation),
-                        child: child);
+                    return easeInOutCircTransition(animation, child);
                   });
             },
           ),
@@ -163,10 +175,7 @@ class MyApp extends StatelessWidget {
                   child: const ViewFormsScreen(),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
-                    return FadeTransition(
-                        opacity: CurveTween(curve: Curves.easeInOutCirc)
-                            .animate(animation),
-                        child: child);
+                    return easeInOutCircTransition(animation, child);
                   });
             },
           ),
@@ -179,10 +188,7 @@ class MyApp extends StatelessWidget {
                   child: const AddFormScreen(),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
-                    return FadeTransition(
-                        opacity: CurveTween(curve: Curves.easeInOutCirc)
-                            .animate(animation),
-                        child: child);
+                    return easeInOutCircTransition(animation, child);
                   });
             },
           ),
@@ -195,10 +201,7 @@ class MyApp extends StatelessWidget {
                   child: const ViewProjectsScreen(),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
-                    return FadeTransition(
-                        opacity: CurveTween(curve: Curves.easeInOutCirc)
-                            .animate(animation),
-                        child: child);
+                    return easeInOutCircTransition(animation, child);
                   });
             },
           ),
@@ -211,10 +214,7 @@ class MyApp extends StatelessWidget {
                   child: const AddProjectScreen(),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
-                    return FadeTransition(
-                        opacity: CurveTween(curve: Curves.easeInOutCirc)
-                            .animate(animation),
-                        child: child);
+                    return easeInOutCircTransition(animation, child);
                   });
             },
           ),
@@ -229,10 +229,7 @@ class MyApp extends StatelessWidget {
                       projectID: state.pathParameters['projectID']!),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
-                    return FadeTransition(
-                        opacity: CurveTween(curve: Curves.easeInOutCirc)
-                            .animate(animation),
-                        child: child);
+                    return easeInOutCircTransition(animation, child);
                   });
             },
           ),
@@ -245,10 +242,7 @@ class MyApp extends StatelessWidget {
                   child: const ViewAnnouncementScreen(),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
-                    return FadeTransition(
-                        opacity: CurveTween(curve: Curves.easeInOutCirc)
-                            .animate(animation),
-                        child: child);
+                    return easeInOutCircTransition(animation, child);
                   });
             },
           ),
@@ -261,10 +255,7 @@ class MyApp extends StatelessWidget {
                   child: const AddAnnouncementScreen(),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
-                    return FadeTransition(
-                        opacity: CurveTween(curve: Curves.easeInOutCirc)
-                            .animate(animation),
-                        child: child);
+                    return easeInOutCircTransition(animation, child);
                   });
             },
           ),
@@ -279,10 +270,7 @@ class MyApp extends StatelessWidget {
                       announcementID: state.pathParameters['announcementID']!),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
-                    return FadeTransition(
-                        opacity: CurveTween(curve: Curves.easeInOutCirc)
-                            .animate(animation),
-                        child: child);
+                    return easeInOutCircTransition(animation, child);
                   });
             },
           ),
@@ -295,10 +283,7 @@ class MyApp extends StatelessWidget {
                   child: const ViewSubmissionsScreen(),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
-                    return FadeTransition(
-                        opacity: CurveTween(curve: Curves.easeInOutCirc)
-                            .animate(animation),
-                        child: child);
+                    return easeInOutCircTransition(animation, child);
                   });
             },
           ),
@@ -316,10 +301,7 @@ class MyApp extends StatelessWidget {
                   ),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
-                    return FadeTransition(
-                        opacity: CurveTween(curve: Curves.easeInOutCirc)
-                            .animate(animation),
-                        child: child);
+                    return easeInOutCircTransition(animation, child);
                   });
             },
           ),
@@ -332,10 +314,7 @@ class MyApp extends StatelessWidget {
                     child: ViewUserAccountsScreen(),
                     transitionsBuilder:
                         (context, animation, secondaryAnimation, child) {
-                      return FadeTransition(
-                          opacity: CurveTween(curve: Curves.easeInOutCirc)
-                              .animate(animation),
-                          child: child);
+                      return easeInOutCircTransition(animation, child);
                     });
               }),
           GoRoute(
@@ -347,10 +326,7 @@ class MyApp extends StatelessWidget {
                   child: const AdminSettingsScreen(),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
-                    return FadeTransition(
-                        opacity: CurveTween(curve: Curves.easeInOutCirc)
-                            .animate(animation),
-                        child: child);
+                    return easeInOutCircTransition(animation, child);
                   });
             },
           ),
@@ -366,7 +342,7 @@ class MyApp extends StatelessWidget {
       ),
       appBarTheme: const AppBarTheme(
         foregroundColor: Colors.black,
-        backgroundColor: Color.fromARGB(255, 217, 217, 217),
+        backgroundColor: CustomColors.darkBlue,
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           backgroundColor: Color.fromARGB(255, 217, 217, 217),

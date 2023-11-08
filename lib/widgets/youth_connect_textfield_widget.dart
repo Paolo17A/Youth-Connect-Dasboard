@@ -63,6 +63,6 @@ class _YouthConnectTextFieldState extends State<YouthConnectTextField> {
                     ))
                 : null),
         keyboardType: widget.textInputType,
-        maxLines: widget.textInputType == TextInputType.multiline ? 6 : 1);
+        maxLines: widget.textInputType == TextInputType.multiline ? 4 : 1);
   }
 }

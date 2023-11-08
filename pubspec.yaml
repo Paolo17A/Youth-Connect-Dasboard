@@ -49,6 +49,7 @@ dependencies:
   url_launcher: ^6.1.14
   pie_chart: ^5.3.2
   flutter_launcher_icons: ^0.13.1
+  gap: ^3.0.1
 
 dev_dependencies:
   flutter_test:
@@ -79,6 +80,8 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    - assets/images/background.png
+    - assets/images/YDA logo.png
     - assets/images/ywda_logo.png
     - assets/images/ywda_admin_logo.png
     - assets/images/icons/

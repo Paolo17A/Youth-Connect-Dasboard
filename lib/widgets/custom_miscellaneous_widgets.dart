@@ -2,6 +2,8 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'custom_text_widgets.dart';
+
 Widget viewContentUnavailable(BuildContext context, {required String text}) {
   return SizedBox(
     height: MediaQuery.of(context).size.height * 0.65,
@@ -141,4 +143,17 @@ Widget percentBarWidget(
           ),
         )
       ]));
+}
+
+Widget registerHeader() {
+  return Padding(
+    padding: const EdgeInsets.all(10),
+    child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+      Row(children: [
+        Text('REGISTRATION',
+            style: GoogleFonts.poppins(textStyle: blackBoldStyle(size: 30)))
+      ]),
+      Divider(thickness: 2)
+    ]),
+  );
 }

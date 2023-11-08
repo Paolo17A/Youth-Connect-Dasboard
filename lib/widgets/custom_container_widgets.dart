@@ -1,5 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:ywda_dashboard/utils/color_util.dart';
 import 'package:ywda_dashboard/widgets/custom_text_widgets.dart';
 
 Container bodyWidgetWhiteBG(BuildContext context, Widget child) {
@@ -124,4 +125,50 @@ Container breakdownContainer(BuildContext context, {required Widget child}) {
           borderRadius: BorderRadius.circular(20),
           color: const Color.fromARGB(255, 217, 217, 217)),
       child: Padding(padding: const EdgeInsets.all(11), child: child));
+}
+
+Container loginBackgroundContainer(BuildContext context,
+    {required Widget child}) {
+  return Container(
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height,
+      decoration: BoxDecoration(
+          image: DecorationImage(
+              image: AssetImage('assets/images/background.png'),
+              fit: BoxFit.cover)),
+      child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
+        SizedBox(
+            height: MediaQuery.of(context).size.height * 0.9, child: child),
+        Container(
+            height: MediaQuery.of(context).size.height * 0.05,
+            width: double.infinity,
+            color: CustomColors.darkBlue,
+            child: Padding(
+              padding: const EdgeInsets.all(5),
+              child: Row(children: [
+                AutoSizeText(
+                  'Youth Development Affairs Office of Laguna * Copyright All Rights Reserved 2023',
+                  style: whiteBoldStyle(),
+                )
+              ]),
+            ))
+      ]));
+}
+
+Container loginBoxContainer(BuildContext context, {required Widget child}) {
+  return Container(
+      width: MediaQuery.of(context).size.width * 0.3,
+      //height: MediaQuery.of(context).size.height * 0.5,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20), color: Colors.white),
+      child: child);
+}
+
+Container registerBoxContainer(BuildContext context, {required Widget child}) {
+  return Container(
+      width: MediaQuery.of(context).size.width * 0.45,
+      //height: MediaQuery.of(context).size.height * 0.5,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20), color: Colors.white),
+      child: child);
 }

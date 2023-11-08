@@ -3,10 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ywda_dashboard/widgets/app_bar_widget.dart';
 import 'package:ywda_dashboard/widgets/custom_container_widgets.dart';
+import 'package:ywda_dashboard/widgets/custom_text_widgets.dart';
 
+import '../widgets/custom_button_widgets.dart';
 import '../widgets/youth_connect_textfield_widget.dart';
-import '../widgets/submit_button_widget.dart';
 
 class LogInScreen extends StatefulWidget {
   const LogInScreen({super.key});
@@ -90,7 +92,7 @@ class _LogInScreenState extends State<LogInScreen> {
 
       //  Check if the account has a userType parameter and create it if it doesn't.
       if (!currentUserData.data()!.containsKey('userType')) {
-        FirebaseFirestore.instance
+        await FirebaseFirestore.instance
             .collection('users')
             .doc(FirebaseAuth.instance.currentUser!.uid)
             .update({'userType': 'CLIENT'});
@@ -106,7 +108,12 @@ class _LogInScreenState extends State<LogInScreen> {
         return;
       }
 
-      goRouter.go('/home');
+      if (currentUserData.data()!['userType'] == 'ADMIN') {
+        goRouter.go('/home');
+      } else if (currentUserData.data()!['userType'] == 'ORGHEAD') {
+        print('ORGHEAD');
+        goRouter.go('/orgHome');
+      }
     } catch (error) {
       setState(() {
         _isLoading = false;
@@ -120,134 +127,122 @@ class _LogInScreenState extends State<LogInScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SizedBox(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height,
-      child: SingleChildScrollView(
-          child: stackedLoadingContainer(
-              context,
-              _isLoading,
-              Stack(children: [
-                Positioned(
-                  top: -15,
-                  right: -15,
-                  child: Image.asset('assets/images/icons/Design.png',
-                      scale: 2.75),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                      vertical: MediaQuery.of(context).size.height * 0.1),
+        extendBodyBehindAppBar: true,
+        appBar: loginAppBar(context),
+        body: loginBackgroundContainer(context,
+            child: stackedLoadingContainer(
+                context,
+                _isLoading,
+                SizedBox(
+                  height: MediaQuery.of(context).size.height,
                   child: Center(
-                    child: Container(
-                      width: MediaQuery.of(context).size.width * 0.45,
-                      decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [Colors.deepPurple, Colors.blueAccent])),
-                      child: Padding(
-                        padding: const EdgeInsets.all(15),
-                        child: Container(
-                          color: const Color.fromARGB(255, 227, 236, 244),
-                          child: Padding(
-                            padding: const EdgeInsets.all(15),
-                            child: Column(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(20),
-                                  child: CircleAvatar(
-                                      backgroundColor: Colors.white,
-                                      radius: 75,
-                                      child: Image.asset(
-                                          'assets/images/ywda_admin_logo.png')),
-                                ),
-                                Text('LOG IN',
-                                    style: GoogleFonts.poppins(
-                                        textStyle: const TextStyle(
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 30))),
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 10),
-                                  child: YouthConnectTextField(
-                                    text: 'Email Address',
-                                    controller: _emailController,
-                                    textInputType: TextInputType.emailAddress,
-                                    displayPrefixIcon: const Icon(Icons.email),
-                                  ),
-                                ),
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 10),
-                                  child: YouthConnectTextField(
-                                    text: 'Password',
-                                    controller: _passwordController,
-                                    textInputType:
-                                        TextInputType.visiblePassword,
-                                    displayPrefixIcon: const Icon(Icons.lock),
-                                  ),
-                                ),
-                                Row(children: [
-                                  TextButton(
-                                      onPressed: () {},
-                                      child: Text('Forgot Password?',
-                                          style: GoogleFonts.poppins(
-                                              textStyle: const TextStyle(
-                                                  decoration:
-                                                      TextDecoration.underline,
-                                                  color: Color.fromARGB(
-                                                      255, 34, 52, 189),
-                                                  fontWeight:
-                                                      FontWeight.bold))))
-                                ]),
-                                SizedBox(
-                                    height: MediaQuery.of(context).size.height *
-                                        0.08),
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 30),
-                                  child: submitButton(
-                                      context: context,
-                                      submitFunction: loginUser,
-                                      width: MediaQuery.of(context).size.width *
-                                          0.15,
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.06),
-                                ),
-                                Wrap(
-                                  alignment: WrapAlignment.center,
-                                  children: [
-                                    Text('Don\'t have an account? ',
-                                        style: GoogleFonts.poppins(
-                                            textStyle: const TextStyle(
-                                                fontSize: 16,
-                                                color: Colors.black))),
-                                    TextButton(
-                                        onPressed: () {
-                                          GoRouter.of(context).go('/register');
-                                        },
-                                        child: Text('Register Here',
-                                            style: GoogleFonts.poppins(
-                                                textStyle: const TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    decoration: TextDecoration
-                                                        .underline,
-                                                    fontSize: 14,
-                                                    color: Color.fromARGB(
-                                                        255, 34, 52, 189)))))
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
+                    child: loginBoxContainer(
+                      context,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            _loginHeader(),
+                            _emailAddress(),
+                            _password(),
+                            _logInButton(),
+                            _textButtons(),
+                            // _organizationOption()
+                          ],
                         ),
                       ),
                     ),
                   ),
-                ),
-              ]))),
-    ));
+                ))));
+  }
+
+  Widget _loginHeader() {
+    return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+      Text('LOG IN',
+          style: GoogleFonts.poppins(textStyle: blackBoldStyle(size: 30))),
+      Divider(thickness: 2)
+    ]);
+  }
+
+  Widget _emailAddress() {
+    return Padding(
+      padding: EdgeInsets.all(10),
+      child: YouthConnectTextField(
+        text: 'Email Address',
+        controller: _emailController,
+        textInputType: TextInputType.emailAddress,
+        displayPrefixIcon: const Icon(Icons.email),
+      ),
+    );
+  }
+
+  Widget _password() {
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: YouthConnectTextField(
+        text: 'Password',
+        controller: _passwordController,
+        textInputType: TextInputType.visiblePassword,
+        displayPrefixIcon: const Icon(Icons.lock),
+      ),
+    );
+  }
+
+  Widget _logInButton() {
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: submitButton(context,
+          text: 'Log In',
+          submitFunction: loginUser,
+          width: double.maxFinite,
+          height: MediaQuery.of(context).size.height * 0.06),
+    );
+  }
+
+  Widget _textButtons() {
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        TextButton(
+            onPressed: () {},
+            child: Text('Forgot Password?',
+                style: GoogleFonts.poppins(
+                    textStyle: const TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.w400)))),
+        Wrap(
+          alignment: WrapAlignment.center,
+          children: [
+            Text('New Here? ',
+                style: GoogleFonts.poppins(
+                    textStyle:
+                        const TextStyle(fontSize: 16, color: Colors.black))),
+            TextButton(
+                onPressed: () => GoRouter.of(context).go('/register'),
+                child: Text('Sign Up',
+                    style: GoogleFonts.poppins(
+                        textStyle: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: Color.fromARGB(255, 34, 52, 189)))))
+          ],
+        )
+      ]),
+    );
+  }
+
+  Widget _organizationOption() {
+    return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+      Text(
+        'If you are an organization',
+        style: TextStyle(fontSize: 16),
+      ),
+      TextButton(
+          onPressed: () {},
+          child: Text('Click Here',
+              style: GoogleFonts.poppins(
+                  textStyle: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      color: Color.fromARGB(255, 34, 52, 189)))))
+    ]);
   }
 }
