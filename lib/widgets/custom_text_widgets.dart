@@ -35,3 +35,11 @@ TextStyle greyThinStyle({double? size = 20}) {
   return TextStyle(
       color: Colors.grey, fontWeight: FontWeight.w200, fontSize: size);
 }
+
+TextStyle titleTextStyle() {
+  return TextStyle(fontWeight: FontWeight.bold, fontSize: 18);
+}
+
+TextStyle contentTextStyle() {
+  return TextStyle(overflow: TextOverflow.ellipsis, fontSize: 15);
+}

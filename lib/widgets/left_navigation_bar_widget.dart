@@ -1,13 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:ywda_dashboard/utils/color_util.dart';
 import 'package:ywda_dashboard/widgets/custom_text_widgets.dart';
 
 Widget leftNavigator(BuildContext context, int index) {
   return Container(
       width: MediaQuery.of(context).size.width * 0.2,
-      color: const Color.fromARGB(255, 217, 217, 217),
+      color: CustomColors.softBlue,
       child: Column(children: [
         Flexible(
             flex: 1,
@@ -90,7 +90,7 @@ Widget leftNavigator(BuildContext context, int index) {
 Widget orgLeftNavigator(BuildContext context, int index) {
   return Container(
       width: MediaQuery.of(context).size.width * 0.2,
-      color: const Color.fromARGB(255, 217, 217, 217),
+      color: CustomColors.softBlue,
       child: Column(children: [
         Flexible(
             flex: 1,
@@ -99,7 +99,7 @@ Widget orgLeftNavigator(BuildContext context, int index) {
                   color: index == 0 ? Colors.white : null,
                   child: ListTile(
                       title: Text('Dashboard', style: blackBoldStyle()),
-                      onTap: () {})),
+                      onTap: () => GoRouter.of(context).go('/orgHome'))),
               Container(
                   color: index == 1 ? Colors.white : null,
                   child: ListTile(

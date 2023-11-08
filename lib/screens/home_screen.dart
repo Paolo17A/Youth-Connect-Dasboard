@@ -171,10 +171,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _analyticsBreakdown() {
     return Container(
       width: MediaQuery.of(context).size.width * 0.75,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        color: const Color.fromARGB(255, 217, 217, 217),
-      ),
       child: Padding(
         padding: EdgeInsets.symmetric(
           vertical: MediaQuery.of(context).size.height * 0.04,

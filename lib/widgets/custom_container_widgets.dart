@@ -123,7 +123,7 @@ Container breakdownContainer(BuildContext context, {required Widget child}) {
       height: MediaQuery.of(context).size.height * 0.4,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: const Color.fromARGB(255, 217, 217, 217)),
+          color: CustomColors.softBlue),
       child: Padding(padding: const EdgeInsets.all(11), child: child));
 }
 

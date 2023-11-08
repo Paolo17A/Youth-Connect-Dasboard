@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ywda_dashboard/utils/color_util.dart';
 
 import 'custom_text_widgets.dart';
 
@@ -57,8 +58,7 @@ Widget analyticReportWidget(BuildContext context,
         width: MediaQuery.of(context).size.width * 0.15,
         height: MediaQuery.of(context).size.height * 0.15,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30),
-          color: Colors.white,
+          color: CustomColors.softBlue,
         ),
         child: Row(children: [
           SizedBox(
@@ -68,17 +68,15 @@ Widget analyticReportWidget(BuildContext context,
               children: [
                 AutoSizeText(count,
                     maxLines: 2,
-                    style: GoogleFonts.inter(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 40)),
+                    style:
+                        GoogleFonts.inter(textStyle: blackBoldStyle(size: 40))),
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 0.07,
                   height: 45,
                   child: ElevatedButton(
                     onPressed: () => onPress(),
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
+                        backgroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         )),
@@ -88,7 +86,59 @@ Widget analyticReportWidget(BuildContext context,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: GoogleFonts.inter(
-                              color: Colors.white,
+                              color: Colors.black,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15)),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+          SizedBox(
+              width: MediaQuery.of(context).size.width * 0.05,
+              child: Transform.scale(scale: 2, child: displayIcon))
+        ])),
+  );
+}
+
+Widget orgDashboardWidget(BuildContext context,
+    {required String label,
+    required String buttonLabel,
+    required Widget displayIcon,
+    required Function onPress}) {
+  return Padding(
+    padding: const EdgeInsets.all(8),
+    child: Container(
+        width: MediaQuery.of(context).size.width * 0.15,
+        height: MediaQuery.of(context).size.height * 0.15,
+        decoration: BoxDecoration(
+            color: CustomColors.softBlue,
+            borderRadius: BorderRadius.circular(30)),
+        child: Row(children: [
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.1,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                AutoSizeText(label,
+                    style: GoogleFonts.inter(textStyle: blackBoldStyle())),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.07,
+                  height: 45,
+                  child: ElevatedButton(
+                    onPressed: () => onPress(),
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        )),
+                    child: Center(
+                      child: AutoSizeText(buttonLabel,
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.inter(
+                              color: Colors.black,
                               fontWeight: FontWeight.w600,
                               fontSize: 15)),
                     ),

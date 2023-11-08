@@ -398,6 +398,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         'adviserMiddleName': _adviserMiddleNameController.text,
         'adviserContactNumber': _adviserContactNumberController.text,
         'adviserEmail': _adviseremailAddressController.text,
+        'renewalHistory': [],
         'registrationForm': '',
         'listOfMembersForm': '',
         'directoryForm': '',

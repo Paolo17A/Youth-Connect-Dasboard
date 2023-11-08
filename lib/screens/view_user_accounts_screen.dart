@@ -201,7 +201,8 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
           itemBuilder: (context, index) {
             final userData =
                 filteredUsers[index].data() as Map<dynamic, dynamic>;
-            String fullName = userData['fullName'];
+            String fullName = userData['fullName'] ??
+                '${userData['firstName']} ${userData['middleName']} ${userData['lastName']}';
             Color entryColor = index % 2 == 0 ? Colors.black : Colors.white;
             Color backgroundColor = index % 2 == 0 ? Colors.white : Colors.grey;
             Color borderColor = index % 2 == 0 ? Colors.grey : Colors.white;
