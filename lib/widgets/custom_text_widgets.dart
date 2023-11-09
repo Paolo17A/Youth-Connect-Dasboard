@@ -16,6 +16,11 @@ TextStyle blackBoldStyle({double? size = 20}) {
       color: Colors.black, fontWeight: FontWeight.bold, fontSize: size);
 }
 
+TextStyle blackThinStyle({double? size = 20}) {
+  return TextStyle(
+      color: Colors.black, fontWeight: FontWeight.w500, fontSize: size);
+}
+
 TextStyle whiteBoldStyle({double? size = 20}) {
   return TextStyle(
       color: Colors.white, fontWeight: FontWeight.bold, fontSize: size);

@@ -12,23 +12,24 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:ywda_dashboard/widgets/app_bar_widget.dart';
 import 'package:ywda_dashboard/widgets/custom_container_widgets.dart';
-import 'package:ywda_dashboard/widgets/youth_connect_textfield_widget.dart';
+import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
 import '../utils/string_checker_util.dart';
 import '../widgets/custom_button_widgets.dart';
 import '../widgets/custom_miscellaneous_widgets.dart';
 import '../widgets/custom_text_widgets.dart';
+import '../widgets/youth_connect_textfield_widget.dart';
 
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+class AddOrgHeadScreen extends StatefulWidget {
+  const AddOrgHeadScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  State<AddOrgHeadScreen> createState() => _AddOrgHeadScreenState();
 }
 
 enum RegisterStates { SIGNUP, MEMBERSHIP, ORGANIZATION, FORMS }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _AddOrgHeadScreenState extends State<AddOrgHeadScreen> {
   bool _isLoading = false;
   RegisterStates currentRegisterState = RegisterStates.SIGNUP;
 
@@ -80,28 +81,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String? _formMissionVisionSelectedFileName;
   String? _formMissionVisionSelectedFileExtension;
 
-  @override
-  void dispose() {
-    super.dispose();
-    _usernameController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
-    _familyNameController.dispose();
-    _givenNameController.dispose();
-    _middleNameController.dispose();
-    _contactNumberController.dispose();
-    _headEmailAddressController.dispose();
-    _adviserLastNameController.dispose();
-    _adviserGivenNameController.dispose();
-    _adviserMiddleNameController.dispose();
-    _adviserContactNumberController.dispose();
-    _adviseremailAddressController.dispose();
-  }
-
   void handlePreviousButton() {
     setState(() {
       switch (currentRegisterState) {
+        case RegisterStates.SIGNUP:
+          GoRouter.of(context).go('/orgHeads');
+          break;
         case RegisterStates.MEMBERSHIP:
           currentRegisterState = RegisterStates.SIGNUP;
           break;
@@ -218,7 +203,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 content: Text('Please upload all the required forms.')));
             return;
           }
-          _registerNewUser();
+          _registerNewOrgHead();
           break;
       }
     });
@@ -347,7 +332,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
-  void _registerNewUser() async {
+  void _registerNewOrgHead() async {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     final goRouter = GoRouter.of(context);
     //  Guard conditionals
@@ -371,6 +356,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
         });
         return;
       }
+
+      final currentAdminUser = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .get();
+      final currentAdminData = currentAdminUser.data() as Map<dynamic, dynamic>;
+      final adminEmail = currentAdminData['email'];
+      final adminPassword = currentAdminData['password'];
+
+      await FirebaseAuth.instance.signOut();
 
       //  Proceed with registration of user.
       final newUser =
@@ -493,13 +488,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       await FirebaseAuth.instance.signOut();
 
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: adminEmail, password: adminPassword);
+
       //  Redirect to the login screen when all of this is done.
       setState(() {
         _isLoading = false;
       });
       scaffoldMessenger.showSnackBar(
           const SnackBar(content: Text('Successfully created new account')));
-      goRouter.go('/login');
+      goRouter.go('/orgHeads');
     } catch (error) {
       scaffoldMessenger.showSnackBar(
           SnackBar(content: Text('Error registering new user: $error')));
@@ -509,27 +507,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
-  //  WIDGETS
-  //============================================================================
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        extendBodyBehindAppBar: true,
-        appBar: loginAppBar(context),
-        body: loginBackgroundContainer(context,
-            child: stackedLoadingContainer(
-                context,
-                _isLoading,
-                SizedBox(
-                    height: MediaQuery.of(context).size.height,
-                    child: Center(
-                      child: _currentRegisterStateBox(),
-                    )))));
+      appBar: appBarWidget(context),
+      body: Row(
+        children: [
+          leftNavigator(context, 2),
+          bodyWidgetWhiteBG(
+              context,
+              stackedLoadingContainer(
+                  context,
+                  _isLoading,
+                  SizedBox(
+                      height: MediaQuery.of(context).size.height,
+                      child: Center(
+                        child: _currentRegisterStateBox(),
+                      ))))
+        ],
+      ),
+    );
   }
 
   Widget _currentRegisterStateBox() {
     if (currentRegisterState == RegisterStates.SIGNUP) {
-      return loginBoxContainer(
+      return addOrgHeadBoxContainer(
         context,
         child: SingleChildScrollView(
           child: Column(
@@ -539,13 +541,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
               _emailAddress(),
               _password(),
               _confirmPassword(),
-              registerActionButton('NEXT', handleNextButton)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  registerActionButton('BACK', handlePreviousButton),
+                  registerActionButton('NEXT', handleNextButton),
+                ],
+              )
             ],
           ),
         ),
       );
     } else if (currentRegisterState == RegisterStates.MEMBERSHIP) {
-      return registerBoxContainer(context,
+      return addOrgHeadBoxContainer(context,
           child: SingleChildScrollView(
               child: Column(children: [
             registerHeader(),
@@ -558,7 +566,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ])
           ])));
     } else if (currentRegisterState == RegisterStates.ORGANIZATION) {
-      return registerBoxContainer(context,
+      return addOrgHeadBoxContainer(context,
           child: SingleChildScrollView(
               child: Column(children: [
             registerHeader(),
@@ -573,7 +581,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ])
           ])));
     } else {
-      return registerBoxContainer(context,
+      return addOrgHeadBoxContainer(context,
           child: SingleChildScrollView(
               child: Column(children: [
             registerHeader(),

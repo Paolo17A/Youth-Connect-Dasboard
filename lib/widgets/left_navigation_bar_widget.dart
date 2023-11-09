@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:ywda_dashboard/utils/color_util.dart';
 import 'package:ywda_dashboard/widgets/custom_text_widgets.dart';
 
-Widget leftNavigator(BuildContext context, int index) {
+Widget leftNavigator(BuildContext context, double index) {
   return Container(
       width: MediaQuery.of(context).size.width * 0.2,
       color: CustomColors.softBlue,
@@ -34,6 +34,22 @@ Widget leftNavigator(BuildContext context, int index) {
                   color: index == 2 ? Colors.white : null,
                   child: ListTile(
                       title: Text('Organizations', style: blackBoldStyle()),
+                      onTap: () {
+                        GoRouter.of(context).go('/orgHeads');
+                      })),
+              Container(
+                  color: index == 2.1 ? Colors.white : null,
+                  child: ListTile(
+                      title:
+                          Text('\t\t\tOrg. Renewal', style: blackThinStyle()),
+                      onTap: () {
+                        //GoRouter.of(context).go('/orgs');
+                      })),
+              Container(
+                  color: index == 2.2 ? Colors.white : null,
+                  child: ListTile(
+                      title:
+                          Text('\t\t\tOrg. Profiles', style: blackThinStyle()),
                       onTap: () {
                         GoRouter.of(context).go('/orgs');
                       })),

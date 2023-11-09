@@ -172,3 +172,14 @@ Container registerBoxContainer(BuildContext context, {required Widget child}) {
           borderRadius: BorderRadius.circular(20), color: Colors.white),
       child: child);
 }
+
+Container addOrgHeadBoxContainer(BuildContext context,
+    {required Widget child}) {
+  return Container(
+      width: MediaQuery.of(context).size.width * 0.75,
+      //height: MediaQuery.of(context).size.height * 0.75,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: Colors.grey.withOpacity(0.3)),
+      child: child);
+}

@@ -110,8 +110,7 @@ class _LogInScreenState extends State<LogInScreen> {
 
       if (currentUserData.data()!['userType'] == 'ADMIN') {
         goRouter.go('/home');
-      } else if (currentUserData.data()!['userType'] == 'ORGHEAD') {
-        print('ORGHEAD');
+      } else if (currentUserData.data()!['userType'] == 'ORG HEAD') {
         goRouter.go('/orgHome');
       }
     } catch (error) {
@@ -227,22 +226,5 @@ class _LogInScreenState extends State<LogInScreen> {
         )
       ]),
     );
-  }
-
-  Widget _organizationOption() {
-    return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Text(
-        'If you are an organization',
-        style: TextStyle(fontSize: 16),
-      ),
-      TextButton(
-          onPressed: () {},
-          child: Text('Click Here',
-              style: GoogleFonts.poppins(
-                  textStyle: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                      color: Color.fromARGB(255, 34, 52, 189)))))
-    ]);
   }
 }

@@ -3,10 +3,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ywda_dashboard/screens/add_announcement_screen.dart';
 import 'package:ywda_dashboard/screens/add_form_screen.dart';
+import 'package:ywda_dashboard/screens/add_org_head_screen.dart';
 import 'package:ywda_dashboard/screens/add_org_screen.dart';
 import 'package:ywda_dashboard/screens/add_project_screen.dart';
 import 'package:ywda_dashboard/screens/admin_settings_screen.dart';
 import 'package:ywda_dashboard/screens/edit_announcement_screen.dart';
+import 'package:ywda_dashboard/screens/edit_org_head_screen.dart';
 import 'package:ywda_dashboard/screens/edit_org_screen.dart';
 import 'package:ywda_dashboard/screens/edit_project_screen.dart';
 import 'package:ywda_dashboard/screens/grade_submission_screen.dart';
@@ -24,6 +26,7 @@ import 'package:ywda_dashboard/screens/view_youth_information.dart';
 import 'package:ywda_dashboard/screens/welcome_screen.dart';
 import 'package:ywda_dashboard/utils/color_util.dart';
 import 'firebase_options.dart';
+import 'screens/view_org_heads_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -120,6 +123,48 @@ class MyApp extends StatelessWidget {
                   key: state.pageKey,
                   child: ViewYouthInformationScreen(
                       category: state.pathParameters['category']!),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return easeInOutCircTransition(animation, child);
+                  });
+            },
+          ),
+          GoRoute(
+            path: 'orgHeads',
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                  fullscreenDialog: true,
+                  key: state.pageKey,
+                  child: const ViewOrgHeadsScreen(),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return easeInOutCircTransition(animation, child);
+                  });
+            },
+          ),
+          GoRoute(
+            path: 'orgHeads/add',
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                  fullscreenDialog: true,
+                  key: state.pageKey,
+                  child: const AddOrgHeadScreen(),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return easeInOutCircTransition(animation, child);
+                  });
+            },
+          ),
+          GoRoute(
+            name: 'editOrgHead',
+            path: 'orgHeads/edit/:orgHeadID/:orgID',
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                  fullscreenDialog: true,
+                  key: state.pageKey,
+                  child: EditOrgHeadScreen(
+                      orgHeadID: state.pathParameters['orgHeadID']!,
+                      orgID: state.pathParameters['orgID']!),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
                     return easeInOutCircTransition(animation, child);

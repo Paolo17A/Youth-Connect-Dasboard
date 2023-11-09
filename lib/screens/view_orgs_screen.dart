@@ -55,7 +55,7 @@ class _ViewOrgsScreenState extends State<ViewOrgsScreen> {
 
   void _onSelectFilter() {
     setState(() {
-      if (_selectedCategory.isEmpty) {
+      if (_selectedCategory == 'NO FILTER') {
         filteredOrgs = allOrgs;
       } else {
         filteredOrgs = allOrgs.where((org) {
@@ -93,7 +93,7 @@ class _ViewOrgsScreenState extends State<ViewOrgsScreen> {
     return Scaffold(
         appBar: appBarWidget(context),
         body: Row(children: [
-          leftNavigator(context, 2),
+          leftNavigator(context, 2.2),
           bodyWidgetWhiteBG(
               context,
               switchedLoadingContainer(
@@ -121,7 +121,7 @@ class _ViewOrgsScreenState extends State<ViewOrgsScreen> {
             _selectedCategory = selected!;
             _onSelectFilter();
           }, [
-            '',
+            'NO FILTER',
             'BROTHERHOOD',
             'COMMUNITY BASED',
             'MUSIC ARTS',

@@ -134,7 +134,7 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
               _selectedCategory = selected!;
               _onSelectFilter();
             });
-          }, ['NO FILTER', 'CLIENT', 'ORG HEADS'], _selectedCategory, false),
+          }, ['NO FILTER', 'CLIENT', 'ORG HEAD'], _selectedCategory, false),
         ),
         ElevatedButton(
             onPressed: () {},

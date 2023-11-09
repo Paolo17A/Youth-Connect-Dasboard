@@ -53,3 +53,7 @@ Padding allPadding4pix(Widget child) {
 Padding allPadding8Pix(Widget child) {
   return Padding(padding: EdgeInsets.all(8), child: child);
 }
+
+Padding allPadding20Pix(Widget child) {
+  return Padding(padding: EdgeInsets.all(20), child: child);
+}

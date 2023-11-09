@@ -32,6 +32,15 @@ Widget restoreEntryButton(BuildContext context, {required Function onPress}) {
       child: const Icon(Icons.restart_alt, color: Colors.white));
 }
 
+Widget viewEntryPopUpButton(BuildContext context, {required Function onPress}) {
+  return ElevatedButton(
+      onPressed: () {
+        onPress();
+      },
+      style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+      child: const Icon(Icons.visibility, color: Colors.white));
+}
+
 Widget downloadFileButton(BuildContext context, {required Function onPress}) {
   return ElevatedButton(
       onPressed: () {
@@ -98,6 +107,25 @@ Widget registerActionButton(String text, Function onPress) {
               style: whiteBoldStyle(size: 15),
             ))
       ],
+    ),
+  );
+}
+
+Widget backToViewScreenButton(BuildContext context, Function onPress) {
+  return SizedBox(
+    width: MediaQuery.of(context).size.width * 0.1,
+    child: Padding(
+      padding: const EdgeInsets.all(10),
+      child: ElevatedButton(
+          onPressed: () => onPress(),
+          style: ElevatedButton.styleFrom(
+              backgroundColor: CustomColors.darkBlue,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10))),
+          child: Text(
+            'BACK',
+            style: whiteBoldStyle(),
+          )),
     ),
   );
 }
