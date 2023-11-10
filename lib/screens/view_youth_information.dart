@@ -310,7 +310,7 @@ class _ViewYouthInformationScreenState
                         displayDeleteEntryDialog(context,
                             message:
                                 'Are you sure you want to suspend this user?',
-                            deleteEntry: () {
+                            deleteWord: 'Suspend', deleteEntry: () {
                           setUserSuspendedState(allUsers[index].id, true);
                         });
                       })
@@ -386,7 +386,7 @@ class _ViewYouthInformationScreenState
                         displayDeleteEntryDialog(context,
                             message:
                                 'Are you sure you want to suspend this user?',
-                            deleteEntry: () {
+                            deleteWord: 'Suspend', deleteEntry: () {
                           setUserSuspendedState(allUsers[index].id, true);
                         });
                       })

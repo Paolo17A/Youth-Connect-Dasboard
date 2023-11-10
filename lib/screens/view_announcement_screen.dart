@@ -206,6 +206,7 @@ class _ViewAnnouncementScreenState extends State<ViewAnnouncementScreen> {
                     displayDeleteEntryDialog(context,
                         message:
                             'Are you sure you want to delete this announcement?',
+                        deleteWord: 'Delete',
                         deleteEntry: () =>
                             deleteThisAnnouncement(allAnnouncements[index]));
                   })

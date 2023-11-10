@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 void displayDeleteEntryDialog(BuildContext context,
-    {required String message, required Function deleteEntry}) async {
+    {required String message,
+    required String deleteWord,
+    required Function deleteEntry}) async {
   return showDialog(
       context: context,
       builder: (context) {
@@ -20,7 +22,7 @@ void displayDeleteEntryDialog(BuildContext context,
                 GoRouter.of(context).pop();
                 deleteEntry();
               },
-              child: const Text('Delete'),
+              child: Text(deleteWord),
             ),
           ],
         );

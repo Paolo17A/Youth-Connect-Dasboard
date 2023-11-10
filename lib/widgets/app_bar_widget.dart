@@ -47,7 +47,7 @@ AppBar orgAppBarWidget(BuildContext context) {
       Padding(
         padding: const EdgeInsets.all(10),
         child: ElevatedButton(
-            onPressed: () {},
+            onPressed: () => GoRouter.of(context).go('/editOwnOrgHead'),
             style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromARGB(255, 88, 147, 201),
                 shape: RoundedRectangleBorder(

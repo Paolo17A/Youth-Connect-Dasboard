@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:ywda_dashboard/widgets/app_bar_widget.dart';
 import 'package:ywda_dashboard/widgets/custom_button_widgets.dart';
 import 'package:ywda_dashboard/widgets/custom_container_widgets.dart';
@@ -18,6 +17,7 @@ import 'package:ywda_dashboard/widgets/custom_text_widgets.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
 import '../utils/color_util.dart';
+import '../utils/url_util.dart';
 import '../widgets/custom_padding_widgets.dart';
 
 class OrgHomeScreen extends StatefulWidget {
@@ -131,6 +131,9 @@ class _OrgHomeScreenState extends State<OrgHomeScreen> {
           .collection('accreditations')
           .doc(accreditationID)
           .set({
+        'orgHead': FirebaseAuth.instance.currentUser!.uid,
+        'orgID': orgID,
+        'formName': _formAccreditationSelectedFileName,
         'accreditationForm': accreditationFormDownloadURL,
         'certification': '',
         'status': 'PENDING'
@@ -199,7 +202,7 @@ class _OrgHomeScreenState extends State<OrgHomeScreen> {
             displayIcon:
                 Image.asset('assets/images/icons/organization.png', scale: 2),
             onPress: () {
-          if (!_isAccredited) {
+          if (!_isAccredited && _accreditationStatus == '') {
             _displayRenewOrgDialog();
           }
         }),
@@ -338,7 +341,7 @@ class _OrgHomeScreenState extends State<OrgHomeScreen> {
                                 ),
                                 TextButton(
                                     onPressed: () {
-                                      _launchURL(
+                                      launchURL(
                                           'https://firebasestorage.googleapis.com/v0/b/ywda-dfc54.appspot.com/o/YDAaccred-form-2021.docx?alt=media&token=80b29287-44a7-4cb8-a8db-c315fd6d041c');
                                     },
                                     child: AutoSizeText(
@@ -389,15 +392,5 @@ class _OrgHomeScreenState extends State<OrgHomeScreen> {
                         ),
                       )),
                 ))));
-  }
-}
-
-_launchURL(String _url) async {
-  final url = Uri.parse(_url);
-  if (await canLaunchUrl(url)) {
-    await launchUrl(url);
-  } else {
-    // Handle the case where the URL cannot be launched
-    print('Could not launch $url');
   }
 }

@@ -43,7 +43,7 @@ Widget leftNavigator(BuildContext context, double index) {
                       title:
                           Text('\t\t\tOrg. Renewal', style: blackThinStyle()),
                       onTap: () {
-                        //GoRouter.of(context).go('/orgs');
+                        GoRouter.of(context).go('/orgRenewals');
                       })),
               Container(
                   color: index == 2.2 ? Colors.white : null,
@@ -133,7 +133,7 @@ Widget orgLeftNavigator(BuildContext context, int index) {
                   color: index == 3 ? Colors.white : null,
                   child: ListTile(
                       title: Text('Profile', style: blackBoldStyle()),
-                      onTap: () {})),
+                      onTap: () => GoRouter.of(context).go('/orgProfile'))),
             ])),
         ListTile(
             leading: const Icon(

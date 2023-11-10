@@ -129,3 +129,24 @@ Widget backToViewScreenButton(BuildContext context, Function onPress) {
     ),
   );
 }
+
+Widget appproveRenewalButton(BuildContext context,
+    {required Function onPress}) {
+  return ElevatedButton(
+      onPressed: () {
+        onPress();
+      },
+      style: ElevatedButton.styleFrom(
+          backgroundColor: Color.fromARGB(255, 245, 235, 144)),
+      child: const Icon(Icons.check_sharp, color: Colors.white));
+}
+
+Widget denyRenewalButton(BuildContext context, {required Function onPress}) {
+  return ElevatedButton(
+      onPressed: () {
+        onPress();
+      },
+      style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+      child:
+          Text('X', style: GoogleFonts.poppins(textStyle: whiteBoldStyle())));
+}

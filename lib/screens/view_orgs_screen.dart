@@ -248,7 +248,7 @@ class _ViewOrgsScreenState extends State<ViewOrgsScreen> {
                         displayDeleteEntryDialog(context,
                             message:
                                 'Are you sure you want to suspend this organization?',
-                            deleteEntry: () {
+                            deleteWord: 'Suspend', deleteEntry: () {
                           setOrgActiveState(filteredOrgs[index].id, false);
                         });
                       }),

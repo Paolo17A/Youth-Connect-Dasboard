@@ -235,7 +235,7 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
                         displayDeleteEntryDialog(context,
                             message:
                                 'Are you sure you want to suspend this user?',
-                            deleteEntry: () {
+                            deleteWord: 'Delete', deleteEntry: () {
                           setUserSuspendedState(filteredUsers[index].id, true);
                         });
                       })

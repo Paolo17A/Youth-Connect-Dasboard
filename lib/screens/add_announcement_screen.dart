@@ -4,6 +4,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker_web/image_picker_web.dart';
@@ -138,51 +139,30 @@ class _AddAnnouncementScreenState extends State<AddAnnouncementScreen> {
                       SingleChildScrollView(
                         child: Column(
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 50),
-                              child: AutoSizeText(
-                                'NEW ANNOUNCEMENT',
-                                textAlign: TextAlign.center,
-                                style: GoogleFonts.poppins(
-                                    textStyle: const TextStyle(
-                                        fontSize: 38,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black)),
-                              ),
-                            ),
+                            _announcementHeader(),
                             _announcementTitle(),
-                            const SizedBox(height: 50),
+                            Gap(50),
                             _announcementContent(),
                             _announcementImage(),
-                            const SizedBox(height: 60),
-                            Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  ElevatedButton(
-                                      onPressed: uploadNewAnnouncement,
-                                      style: ElevatedButton.styleFrom(
-                                          backgroundColor: const Color.fromARGB(
-                                              255, 88, 147, 201),
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(20))),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(11),
-                                        child: AutoSizeText('SUBMIT',
-                                            style: GoogleFonts.poppins(
-                                                textStyle: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 18,
-                                                    fontWeight:
-                                                        FontWeight.bold))),
-                                      ))
-                                ]),
+                            Gap(60),
+                            _announcementBottomButtons(),
                           ],
                         ),
                       )),
                 ))
           ],
         ));
+  }
+
+  Widget _announcementHeader() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 50),
+      child: AutoSizeText(
+        'NEW ANNOUNCEMENT',
+        textAlign: TextAlign.center,
+        style: GoogleFonts.poppins(textStyle: blackBoldStyle(size: 38)),
+      ),
+    );
   }
 
   Widget _announcementTitle() {
@@ -269,6 +249,23 @@ class _AddAnnouncementScreenState extends State<AddAnnouncementScreen> {
             ),
           ),
         ),
+    ]);
+  }
+
+  Widget _announcementBottomButtons() {
+    return Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+      ElevatedButton(
+          onPressed: uploadNewAnnouncement,
+          style: ElevatedButton.styleFrom(
+              backgroundColor: const Color.fromARGB(255, 88, 147, 201),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20))),
+          child: Padding(
+            padding: const EdgeInsets.all(11),
+            child: AutoSizeText('SUBMIT',
+                style:
+                    GoogleFonts.poppins(textStyle: whiteBoldStyle(size: 18))),
+          ))
     ]);
   }
 }

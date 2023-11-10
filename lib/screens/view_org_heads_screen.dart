@@ -213,7 +213,7 @@ class _ViewOrgHeadsScreenState extends State<ViewOrgHeadsScreen> {
                         displayDeleteEntryDialog(context,
                             message:
                                 'Are you sure you want to revoke this organization\'s accreditation?',
-                            deleteEntry: () async {
+                            deleteWord: 'Revoke', deleteEntry: () async {
                           revokeOrgAccreditation(orgHeadData['organization']);
                         });
                       })

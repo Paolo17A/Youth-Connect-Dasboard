@@ -170,6 +170,7 @@ class _ViewFormsScreenState extends State<ViewFormsScreen> {
                   deleteEntryButton(context, onPress: () {
                     displayDeleteEntryDialog(context,
                         message: 'Are you sure you want to delete this form?',
+                        deleteWord: 'Delete',
                         deleteEntry: () => deleteFile(allForms[index]));
                   })
                 ],

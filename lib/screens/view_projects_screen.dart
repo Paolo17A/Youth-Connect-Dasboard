@@ -203,6 +203,7 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
                     displayDeleteEntryDialog(context,
                         message:
                             'Are you sure you want to delete this project?',
+                        deleteWord: 'Delete',
                         deleteEntry: () =>
                             deleteThisProject(allProjects[index]));
                   })
