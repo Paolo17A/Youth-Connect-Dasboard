@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ywda_dashboard/utils/color_util.dart';
+import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
 
 import 'custom_text_widgets.dart';
 
@@ -110,41 +111,43 @@ Widget orgDashboardWidget(BuildContext context,
   return Padding(
     padding: const EdgeInsets.all(8),
     child: Container(
-        width: MediaQuery.of(context).size.width * 0.15,
-        height: MediaQuery.of(context).size.height * 0.15,
+        width: MediaQuery.of(context).size.width * 0.2,
+        height: MediaQuery.of(context).size.height * 0.2,
         decoration: BoxDecoration(
             color: CustomColors.softBlue,
             borderRadius: BorderRadius.circular(30)),
         child: Row(children: [
           SizedBox(
-            width: MediaQuery.of(context).size.width * 0.1,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                AutoSizeText(label,
-                    style: GoogleFonts.inter(textStyle: blackBoldStyle())),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.07,
-                  height: 45,
-                  child: ElevatedButton(
-                    onPressed: () => onPress(),
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        )),
-                    child: Center(
-                      child: AutoSizeText(buttonLabel,
-                          textAlign: TextAlign.center,
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.inter(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 15)),
+            width: MediaQuery.of(context).size.width * 0.15,
+            child: allPadding8Pix(
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  AutoSizeText(label,
+                      style: GoogleFonts.inter(textStyle: blackBoldStyle())),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.07,
+                    height: 45,
+                    child: ElevatedButton(
+                      onPressed: () => onPress(),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          )),
+                      child: Center(
+                        child: AutoSizeText(buttonLabel,
+                            textAlign: TextAlign.center,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.inter(
+                                color: Colors.black,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 15)),
+                      ),
                     ),
-                  ),
-                )
-              ],
+                  )
+                ],
+              ),
             ),
           ),
           SizedBox(

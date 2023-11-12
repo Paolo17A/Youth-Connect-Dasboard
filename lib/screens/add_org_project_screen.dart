@@ -18,14 +18,14 @@ import 'package:ywda_dashboard/widgets/custom_text_widgets.dart';
 import 'package:ywda_dashboard/widgets/youth_connect_textfield_widget.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
-class AddProjectScreen extends StatefulWidget {
-  const AddProjectScreen({super.key});
+class AddOrgProjectScreen extends StatefulWidget {
+  const AddOrgProjectScreen({super.key});
 
   @override
-  State<AddProjectScreen> createState() => _AddProjectScreenState();
+  State<AddOrgProjectScreen> createState() => _AddOrgProjectScreenState();
 }
 
-class _AddProjectScreenState extends State<AddProjectScreen> {
+class _AddOrgProjectScreenState extends State<AddOrgProjectScreen> {
   bool _isLoading = false;
 
   final _titleController = TextEditingController();
@@ -132,7 +132,7 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
 
       scaffoldMessenger.showSnackBar(
           const SnackBar(content: Text('Successfully created new project!')));
-      goRouter.go('/project');
+      goRouter.go('/orgProjects');
     } catch (error) {
       scaffoldMessenger.showSnackBar(
           SnackBar(content: Text('Error creating new project: $error')));
@@ -151,10 +151,10 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
                 stackedLoadingContainer(
                     context,
                     _isLoading,
-                    horizontalPadding5Percent(
-                        context,
-                        SingleChildScrollView(
-                          child: Column(
+                    SingleChildScrollView(
+                      child: horizontalPadding5Percent(
+                          context,
+                          Column(
                             children: [
                               _newProjectHeader(),
                               _projectTitle(),
@@ -163,10 +163,11 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
                               _projectDateSelect(),
                               if (currentSelectedFile != null) _projectImages(),
                               Gap(60),
-                              _submitButton()
+                              _submitButton(),
+                              Gap(40)
                             ],
-                          ),
-                        ))))
+                          )),
+                    )))
           ],
         ));
   }

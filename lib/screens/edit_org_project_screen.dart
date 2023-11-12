@@ -16,15 +16,15 @@ import 'package:ywda_dashboard/widgets/custom_text_widgets.dart';
 import 'package:ywda_dashboard/widgets/youth_connect_textfield_widget.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
-class EditProjectScreen extends StatefulWidget {
+class EditOrgProjectScreen extends StatefulWidget {
   final String projectID;
-  const EditProjectScreen({super.key, required this.projectID});
+  const EditOrgProjectScreen({super.key, required this.projectID});
 
   @override
-  State<EditProjectScreen> createState() => _EditProjectScreenState();
+  State<EditOrgProjectScreen> createState() => _EditOrgProjectScreenState();
 }
 
-class _EditProjectScreenState extends State<EditProjectScreen> {
+class _EditOrgProjectScreenState extends State<EditOrgProjectScreen> {
   bool _isLoading = true;
 
   final _titleController = TextEditingController();
@@ -180,7 +180,7 @@ class _EditProjectScreenState extends State<EditProjectScreen> {
       });
       scaffoldMessenger.showSnackBar(
           const SnackBar(content: Text('Successfully edited this project!')));
-      goRouter.go('/project');
+      goRouter.go('/orgProjects');
     } catch (error) {
       scaffoldMessenger.showSnackBar(
           SnackBar(content: Text('Error editing project: $error')));

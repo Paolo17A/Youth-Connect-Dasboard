@@ -98,14 +98,16 @@ class _ViewOrgsScreenState extends State<ViewOrgsScreen> {
               context,
               switchedLoadingContainer(
                   _isLoading,
-                  horizontalPadding5Percent(
-                      context,
-                      Column(
-                        children: [
-                          _newOrganizationHeaderWidget(),
-                          _organizationsContainerWidget()
-                        ],
-                      ))))
+                  SingleChildScrollView(
+                    child: horizontalPadding5Percent(
+                        context,
+                        Column(
+                          children: [
+                            _newOrganizationHeaderWidget(),
+                            _organizationsContainerWidget()
+                          ],
+                        )),
+                  )))
         ]));
   }
 
@@ -201,7 +203,7 @@ class _ViewOrgsScreenState extends State<ViewOrgsScreen> {
 
   Widget _orgEntries() {
     return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.75,
+      height: MediaQuery.of(context).size.height * 0.7,
       child: ListView.builder(
           shrinkWrap: true,
           itemCount: filteredOrgs.length,

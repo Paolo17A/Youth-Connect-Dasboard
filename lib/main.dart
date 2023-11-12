@@ -4,12 +4,14 @@ import 'package:go_router/go_router.dart';
 import 'package:ywda_dashboard/screens/add_announcement_screen.dart';
 import 'package:ywda_dashboard/screens/add_form_screen.dart';
 import 'package:ywda_dashboard/screens/add_org_head_screen.dart';
+import 'package:ywda_dashboard/screens/add_org_project_screen.dart';
 import 'package:ywda_dashboard/screens/add_org_screen.dart';
 import 'package:ywda_dashboard/screens/add_project_screen.dart';
 import 'package:ywda_dashboard/screens/admin_settings_screen.dart';
 import 'package:ywda_dashboard/screens/edit_announcement_screen.dart';
 import 'package:ywda_dashboard/screens/edit_org_head_screen.dart';
 import 'package:ywda_dashboard/screens/edit_org_profile_screen.dart';
+import 'package:ywda_dashboard/screens/edit_org_project_screen.dart';
 import 'package:ywda_dashboard/screens/edit_org_screen.dart';
 import 'package:ywda_dashboard/screens/edit_own_org_head_screen.dart';
 import 'package:ywda_dashboard/screens/edit_project_screen.dart';
@@ -20,6 +22,7 @@ import 'package:ywda_dashboard/screens/org_home_screen.dart';
 import 'package:ywda_dashboard/screens/register_screen.dart';
 import 'package:ywda_dashboard/screens/view_announcement_screen.dart';
 import 'package:ywda_dashboard/screens/view_forms_screen.dart';
+import 'package:ywda_dashboard/screens/view_org_projects_screen.dart';
 import 'package:ywda_dashboard/screens/view_org_renewals_screen.dart';
 import 'package:ywda_dashboard/screens/view_orgs_screen.dart';
 import 'package:ywda_dashboard/screens/view_projects_screen.dart';
@@ -30,6 +33,7 @@ import 'package:ywda_dashboard/screens/welcome_screen.dart';
 import 'package:ywda_dashboard/utils/color_util.dart';
 import 'firebase_options.dart';
 import 'screens/view_org_heads_screen.dart';
+import 'utils/go_router_util.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,24 +41,6 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(MyApp());
-}
-
-CustomTransitionPage customTransition(
-    BuildContext context, GoRouterState state, Widget widget) {
-  return CustomTransitionPage(
-      fullscreenDialog: true,
-      key: state.pageKey,
-      child: widget,
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        return easeInOutCircTransition(animation, child);
-      });
-}
-
-FadeTransition easeInOutCircTransition(
-    Animation<double> animation, Widget child) {
-  return FadeTransition(
-      opacity: CurveTween(curve: Curves.easeInOutCirc).animate(animation),
-      child: child);
 }
 
 class MyApp extends StatelessWidget {
@@ -316,6 +302,28 @@ class MyApp extends StatelessWidget {
               pageBuilder: (context, state) {
                 return customTransition(
                     context, state, const ViewOrgRenewalsScreen());
+              }),
+          GoRoute(
+              path: 'orgProjects',
+              pageBuilder: (context, state) {
+                return customTransition(
+                    context, state, const ViewOrgProjectsScreen());
+              }),
+          GoRoute(
+              path: 'orgProjects/add',
+              pageBuilder: (context, state) {
+                return customTransition(
+                    context, state, const AddOrgProjectScreen());
+              }),
+          GoRoute(
+              name: 'editOrgProject',
+              path: 'orgProjects/edit/:projectID',
+              pageBuilder: (context, state) {
+                return customTransition(
+                    context,
+                    state,
+                    EditOrgProjectScreen(
+                        projectID: state.pathParameters['projectID']!));
               }),
           GoRoute(
             path: 'editOwnOrgHead',

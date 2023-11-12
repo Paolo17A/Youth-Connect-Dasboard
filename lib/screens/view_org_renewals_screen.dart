@@ -3,8 +3,10 @@ import 'dart:typed_data';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ywda_dashboard/utils/delete_entry_dialog_util.dart';
 import 'package:ywda_dashboard/utils/url_util.dart';
 import 'package:ywda_dashboard/widgets/app_bar_widget.dart';
@@ -45,7 +47,6 @@ class _ViewOrgRenewalsScreenState extends State<ViewOrgRenewalsScreen> {
     setState(() {
       if (_selectedCategory == 'NO FILTER') {
         filteredAccreds = allAccreds;
-        print('filtered accreds count: ${filteredAccreds.length}');
       } else {
         filteredAccreds = allAccreds.where((accred) {
           final accredData = accred.data() as Map<dynamic, dynamic>;
@@ -91,6 +92,7 @@ class _ViewOrgRenewalsScreenState extends State<ViewOrgRenewalsScreen> {
       final accreds =
           await FirebaseFirestore.instance.collection('accreditations').get();
       allAccreds = accreds.docs;
+      allAccreds = List.from(allAccreds.reversed);
       filteredAccreds = List.from(accreds.docs);
       associatedOrgs.clear();
       for (var accred in accreds.docs) {
@@ -119,7 +121,84 @@ class _ViewOrgRenewalsScreenState extends State<ViewOrgRenewalsScreen> {
     }
   }
 
-  Future denyRenewalRequest() async {}
+  Future denyRenewalRequest(String accredID, String orgID) async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    try {
+      setState(() {
+        isLoading = true;
+      });
+
+      await FirebaseFirestore.instance
+          .collection('accreditations')
+          .doc(accredID)
+          .update({'status': 'DISAPPROVED'});
+
+      await FirebaseFirestore.instance
+          .collection('orgs')
+          .doc(orgID)
+          .update({'accreditationStatus': 'DISAPPROVED'});
+
+      scaffoldMessenger.showSnackBar(
+          SnackBar(content: Text('Successfully denied this renewa request.')));
+      getAllRenewalRequests();
+    } catch (error) {
+      scaffoldMessenger.showSnackBar(SnackBar(
+          content: Text('Error denying accreditation request: $error')));
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Future approveRenewalRequest(String accredID, String orgID) async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final goRouter = GoRouter.of(context);
+    if (_formCertificationSelectedFileBytes == null) {
+      scaffoldMessenger.showSnackBar(
+          SnackBar(content: Text('Please attach a certification document')));
+      return;
+    }
+    try {
+      setState(() {
+        isLoading = true;
+      });
+      goRouter.pop();
+      Reference storageRef = FirebaseStorage.instance
+          .ref()
+          .child('accreditations')
+          .child(accredID)
+          .child('certification.${_formCertificationSelectedFileExtension!}');
+      UploadTask uploadTask =
+          storageRef.putData(_formCertificationSelectedFileBytes!);
+      TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() {});
+      String certificationFormDownloadURL =
+          await taskSnapshot.ref.getDownloadURL();
+
+      await FirebaseFirestore.instance
+          .collection('accreditations')
+          .doc(accredID)
+          .update({
+        'status': 'APPROVED',
+        'certification': certificationFormDownloadURL,
+        'certificateName': _formCertificationSelectedFileName
+      });
+
+      await FirebaseFirestore.instance
+          .collection('orgs')
+          .doc(orgID)
+          .update({'accreditationStatus': 'APPROVED', 'isAccredited': true});
+
+      scaffoldMessenger.showSnackBar(SnackBar(
+          content: Text('Successfully approved this renewal request.')));
+      getAllRenewalRequests();
+    } catch (error) {
+      scaffoldMessenger.showSnackBar(SnackBar(
+          content: Text('Error approving accreditation request: $error')));
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -195,11 +274,18 @@ class _ViewOrgRenewalsScreenState extends State<ViewOrgRenewalsScreen> {
             backgroundColor: Colors.grey,
             borderColor: Colors.white,
             textColor: Colors.white),
-        viewFlexTextCell('Actions',
-            flex: 2,
-            backgroundColor: Colors.grey,
-            borderColor: Colors.white,
-            textColor: Colors.white)
+        if (_selectedCategory == 'APPROVED')
+          viewFlexTextCell('Certification',
+              flex: 2,
+              backgroundColor: Colors.grey,
+              borderColor: Colors.white,
+              textColor: Colors.white)
+        else
+          viewFlexTextCell('Actions',
+              flex: 2,
+              backgroundColor: Colors.grey,
+              borderColor: Colors.white,
+              textColor: Colors.white)
       ],
     );
   }
@@ -232,17 +318,21 @@ class _ViewOrgRenewalsScreenState extends State<ViewOrgRenewalsScreen> {
                       borderColor: borderColor,
                       textColor: entryColor),
                   viewFlexActionsCell([
-                    TextButton(
-                        onPressed: () =>
-                            launchURL(accredData['accreditationForm']),
-                        child: Text(
-                          accredData['formName'],
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              decoration: TextDecoration.underline),
-                        ))
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.13,
+                      child: TextButton(
+                          onPressed: () =>
+                              launchURL(accredData['accreditationForm']),
+                          child: Text(
+                            accredData['formName'],
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                overflow: TextOverflow.ellipsis,
+                                decoration: TextDecoration.underline),
+                          )),
+                    )
                   ],
                       flex: 2,
                       backgroundColor: backgroundColor,
@@ -253,16 +343,36 @@ class _ViewOrgRenewalsScreenState extends State<ViewOrgRenewalsScreen> {
                       borderColor: borderColor,
                       textColor: entryColor),
                   viewFlexActionsCell([
-                    appproveRenewalButton(context,
-                        onPress: () => showUploadCertificationDialog(
-                            filteredAccreds[index].id)),
-                    denyRenewalButton(context, onPress: () {
-                      displayDeleteEntryDialog(context,
-                          message:
-                              'Are you sure you want to deny this org\'s accreditation request?',
-                          deleteWord: 'Deny',
-                          deleteEntry: () {});
-                    }),
+                    if (accredData['status'] == 'APPROVED')
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.13,
+                        child: TextButton(
+                            onPressed: () =>
+                                launchURL(accredData['certification']),
+                            child: Text(
+                              accredData['certificateName'],
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  overflow: TextOverflow.ellipsis,
+                                  decoration: TextDecoration.underline),
+                            )),
+                      ),
+                    if (accredData['status'] == 'PENDING')
+                      appproveRenewalButton(context,
+                          onPress: () => showUploadCertificationDialog(
+                              filteredAccreds[index].id, accredData['orgID'])),
+                    if (accredData['status'] == 'PENDING')
+                      denyRenewalButton(context, onPress: () {
+                        displayDeleteEntryDialog(context,
+                            message:
+                                'Are you sure you want to deny this org\'s accreditation request?',
+                            deleteWord: 'Deny',
+                            deleteEntry: () async => denyRenewalRequest(
+                                filteredAccreds[index].id,
+                                accredData['orgID']));
+                      }),
                   ],
                       flex: 2,
                       backgroundColor: backgroundColor,
@@ -274,7 +384,7 @@ class _ViewOrgRenewalsScreenState extends State<ViewOrgRenewalsScreen> {
     );
   }
 
-  void showUploadCertificationDialog(String accredID) {
+  void showUploadCertificationDialog(String accredID, String orgID) {
     setState(() {
       _formCertificationSelectedFileBytes = null;
       _formCertificationSelectedFileExtension = null;
@@ -323,7 +433,12 @@ class _ViewOrgRenewalsScreenState extends State<ViewOrgRenewalsScreen> {
                             Gap(30),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.end,
-                              children: [registerActionButton('FINISH', () {})],
+                              children: [
+                                registerActionButton(
+                                    'FINISH',
+                                    () async =>
+                                        approveRenewalRequest(accredID, orgID))
+                              ],
                             )
                           ],
                         ),

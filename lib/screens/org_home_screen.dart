@@ -202,7 +202,9 @@ class _OrgHomeScreenState extends State<OrgHomeScreen> {
             displayIcon:
                 Image.asset('assets/images/icons/organization.png', scale: 2),
             onPress: () {
-          if (!_isAccredited && _accreditationStatus == '') {
+          if (!_isAccredited &&
+              (_accreditationStatus == '' ||
+                  _accreditationStatus == 'DISAPPROVED')) {
             _displayRenewOrgDialog();
           }
         }),

@@ -128,7 +128,7 @@ Widget orgLeftNavigator(BuildContext context, int index) {
                   color: index == 2 ? Colors.white : null,
                   child: ListTile(
                       title: Text('Projects', style: blackBoldStyle()),
-                      onTap: () {})),
+                      onTap: () => GoRouter.of(context).go('/orgProjects'))),
               Container(
                   color: index == 3 ? Colors.white : null,
                   child: ListTile(

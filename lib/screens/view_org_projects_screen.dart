@@ -12,20 +12,16 @@ import 'package:ywda_dashboard/widgets/custom_miscellaneous_widgets.dart';
 import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
-import '../widgets/dropdown_widget.dart';
-
-class ViewProjectsScreen extends StatefulWidget {
-  const ViewProjectsScreen({super.key});
+class ViewOrgProjectsScreen extends StatefulWidget {
+  const ViewOrgProjectsScreen({super.key});
 
   @override
-  State<ViewProjectsScreen> createState() => _ViewProjectsScreenState();
+  State<ViewOrgProjectsScreen> createState() => _ViewOrgProjectsScreenState();
 }
 
-class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
+class _ViewOrgProjectsScreenState extends State<ViewOrgProjectsScreen> {
   bool _isLoading = true;
   List<DocumentSnapshot> allProjects = [];
-  List<DocumentSnapshot> filteredProjects = [];
-  String _selectedCategory = '';
 
   @override
   void didChangeDependencies() {
@@ -33,46 +29,20 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
     getAllProjects();
   }
 
-  void _onSelectFilter() {
-    print('current uid: ${FirebaseAuth.instance.currentUser!.uid}');
-    setState(() {
-      if (_selectedCategory == 'ALL') {
-        filteredProjects = allProjects;
-      } else if (_selectedCategory == 'ADMIN PROJECTS') {
-        filteredProjects = allProjects.where((project) {
-          final projectData = project.data()! as Map<dynamic, dynamic>;
-          String organizer = projectData['organizer'].toString();
-          return organizer == FirebaseAuth.instance.currentUser!.uid;
-        }).toList();
-      } else {
-        //print('ORG PROJECTS');
-        filteredProjects = allProjects.where((project) {
-          final projectData = project.data()! as Map<dynamic, dynamic>;
-          String organizer = projectData['organizer'];
-          print(
-              '$organizer: ${organizer != FirebaseAuth.instance.currentUser!.uid}');
-          return organizer != FirebaseAuth.instance.currentUser!.uid;
-        }).toList();
-        for (var proj in filteredProjects) {
-          print(proj.id);
-        }
-      }
-    });
-  }
-
   void getAllProjects() async {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     try {
-      final announcements =
-          await FirebaseFirestore.instance.collection('projects').get();
+      final announcements = await FirebaseFirestore.instance
+          .collection('projects')
+          .where('organizer', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+          .get();
       allProjects = announcements.docs;
-      filteredProjects = List.from(allProjects);
       setState(() {
         _isLoading = false;
       });
     } catch (error) {
       scaffoldMessenger.showSnackBar(
-          SnackBar(content: Text('Error getting all projects: $error')));
+          SnackBar(content: Text('Error getting your projects: $error')));
     }
   }
 
@@ -122,7 +92,7 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
     return Scaffold(
         appBar: appBarWidget(context),
         body: Row(children: [
-          leftNavigator(context, 5),
+          orgLeftNavigator(context, 2),
           bodyWidgetWhiteBG(
               context,
               switchedLoadingContainer(
@@ -132,7 +102,7 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
                       Column(
                         children: [
                           _newProjectHeaderWidget(),
-                          _projectsContainerWidget(),
+                          _projectsContainerWidget()
                         ],
                       ))))
         ]));
@@ -141,24 +111,9 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
   //  COMPONENT WIDGETS
   //============================================================================
   Widget _newProjectHeaderWidget() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        SizedBox(
-          width: MediaQuery.of(context).size.width * 0.4,
-          child: dropdownWidget(_selectedCategory, (selected) {
-            setState(() {
-              _selectedCategory = selected!;
-              _onSelectFilter();
-            });
-          }, ['ALL', 'ADMIN PROJECTS', 'ORG PROJECTS'], _selectedCategory,
-              false),
-        ),
-        viewHeaderAddButton(
-            addFunction: () => GoRouter.of(context).go('/project/addProject'),
-            addLabel: 'NEW PROJECT'),
-      ],
-    );
+    return viewHeaderAddButton(
+        addFunction: () => GoRouter.of(context).go('/orgProjects/add'),
+        addLabel: 'NEW PROJECT');
   }
 
   Widget _projectsContainerWidget() {
@@ -209,7 +164,7 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
   Widget _projectEntries() {
     return ListView.builder(
         shrinkWrap: true,
-        itemCount: filteredProjects.length,
+        itemCount: allProjects.length,
         itemBuilder: (context, index) {
           Color entryColor = index % 2 == 0 ? Colors.black : Colors.white;
           Color backgroundColor = index % 2 == 0 ? Colors.white : Colors.grey;
@@ -243,17 +198,17 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
                     textColor: entryColor),
                 viewFlexActionsCell([
                   editEntryButton(context,
-                      onPress: () => GoRouter.of(context).goNamed('editProject',
-                              pathParameters: {
-                                'projectID': filteredProjects[index].id
-                              })),
+                      onPress: () => GoRouter.of(context)
+                              .goNamed('editOrgProject', pathParameters: {
+                            'projectID': allProjects[index].id
+                          })),
                   deleteEntryButton(context, onPress: () {
                     displayDeleteEntryDialog(context,
                         message:
                             'Are you sure you want to delete this project?',
                         deleteWord: 'Delete',
                         deleteEntry: () =>
-                            deleteThisProject(filteredProjects[index]));
+                            deleteThisProject(allProjects[index]));
                   })
                 ],
                     flex: 2,
@@ -261,7 +216,7 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
                     borderColor: borderColor)
               ],
               borderColor: borderColor,
-              isLastEntry: index == filteredProjects.length - 1);
+              isLastEntry: index == allProjects.length - 1);
         });
   }
 }
