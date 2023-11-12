@@ -1,27 +1,27 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:ywda_dashboard/widgets/app_bar_widget.dart';
 import 'package:ywda_dashboard/widgets/custom_container_widgets.dart';
-import 'package:ywda_dashboard/widgets/custom_miscellaneous_widgets.dart';
 import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
-import 'package:ywda_dashboard/widgets/custom_text_widgets.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
 import '../utils/delete_entry_dialog_util.dart';
 import '../widgets/custom_button_widgets.dart';
+import '../widgets/custom_miscellaneous_widgets.dart';
+import '../widgets/custom_text_widgets.dart';
 import '../widgets/dropdown_widget.dart';
 
-class ViewUserAccountsScreen extends StatefulWidget {
-  const ViewUserAccountsScreen({super.key});
+class ViewYouthGenderReportScreen extends StatefulWidget {
+  const ViewYouthGenderReportScreen({super.key});
 
   @override
-  State<ViewUserAccountsScreen> createState() => _ViewUserAccountsScreenState();
+  State<ViewYouthGenderReportScreen> createState() =>
+      _ViewYouthGenderReportState();
 }
 
-class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
-  bool _isLoading = false;
+class _ViewYouthGenderReportState extends State<ViewYouthGenderReportScreen> {
+  bool _isLoading = true;
   bool _isInitialized = false;
   List<DocumentSnapshot> allUsers = [];
   List<DocumentSnapshot> filteredUsers = [];
@@ -29,6 +29,11 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
 
   int pageNumber = 1;
   int maxPageNumber = 1;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   void didChangeDependencies() {
@@ -40,11 +45,20 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
     setState(() {
       if (_selectedCategory == 'NO FILTER') {
         filteredUsers = allUsers;
+      } else if (_selectedCategory == 'OTHERS') {
+        filteredUsers = allUsers.where((user) {
+          final userData = user.data()! as Map<dynamic, dynamic>;
+          String gender = userData['gender'];
+          return gender != 'WOMAN' &&
+              gender != 'MAN' &&
+              gender != 'NON-BINARY' &&
+              gender != 'TRANSGENDER' &&
+              gender != 'INTERSEX';
+        }).toList();
       } else {
         filteredUsers = allUsers.where((user) {
           final userData = user.data()! as Map<dynamic, dynamic>;
-          String userType = userData['userType'].toString().toUpperCase();
-          return userType == _selectedCategory;
+          return userData['gender'] == _selectedCategory;
         }).toList();
       }
       maxPageNumber = (filteredUsers.length / 10).ceil();
@@ -60,21 +74,11 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
     try {
       final users = await FirebaseFirestore.instance
           .collection('users')
-          .where('userType', isNotEqualTo: 'ADMIN')
+          .where('userType', isEqualTo: 'CLIENT')
           .get();
       allUsers = users.docs;
       filteredUsers = List.from(allUsers);
       maxPageNumber = (filteredUsers.length / 10).ceil();
-
-      for (var user in filteredUsers) {
-        final userData = user.data() as Map<dynamic, dynamic>;
-        if (!userData.containsKey('isSuspended')) {
-          await FirebaseFirestore.instance
-              .collection('users')
-              .doc(user.id)
-              .update({'isSuspended': false});
-        }
-      }
       setState(() {
         _isInitialized = true;
         _isLoading = false;
@@ -110,7 +114,7 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
       appBar: appBarWidget(context),
       body: Row(
         children: [
-          leftNavigator(context, 4),
+          leftNavigator(context, 1.2),
           bodyWidgetWhiteBG(
               context,
               switchedLoadingContainer(
@@ -120,8 +124,8 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
                         context,
                         Column(
                           children: [
-                            _newUserHeaderWidget(),
-                            _usersContainerWidget()
+                            _genderReportHeaderWidget(),
+                            _genderReportContainerWidget()
                           ],
                         )),
                   )))
@@ -130,7 +134,7 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
     );
   }
 
-  Widget _newUserHeaderWidget() {
+  Widget _genderReportHeaderWidget() {
     return Padding(
       padding: const EdgeInsets.all(25),
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -141,35 +145,31 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
               _selectedCategory = selected!;
               _onSelectFilter();
             });
-          }, ['NO FILTER', 'CLIENT', 'ORG HEAD'], _selectedCategory, false),
-        ),
-        ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 88, 147, 201),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30))),
-            child: Padding(
-              padding: const EdgeInsets.all(11),
-              child: AutoSizeText('NEW USER',
-                  style:
-                      GoogleFonts.poppins(textStyle: whiteBoldStyle(size: 18))),
-            ))
+          }, [
+            'NO FILTER',
+            'WOMAN',
+            'MAN',
+            'NON-BINARY',
+            'TRANSGENDER',
+            'INTERSEX',
+            'OTHERS'
+          ], _selectedCategory, false),
+        )
       ]),
     );
   }
 
-  Widget _usersContainerWidget() {
+  Widget _genderReportContainerWidget() {
     return Column(
       children: [
         viewContentContainer(context,
             child: Column(
               children: [
-                _usersLabelRow(),
+                _genderReportLabelRow(),
                 filteredUsers.isNotEmpty
                     ? _userEntries()
                     : viewContentUnavailable(context,
-                        text: 'NO USERS AVAILABLE')
+                        text: 'NO YOUTH INFORMATION AVAILABLE')
               ],
             )),
         if (filteredUsers.length > 10) _navigatorButtons()
@@ -177,19 +177,14 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
     );
   }
 
-  Widget _usersLabelRow() {
+  Widget _genderReportLabelRow() {
     return viewContentLabelRow(context, children: [
       viewFlexTextCell('Name',
           flex: 3,
           backgroundColor: Colors.grey,
           borderColor: Colors.white,
           textColor: Colors.white),
-      viewFlexTextCell('Username',
-          flex: 3,
-          backgroundColor: Colors.grey,
-          borderColor: Colors.white,
-          textColor: Colors.white),
-      viewFlexTextCell('Type',
+      viewFlexTextCell('Gender',
           flex: 2,
           backgroundColor: Colors.grey,
           borderColor: Colors.white,
@@ -212,8 +207,9 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
           itemBuilder: (context, index) {
             final userData = filteredUsers[index + ((pageNumber - 1) * 10)]
                 .data() as Map<dynamic, dynamic>;
-            String fullName = userData['fullName'] ??
-                '${userData['firstName']} ${userData['middleName']} ${userData['lastName']}';
+            String fullName = userData['fullName'];
+            String gender = userData['gender'];
+
             Color entryColor = index % 2 == 0 ? Colors.black : Colors.white;
             Color backgroundColor = index % 2 == 0 ? Colors.white : Colors.grey;
             Color borderColor = index % 2 == 0 ? Colors.grey : Colors.white;
@@ -225,12 +221,7 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
                       backgroundColor: backgroundColor,
                       borderColor: borderColor,
                       textColor: entryColor),
-                  viewFlexTextCell(userData['username'],
-                      flex: 3,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),
-                  viewFlexTextCell(userData['userType'],
+                  viewFlexTextCell(gender,
                       flex: 2,
                       backgroundColor: backgroundColor,
                       borderColor: borderColor,
@@ -248,7 +239,7 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
                         displayDeleteEntryDialog(context,
                             message:
                                 'Are you sure you want to suspend this user?',
-                            deleteWord: 'Delete', deleteEntry: () {
+                            deleteWord: 'Suspend', deleteEntry: () {
                           setUserSuspendedState(
                               filteredUsers[index + ((pageNumber - 1) * 10)].id,
                               true);

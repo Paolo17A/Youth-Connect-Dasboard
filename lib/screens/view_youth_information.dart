@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -10,6 +11,7 @@ import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 import '../utils/delete_entry_dialog_util.dart';
 import '../widgets/custom_button_widgets.dart';
 import '../widgets/custom_miscellaneous_widgets.dart';
+import '../widgets/custom_text_widgets.dart';
 import '../widgets/dropdown_widget.dart';
 
 class ViewYouthInformationScreen extends StatefulWidget {
@@ -27,6 +29,9 @@ class _ViewYouthInformationScreenState
   bool _isInitialized = false;
   List<DocumentSnapshot> allUsers = [];
   String _selectedCategory = 'NO FILTER';
+
+  int pageNumber = 1;
+  int maxPageNumber = 1;
 
   @override
   void initState() {
@@ -52,6 +57,7 @@ class _ViewYouthInformationScreenState
           .where('userType', isEqualTo: 'CLIENT')
           .get();
       allUsers = users.docs;
+      maxPageNumber = (allUsers.length / 10).ceil();
 
       setState(() {
         _isInitialized = true;
@@ -85,18 +91,6 @@ class _ViewYouthInformationScreenState
       scaffoldMessenger.showSnackBar(
           SnackBar(content: Text('Error setting org active state: $error')));
     }
-  }
-
-  int _calculateAge(DateTime birthDate) {
-    final now = DateTime.now();
-    int age = now.year - birthDate.year;
-
-    if (now.month < birthDate.month ||
-        (now.month == birthDate.month && now.day < birthDate.day)) {
-      age--;
-    }
-
-    return age;
   }
 
   @override
@@ -139,37 +133,46 @@ class _ViewYouthInformationScreenState
               _selectedCategory = selected!;
               _onSelectFilter();
             });
-          }, ['NO FILTER', 'EDUCATION', 'TOWN', 'AGE REPORT', 'GENDER REPORT'],
-              _selectedCategory, false),
+          }, ['NO FILTER', 'EDUCATION', 'TOWN'], _selectedCategory, false),
         )
       ]),
     );
   }
 
   Widget _unfilteredYouthInformationContainerWidget() {
-    return viewContentContainer(context,
-        child: Column(
-          children: [
-            _unfilteredUsersLabelRow(),
-            allUsers.isNotEmpty
-                ? _unfilteredUserEntries()
-                : viewContentUnavailable(context,
-                    text: 'NO YOUTH INFORMATION AVAILABLE')
-          ],
-        ));
+    return Column(
+      children: [
+        viewContentContainer(context,
+            child: Column(
+              children: [
+                _unfilteredUsersLabelRow(),
+                allUsers.isNotEmpty
+                    ? _unfilteredUserEntries()
+                    : viewContentUnavailable(context,
+                        text: 'NO YOUTH INFORMATION AVAILABLE')
+              ],
+            )),
+        if (allUsers.length > 10) _navigatorButtons()
+      ],
+    );
   }
 
   Widget _filteredYouthInformationContainerWidget() {
-    return viewContentContainer(context,
-        child: Column(
-          children: [
-            _filteredUsersLabelRow(),
-            allUsers.isNotEmpty
-                ? _filteredUserEntries()
-                : viewContentUnavailable(context,
-                    text: 'NO YOUTH INFORMATION AVAILABLE')
-          ],
-        ));
+    return Column(
+      children: [
+        viewContentContainer(context,
+            child: Column(
+              children: [
+                _filteredUsersLabelRow(),
+                allUsers.isNotEmpty
+                    ? _filteredUserEntries()
+                    : viewContentUnavailable(context,
+                        text: 'NO YOUTH INFORMATION AVAILABLE')
+              ],
+            )),
+        if (allUsers.length > 10) _navigatorButtons()
+      ],
+    );
   }
 
   Widget _unfilteredUsersLabelRow() {
@@ -244,12 +247,13 @@ class _ViewYouthInformationScreenState
 
   Widget _unfilteredUserEntries() {
     return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.75,
+      height: MediaQuery.of(context).size.height * 0.52,
       child: ListView.builder(
           shrinkWrap: true,
-          itemCount: allUsers.length,
+          itemCount: pageNumber == maxPageNumber ? allUsers.length % 10 : 10,
           itemBuilder: (context, index) {
-            final userData = allUsers[index].data() as Map<dynamic, dynamic>;
+            final userData = allUsers[index + ((pageNumber - 1) * 10)].data()
+                as Map<dynamic, dynamic>;
             String fullName = userData['fullName'];
             Color entryColor = index % 2 == 0 ? Colors.black : Colors.white;
             Color backgroundColor = index % 2 == 0 ? Colors.white : Colors.grey;
@@ -303,7 +307,9 @@ class _ViewYouthInformationScreenState
                     editEntryButton(context, onPress: () {}),
                     if (userData['isSuspended'] == true)
                       restoreEntryButton(context, onPress: () {
-                        setUserSuspendedState(allUsers[index].id, false);
+                        setUserSuspendedState(
+                            allUsers[index + ((pageNumber - 1) * 10)].id,
+                            false);
                       })
                     else if (userData['isSuspended'] == false)
                       deleteEntryButton(context, onPress: () {
@@ -311,7 +317,9 @@ class _ViewYouthInformationScreenState
                             message:
                                 'Are you sure you want to suspend this user?',
                             deleteWord: 'Suspend', deleteEntry: () {
-                          setUserSuspendedState(allUsers[index].id, true);
+                          setUserSuspendedState(
+                              allUsers[index + ((pageNumber - 1) * 10)].id,
+                              true);
                         });
                       })
                   ],
@@ -327,19 +335,16 @@ class _ViewYouthInformationScreenState
 
   Widget _filteredUserEntries() {
     return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.75,
+      height: MediaQuery.of(context).size.height * 0.52,
       child: ListView.builder(
           shrinkWrap: true,
-          itemCount: allUsers.length,
+          itemCount: pageNumber == maxPageNumber ? allUsers.length % 10 : 10,
           itemBuilder: (context, index) {
-            final userData = allUsers[index].data() as Map<dynamic, dynamic>;
+            final userData = allUsers[index + ((pageNumber - 1) * 10)].data()
+                as Map<dynamic, dynamic>;
             String fullName = userData['fullName'];
             String education = userData['categorySpecific'];
             String city = userData['city'];
-            int age =
-                _calculateAge((userData['birthday'] as Timestamp).toDate());
-            String gender = userData['gender'];
-
             Color entryColor = index % 2 == 0 ? Colors.black : Colors.white;
             Color backgroundColor = index % 2 == 0 ? Colors.white : Colors.grey;
             Color borderColor = index % 2 == 0 ? Colors.grey : Colors.white;
@@ -362,24 +367,14 @@ class _ViewYouthInformationScreenState
                         flex: 3,
                         backgroundColor: backgroundColor,
                         borderColor: borderColor,
-                        textColor: entryColor)
-                  else if (_selectedCategory == 'AGE REPORT')
-                    viewFlexTextCell('${age} years old',
-                        flex: 3,
-                        backgroundColor: backgroundColor,
-                        borderColor: borderColor,
-                        textColor: entryColor)
-                  else if (_selectedCategory == 'GENDER REPORT')
-                    viewFlexTextCell(gender,
-                        flex: 3,
-                        backgroundColor: backgroundColor,
-                        borderColor: borderColor,
                         textColor: entryColor),
                   viewFlexActionsCell([
                     editEntryButton(context, onPress: () {}),
                     if (userData['isSuspended'] == true)
                       restoreEntryButton(context, onPress: () {
-                        setUserSuspendedState(allUsers[index].id, false);
+                        setUserSuspendedState(
+                            allUsers[index + ((pageNumber - 1) * 10)].id,
+                            false);
                       })
                     else if (userData['isSuspended'] == false)
                       deleteEntryButton(context, onPress: () {
@@ -387,7 +382,9 @@ class _ViewYouthInformationScreenState
                             message:
                                 'Are you sure you want to suspend this user?',
                             deleteWord: 'Suspend', deleteEntry: () {
-                          setUserSuspendedState(allUsers[index].id, true);
+                          setUserSuspendedState(
+                              allUsers[index + ((pageNumber - 1) * 10)].id,
+                              true);
                         });
                       })
                   ],
@@ -399,5 +396,38 @@ class _ViewYouthInformationScreenState
                 isLastEntry: index == allUsers.length - 1);
           }),
     );
+  }
+
+  Widget _navigatorButtons() {
+    return SizedBox(
+        width: MediaQuery.of(context).size.height * 0.6,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            previousPageButton(context,
+                onPress: pageNumber == 1
+                    ? null
+                    : () {
+                        if (pageNumber == 1) {
+                          return;
+                        }
+                        setState(() {
+                          pageNumber--;
+                        });
+                      }),
+            AutoSizeText(pageNumber.toString(), style: blackBoldStyle()),
+            nextPageButton(context,
+                onPress: pageNumber == maxPageNumber
+                    ? null
+                    : () {
+                        if (pageNumber == maxPageNumber) {
+                          return;
+                        }
+                        setState(() {
+                          pageNumber++;
+                        });
+                      })
+          ],
+        ));
   }
 }

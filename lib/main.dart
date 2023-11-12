@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ywda_dashboard/screens/add_announcement_screen.dart';
+import 'package:ywda_dashboard/screens/add_faq_screen.dart';
 import 'package:ywda_dashboard/screens/add_form_screen.dart';
 import 'package:ywda_dashboard/screens/add_org_head_screen.dart';
 import 'package:ywda_dashboard/screens/add_org_project_screen.dart';
@@ -9,6 +10,7 @@ import 'package:ywda_dashboard/screens/add_org_screen.dart';
 import 'package:ywda_dashboard/screens/add_project_screen.dart';
 import 'package:ywda_dashboard/screens/admin_settings_screen.dart';
 import 'package:ywda_dashboard/screens/edit_announcement_screen.dart';
+import 'package:ywda_dashboard/screens/edit_faq_screen.dart';
 import 'package:ywda_dashboard/screens/edit_org_head_screen.dart';
 import 'package:ywda_dashboard/screens/edit_org_profile_screen.dart';
 import 'package:ywda_dashboard/screens/edit_org_project_screen.dart';
@@ -21,13 +23,17 @@ import 'package:ywda_dashboard/screens/log_in_screen.dart';
 import 'package:ywda_dashboard/screens/org_home_screen.dart';
 import 'package:ywda_dashboard/screens/register_screen.dart';
 import 'package:ywda_dashboard/screens/view_announcement_screen.dart';
+import 'package:ywda_dashboard/screens/view_faqs_screen.dart';
 import 'package:ywda_dashboard/screens/view_forms_screen.dart';
 import 'package:ywda_dashboard/screens/view_org_projects_screen.dart';
 import 'package:ywda_dashboard/screens/view_org_renewals_screen.dart';
 import 'package:ywda_dashboard/screens/view_orgs_screen.dart';
 import 'package:ywda_dashboard/screens/view_projects_screen.dart';
+import 'package:ywda_dashboard/screens/view_renewal_history_screen.dart';
 import 'package:ywda_dashboard/screens/view_submissions_screen.dart';
 import 'package:ywda_dashboard/screens/view_user_accounts_screen.dart';
+import 'package:ywda_dashboard/screens/view_youth_age_report.dart';
+import 'package:ywda_dashboard/screens/view_youth_gender_report.dart';
 import 'package:ywda_dashboard/screens/view_youth_information.dart';
 import 'package:ywda_dashboard/screens/welcome_screen.dart';
 import 'package:ywda_dashboard/utils/color_util.dart';
@@ -79,6 +85,18 @@ class MyApp extends StatelessWidget {
                         category: state.pathParameters['category']!));
               }),
           GoRoute(
+              path: 'ageReport',
+              pageBuilder: (context, state) {
+                return customTransition(
+                    context, state, const ViewYouthAgeReportScreen());
+              }),
+          GoRoute(
+              path: 'genderReport',
+              pageBuilder: (context, state) {
+                return customTransition(
+                    context, state, const ViewYouthGenderReportScreen());
+              }),
+          GoRoute(
               path: 'orgHeads',
               pageBuilder: (context, state) {
                 return customTransition(
@@ -101,7 +119,12 @@ class MyApp extends StatelessWidget {
                         orgHeadID: state.pathParameters['orgHeadID']!,
                         orgID: state.pathParameters['orgID']!));
               }),
-
+          GoRoute(
+              path: 'orgRenewals',
+              pageBuilder: (context, state) {
+                return customTransition(
+                    context, state, const ViewOrgRenewalsScreen());
+              }),
           GoRoute(
               path: 'orgs',
               pageBuilder: (context, state) {
@@ -286,6 +309,23 @@ class MyApp extends StatelessWidget {
                     });
               }),
           GoRoute(
+              path: 'faqs',
+              pageBuilder: (context, state) {
+                return customTransition(context, state, const ViewFAQSscreen());
+              }),
+          GoRoute(
+              path: 'faqs/add',
+              pageBuilder: (context, state) {
+                return customTransition(context, state, const AddFAQScreen());
+              }),
+          GoRoute(
+              name: 'editFAQ',
+              path: 'faqs/edit/:faqID',
+              pageBuilder: (context, state) {
+                return customTransition(context, state,
+                    EditFAQScreen(faqID: state.pathParameters['faqID']!));
+              }),
+          GoRoute(
               path: 'adminSettings',
               pageBuilder: (context, state) {
                 return customTransition(
@@ -298,10 +338,10 @@ class MyApp extends StatelessWidget {
                 return customTransition(context, state, const OrgHomeScreen());
               }),
           GoRoute(
-              path: 'orgRenewals',
+              path: 'orgRenewalHistory',
               pageBuilder: (context, state) {
                 return customTransition(
-                    context, state, const ViewOrgRenewalsScreen());
+                    context, state, const ViewRenewalHistoryScreen());
               }),
           GoRoute(
               path: 'orgProjects',

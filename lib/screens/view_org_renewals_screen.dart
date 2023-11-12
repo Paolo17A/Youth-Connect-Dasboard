@@ -37,6 +37,9 @@ class _ViewOrgRenewalsScreenState extends State<ViewOrgRenewalsScreen> {
   String? _formCertificationSelectedFileName;
   String? _formCertificationSelectedFileExtension;
 
+  int pageNumber = 1;
+  int maxPageNumber = 1;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -53,6 +56,8 @@ class _ViewOrgRenewalsScreenState extends State<ViewOrgRenewalsScreen> {
           String accredStatus = accredData['status'];
           return accredStatus == _selectedCategory;
         }).toList();
+        filteredAccreds = filteredAccreds.reversed.toList();
+        maxPageNumber = (filteredAccreds.length / 10).ceil();
       }
     });
   }
@@ -94,6 +99,9 @@ class _ViewOrgRenewalsScreenState extends State<ViewOrgRenewalsScreen> {
       allAccreds = accreds.docs;
       allAccreds = List.from(allAccreds.reversed);
       filteredAccreds = List.from(accreds.docs);
+      filteredAccreds = filteredAccreds.reversed.toList();
+      maxPageNumber = (filteredAccreds.length / 10).ceil();
+
       associatedOrgs.clear();
       for (var accred in accreds.docs) {
         final accredData = accred.data();
@@ -238,16 +246,21 @@ class _ViewOrgRenewalsScreenState extends State<ViewOrgRenewalsScreen> {
   }
 
   Widget _accredsContainerWidget() {
-    return viewContentContainer(context,
-        child: Column(
-          children: [
-            _accredsLabelRow(),
-            filteredAccreds.isNotEmpty
-                ? _accredEntries()
-                : viewContentUnavailable(context,
-                    text: 'NO ACCREDITATION REQUESTS AVAILABLE')
-          ],
-        ));
+    return Column(
+      children: [
+        viewContentContainer(context,
+            child: Column(
+              children: [
+                _accredsLabelRow(),
+                filteredAccreds.isNotEmpty
+                    ? _accredEntries()
+                    : viewContentUnavailable(context,
+                        text: 'NO ACCREDITATION REQUESTS AVAILABLE')
+              ],
+            )),
+        if (filteredAccreds.length > 10) _navigatorButtons()
+      ],
+    );
   }
 
   Widget _accredsLabelRow() {
@@ -292,13 +305,14 @@ class _ViewOrgRenewalsScreenState extends State<ViewOrgRenewalsScreen> {
 
   Widget _accredEntries() {
     return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.75,
+      height: MediaQuery.of(context).size.height * 0.52,
       child: ListView.builder(
           shrinkWrap: true,
-          itemCount: filteredAccreds.length,
+          itemCount:
+              pageNumber == maxPageNumber ? filteredAccreds.length % 10 : 10,
           itemBuilder: (context, index) {
-            final accredData =
-                filteredAccreds[index].data() as Map<dynamic, dynamic>;
+            final accredData = filteredAccreds[index + ((pageNumber - 1) * 10)]
+                .data() as Map<dynamic, dynamic>;
             final orgData =
                 associatedOrgs[accredData['orgID']] as Map<dynamic, dynamic>;
             Color entryColor = index % 2 == 0 ? Colors.black : Colors.white;
@@ -307,7 +321,7 @@ class _ViewOrgRenewalsScreenState extends State<ViewOrgRenewalsScreen> {
 
             return viewContentEntryRow(context,
                 children: [
-                  viewFlexTextCell('#${index + 1}',
+                  viewFlexTextCell('#${(index + 1) + ((pageNumber - 1) * 10)}',
                       flex: 1,
                       backgroundColor: backgroundColor,
                       borderColor: borderColor,
@@ -362,7 +376,9 @@ class _ViewOrgRenewalsScreenState extends State<ViewOrgRenewalsScreen> {
                     if (accredData['status'] == 'PENDING')
                       appproveRenewalButton(context,
                           onPress: () => showUploadCertificationDialog(
-                              filteredAccreds[index].id, accredData['orgID'])),
+                              filteredAccreds[index + ((pageNumber - 1) * 10)]
+                                  .id,
+                              accredData['orgID'])),
                     if (accredData['status'] == 'PENDING')
                       denyRenewalButton(context, onPress: () {
                         displayDeleteEntryDialog(context,
@@ -370,7 +386,8 @@ class _ViewOrgRenewalsScreenState extends State<ViewOrgRenewalsScreen> {
                                 'Are you sure you want to deny this org\'s accreditation request?',
                             deleteWord: 'Deny',
                             deleteEntry: () async => denyRenewalRequest(
-                                filteredAccreds[index].id,
+                                filteredAccreds[index + ((pageNumber - 1) * 10)]
+                                    .id,
                                 accredData['orgID']));
                       }),
                   ],
@@ -444,5 +461,38 @@ class _ViewOrgRenewalsScreenState extends State<ViewOrgRenewalsScreen> {
                         ),
                       )),
                 ))));
+  }
+
+  Widget _navigatorButtons() {
+    return SizedBox(
+        width: MediaQuery.of(context).size.height * 0.6,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            previousPageButton(context,
+                onPress: pageNumber == 1
+                    ? null
+                    : () {
+                        if (pageNumber == 1) {
+                          return;
+                        }
+                        setState(() {
+                          pageNumber--;
+                        });
+                      }),
+            AutoSizeText(pageNumber.toString(), style: blackBoldStyle()),
+            nextPageButton(context,
+                onPress: pageNumber == maxPageNumber
+                    ? null
+                    : () {
+                        if (pageNumber == maxPageNumber) {
+                          return;
+                        }
+                        setState(() {
+                          pageNumber++;
+                        });
+                      })
+          ],
+        ));
   }
 }

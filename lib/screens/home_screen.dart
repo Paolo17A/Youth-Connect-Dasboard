@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pie_chart/pie_chart.dart';
+import 'package:ywda_dashboard/utils/color_util.dart';
 import 'package:ywda_dashboard/widgets/app_bar_widget.dart';
 import 'package:ywda_dashboard/widgets/custom_container_widgets.dart';
 import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
@@ -25,14 +26,19 @@ class _HomeScreenState extends State<HomeScreen> {
   int inSchool = 0;
   int outSchool = 0;
   int laborForce = 0;
-  Map<String, double> civilStatusMap = {
+  Map<String, double> ageMap = {
+    'CHILD YOUTH': 0,
+    'CORE YOUTH': 0,
+    'ADULT YOUTH': 0
+  };
+  /*Map<String, double> civilStatusMap = {
     'SINGLE': 0,
     'MARRIED': 0,
     'DIVORCED': 0,
     'SINGLE-PARENTS': 0,
     'WIDOWED': 0,
     'SEPARATE': 0
-  };
+  };*/
   Map<String, double> genderMap = {
     'WOMAN': 0,
     'MAN': 0,
@@ -50,6 +56,18 @@ class _HomeScreenState extends State<HomeScreen> {
     initializeHome();
   }
 
+  int _calculateAge(DateTime birthDate) {
+    final now = DateTime.now();
+    int age = now.year - birthDate.year;
+
+    if (now.month < birthDate.month ||
+        (now.month == birthDate.month && now.day < birthDate.day)) {
+      age--;
+    }
+
+    return age;
+  }
+
   void initializeHome() async {
     if (_doneInitializing) {
       return;
@@ -65,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
       Map<dynamic, dynamic> userData;
       String education;
       String gender;
-      String civilStatus;
+      int age;
       for (var user in allUsers) {
         userData = (user.data() as Map<dynamic, dynamic>);
         if (userData.containsKey('categoryGeneral')) {
@@ -96,21 +114,14 @@ class _HomeScreenState extends State<HomeScreen> {
           }
         }
 
-        if (userData.containsKey('civilStatus')) {
-          civilStatus = userData['civilStatus'];
-          if (civilStatus == 'SINGLE') {
-            civilStatusMap['SINGLE'] = civilStatusMap['SINGLE']! + 1;
-          } else if (civilStatus == 'MARRIED') {
-            civilStatusMap['MARRIED'] = civilStatusMap['MARRIED']! + 1;
-          } else if (civilStatus == 'DIVORCED') {
-            civilStatusMap['DIVORCED'] = civilStatusMap['DIVORCED']! + 1;
-          } else if (civilStatus == 'SINGLE-PARENTS') {
-            civilStatusMap['SINGLE-PARENTS'] =
-                civilStatusMap['SINGLE-PARENTS']! + 1;
-          } else if (civilStatus == 'WIDOWED') {
-            civilStatusMap['WIDOWED'] = civilStatusMap['WIDOWED']! + 1;
-          } else if (civilStatus == 'SEPARATE') {
-            civilStatusMap['SEPARATE'] = civilStatusMap['SEPARATE']! + 1;
+        if (userData.containsKey('birthday')) {
+          age = _calculateAge((userData['birthday'] as Timestamp).toDate());
+          if (age >= 15 && age <= 17) {
+            ageMap['CHILD YOUTH'] = ageMap['CHILD YOUTH']! + 1;
+          } else if (age >= 18 && age <= 24) {
+            ageMap['CORE YOUTH'] = ageMap['CORE YOUTH']! + 1;
+          } else if (age >= 25 && age <= 30) {
+            ageMap['ADULT YOUTH'] = ageMap['ADULT YOUTH']! + 1;
           }
         }
 
@@ -230,7 +241,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Image.asset('assets/images/icons/town.png', scale: 2),
                 onPress: () {
               GoRouter.of(context).goNamed('youthInformation',
-                  pathParameters: {'category': 'TOWNS'});
+                  pathParameters: {'category': 'TOWN'});
             }),
             analyticReportWidget(context,
                 count: '',
@@ -238,8 +249,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 displayIcon:
                     Image.asset('assets/images/icons/age.png', scale: 2),
                 onPress: () {
-              GoRouter.of(context).goNamed('youthInformation',
-                  pathParameters: {'category': 'AGE REPORT'});
+              GoRouter.of(context).go('/ageReport');
             }),
             analyticReportWidget(context,
                 count: '',
@@ -247,8 +257,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 displayIcon:
                     Image.asset('assets/images/icons/gender.png', scale: 2),
                 onPress: () {
-              GoRouter.of(context).goNamed('youthInformation',
-                  pathParameters: {'category': 'GENDER REPORT'});
+              GoRouter.of(context).go('/genderReport');
             }),
           ],
         ),
@@ -278,11 +287,11 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              percentBarWidget(context, Colors.blue,
+              percentBarWidget(context, CustomColors.darkBlue,
                   (inSchool / allUsers.length), 'In School'),
-              percentBarWidget(context, Colors.blue,
+              percentBarWidget(context, CustomColors.darkBlue,
                   (outSchool / allUsers.length), 'Out of School'),
-              percentBarWidget(context, Colors.blue,
+              percentBarWidget(context, CustomColors.darkBlue,
                   (laborForce / allUsers.length), 'Labor Force')
             ],
           ),
@@ -309,7 +318,12 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 40),
           PieChart(
-              dataMap: civilStatusMap,
+              dataMap: ageMap,
+              colorList: [
+                Colors.yellow,
+                Colors.deepOrange,
+                const Color.fromARGB(255, 240, 207, 159)
+              ],
               chartValuesOptions: const ChartValuesOptions(decimalPlaces: 0))
         ]));
   }
@@ -334,6 +348,14 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 40),
           PieChart(
               dataMap: genderMap,
+              colorList: [
+                Colors.redAccent,
+                Colors.orangeAccent,
+                Colors.yellowAccent,
+                Colors.greenAccent,
+                Colors.blueAccent,
+                Colors.purpleAccent
+              ],
               chartValuesOptions: const ChartValuesOptions(decimalPlaces: 0))
         ]));
   }

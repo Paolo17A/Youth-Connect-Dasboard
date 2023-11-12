@@ -14,6 +14,7 @@ import 'package:ywda_dashboard/widgets/youth_connect_textfield_widget.dart';
 import 'package:ywda_dashboard/widgets/dropdown_widget.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
+import '../widgets/custom_button_widgets.dart';
 import '../widgets/custom_text_widgets.dart';
 
 class EditOrgScreen extends StatefulWidget {
@@ -227,21 +228,26 @@ class _EditOrgScreenState extends State<EditOrgScreen> {
                   context,
                   _isLoading,
                   SingleChildScrollView(
-                    child: horizontalPadding5Percent(
-                        context,
-                        Column(
-                          children: [
-                            _editOrganizationHeaderWidget(),
-                            _organizationNameWidget(),
-                            _organizationNatureWidget(),
-                            _organizationIntroWidget(),
-                            _organizationContactDetailsWidget(),
-                            _organizationSocMedWidget(),
-                            _orgImageSelectorWidgets(),
-                            const SizedBox(height: 30),
-                            _submitButtonWidget()
-                          ],
-                        )),
+                    child: Column(
+                      children: [
+                        _backButton(),
+                        horizontalPadding5Percent(
+                            context,
+                            Column(
+                              children: [
+                                _editOrganizationHeaderWidget(),
+                                _organizationNameWidget(),
+                                _organizationNatureWidget(),
+                                _organizationIntroWidget(),
+                                _organizationContactDetailsWidget(),
+                                _organizationSocMedWidget(),
+                                _orgImageSelectorWidgets(),
+                                const SizedBox(height: 30),
+                                _submitButtonWidget()
+                              ],
+                            )),
+                      ],
+                    ),
                   )),
             )
           ],
@@ -250,17 +256,20 @@ class _EditOrgScreenState extends State<EditOrgScreen> {
 
   //  COMPONENT WIDGETS
   //============================================================================
+  Widget _backButton() {
+    return Row(children: [
+      backToViewScreenButton(context,
+          onPress: () => GoRouter.of(context).go('/orgs'))
+    ]);
+  }
+
   Widget _editOrganizationHeaderWidget() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 30),
       child: AutoSizeText(
         'EDIT ORGANIZATION',
         textAlign: TextAlign.center,
-        style: GoogleFonts.poppins(
-            textStyle: const TextStyle(
-                fontSize: 38,
-                fontWeight: FontWeight.bold,
-                color: Colors.black)),
+        style: GoogleFonts.poppins(textStyle: blackBoldStyle(size: 28)),
       ),
     );
   }

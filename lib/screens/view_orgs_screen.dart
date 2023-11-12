@@ -9,6 +9,7 @@ import 'package:ywda_dashboard/widgets/custom_container_widgets.dart';
 import 'package:ywda_dashboard/widgets/custom_miscellaneous_widgets.dart';
 import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
 import 'package:ywda_dashboard/widgets/app_bar_widget.dart';
+import 'package:ywda_dashboard/widgets/custom_text_widgets.dart';
 import 'package:ywda_dashboard/widgets/dropdown_widget.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
@@ -24,7 +25,8 @@ class _ViewOrgsScreenState extends State<ViewOrgsScreen> {
   bool _isInitialized = false;
   List<DocumentSnapshot> allOrgs = [];
   List<DocumentSnapshot> filteredOrgs = [];
-
+  int pageNumber = 1;
+  int maxPageNumber = 1;
   String _selectedCategory = '';
 
   @override
@@ -42,7 +44,7 @@ class _ViewOrgsScreenState extends State<ViewOrgsScreen> {
       final orgs = await FirebaseFirestore.instance.collection('orgs').get();
       allOrgs = orgs.docs;
       filteredOrgs = List.from(allOrgs);
-
+      maxPageNumber = (filteredOrgs.length / 10).ceil();
       setState(() {
         _isLoading = false;
         _isInitialized = true;
@@ -64,6 +66,8 @@ class _ViewOrgsScreenState extends State<ViewOrgsScreen> {
           return orgNature == _selectedCategory;
         }).toList();
       }
+      pageNumber = 1;
+      maxPageNumber = (filteredOrgs.length / 10).ceil();
     });
   }
 
@@ -156,14 +160,19 @@ class _ViewOrgsScreenState extends State<ViewOrgsScreen> {
   }
 
   Widget _organizationsContainerWidget() {
-    return viewContentContainer(context,
-        child: Column(children: [
-          _announcementLabelRow(),
-          allOrgs.isNotEmpty
-              ? _orgEntries()
-              : viewContentUnavailable(context,
-                  text: 'NO ORGANIZATIONS AVAILABLE')
-        ]));
+    return Column(
+      children: [
+        viewContentContainer(context,
+            child: Column(children: [
+              _announcementLabelRow(),
+              allOrgs.isNotEmpty
+                  ? _orgEntries()
+                  : viewContentUnavailable(context,
+                      text: 'NO ORGANIZATIONS AVAILABLE')
+            ])),
+        if (filteredOrgs.length > 10) _navigatorButtons()
+      ],
+    );
   }
 
   Widget _announcementLabelRow() {
@@ -183,7 +192,7 @@ class _ViewOrgsScreenState extends State<ViewOrgsScreen> {
           backgroundColor: Colors.grey,
           borderColor: Colors.white,
           textColor: Colors.white),
-      viewFlexTextCell('Intro',
+      viewFlexTextCell('Description',
           flex: 2,
           backgroundColor: Colors.grey,
           borderColor: Colors.white,
@@ -203,12 +212,14 @@ class _ViewOrgsScreenState extends State<ViewOrgsScreen> {
 
   Widget _orgEntries() {
     return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.7,
+      height: MediaQuery.of(context).size.height * 0.52,
       child: ListView.builder(
           shrinkWrap: true,
-          itemCount: filteredOrgs.length,
+          itemCount:
+              pageNumber == maxPageNumber ? filteredOrgs.length % 10 : 10,
           itemBuilder: (context, index) {
-            final orgData = filteredOrgs[index].data() as Map<dynamic, dynamic>;
+            final orgData = filteredOrgs[index + ((pageNumber - 1) * 10)].data()
+                as Map<dynamic, dynamic>;
             int memberCount = (orgData['members'] as List<dynamic>).length;
             Color entryColor = index % 2 == 0 ? Colors.black : Colors.white;
             Color backgroundColor = index % 2 == 0 ? Colors.white : Colors.grey;
@@ -216,7 +227,7 @@ class _ViewOrgsScreenState extends State<ViewOrgsScreen> {
 
             return viewContentEntryRow(context,
                 children: [
-                  viewFlexTextCell('#${index + 1}',
+                  viewFlexTextCell('#${(index + 1) + ((pageNumber - 1) * 10)}',
                       flex: 1,
                       backgroundColor: backgroundColor,
                       borderColor: borderColor,
@@ -251,12 +262,16 @@ class _ViewOrgsScreenState extends State<ViewOrgsScreen> {
                             message:
                                 'Are you sure you want to suspend this organization?',
                             deleteWord: 'Suspend', deleteEntry: () {
-                          setOrgActiveState(filteredOrgs[index].id, false);
+                          setOrgActiveState(
+                              filteredOrgs[index + ((pageNumber - 1) * 10)].id,
+                              false);
                         });
                       }),
                     if (orgData['isActive'] == false)
                       restoreEntryButton(context, onPress: () {
-                        setOrgActiveState(filteredOrgs[index].id, true);
+                        setOrgActiveState(
+                            filteredOrgs[index + ((pageNumber - 1) * 10)].id,
+                            true);
                       })
                   ],
                       flex: 2,
@@ -267,5 +282,38 @@ class _ViewOrgsScreenState extends State<ViewOrgsScreen> {
                 isLastEntry: index == allOrgs.length - 1);
           }),
     );
+  }
+
+  Widget _navigatorButtons() {
+    return SizedBox(
+        width: MediaQuery.of(context).size.height * 0.6,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            previousPageButton(context,
+                onPress: pageNumber == 1
+                    ? null
+                    : () {
+                        if (pageNumber == 1) {
+                          return;
+                        }
+                        setState(() {
+                          pageNumber--;
+                        });
+                      }),
+            AutoSizeText(pageNumber.toString(), style: blackBoldStyle()),
+            nextPageButton(context,
+                onPress: pageNumber == maxPageNumber
+                    ? null
+                    : () {
+                        if (pageNumber == maxPageNumber) {
+                          return;
+                        }
+                        setState(() {
+                          pageNumber++;
+                        });
+                      })
+          ],
+        ));
   }
 }

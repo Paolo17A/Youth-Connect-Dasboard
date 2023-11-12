@@ -27,6 +27,9 @@ class _ViewOrgHeadsScreenState extends State<ViewOrgHeadsScreen> {
   List<DocumentSnapshot> allOrgheads = [];
   Map<String, dynamic> associatedOrgs = {};
 
+  int pageNumber = 1;
+  int maxPageNumber = 1;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -41,6 +44,8 @@ class _ViewOrgHeadsScreenState extends State<ViewOrgHeadsScreen> {
           .where('userType', isEqualTo: 'ORG HEAD')
           .get();
       allOrgheads = orgHeads.docs;
+      maxPageNumber = (allOrgheads.length / 10).ceil();
+
       associatedOrgs.clear();
       for (var orgHead in allOrgheads) {
         final orgHeadData = orgHead.data() as Map<dynamic, dynamic>;
@@ -129,25 +134,27 @@ class _ViewOrgHeadsScreenState extends State<ViewOrgHeadsScreen> {
             child: Padding(
               padding: const EdgeInsets.all(11),
               child: AutoSizeText('NEW ORGANIZATION',
-                  style: GoogleFonts.poppins(
-                      textStyle: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold))),
+                  style:
+                      GoogleFonts.poppins(textStyle: whiteBoldStyle(size: 18))),
             ))
       ]),
     );
   }
 
   Widget _orgHeadContainerWidget() {
-    return viewContentContainer(context,
-        child: Column(children: [
-          _orgHeadLabelRow(),
-          associatedOrgs.isNotEmpty
-              ? _orgHeadEntries()
-              : viewContentUnavailable(context,
-                  text: 'NO ORGANIZATIONS AVAILABLE')
-        ]));
+    return Column(
+      children: [
+        viewContentContainer(context,
+            child: Column(children: [
+              _orgHeadLabelRow(),
+              associatedOrgs.isNotEmpty
+                  ? _orgHeadEntries()
+                  : viewContentUnavailable(context,
+                      text: 'NO ORGANIZATIONS AVAILABLE')
+            ])),
+        if (associatedOrgs.length > 10) _navigatorButtons()
+      ],
+    );
   }
 
   Widget _orgHeadLabelRow() {
@@ -172,13 +179,13 @@ class _ViewOrgHeadsScreenState extends State<ViewOrgHeadsScreen> {
 
   Widget _orgHeadEntries() {
     return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.75,
+      height: MediaQuery.of(context).size.height * 0.52,
       child: ListView.builder(
           shrinkWrap: true,
-          itemCount: allOrgheads.length,
+          itemCount: pageNumber == maxPageNumber ? allOrgheads.length % 10 : 10,
           itemBuilder: (context, index) {
-            final orgHeadData =
-                allOrgheads[index].data() as Map<dynamic, dynamic>;
+            final orgHeadData = allOrgheads[index + ((pageNumber - 1) * 10)]
+                .data() as Map<dynamic, dynamic>;
             final associatedOrg = associatedOrgs[orgHeadData['organization']]
                 as Map<dynamic, dynamic>;
             Color entryColor = index % 2 == 0 ? Colors.black : Colors.white;
@@ -187,7 +194,7 @@ class _ViewOrgHeadsScreenState extends State<ViewOrgHeadsScreen> {
 
             return viewContentEntryRow(context,
                 children: [
-                  viewFlexTextCell('#${index + 1}',
+                  viewFlexTextCell('${(index + 1) + ((pageNumber - 1) * 10)}',
                       flex: 1,
                       backgroundColor: backgroundColor,
                       borderColor: borderColor,
@@ -205,7 +212,9 @@ class _ViewOrgHeadsScreenState extends State<ViewOrgHeadsScreen> {
                     editEntryButton(context,
                         onPress: () => GoRouter.of(context)
                                 .goNamed('editOrgHead', pathParameters: {
-                              'orgHeadID': allOrgheads[index].id,
+                              'orgHeadID':
+                                  allOrgheads[index + ((pageNumber - 1) * 10)]
+                                      .id,
                               'orgID': orgHeadData['organization']
                             })),
                     if (associatedOrg['isAccredited'] == true)
@@ -347,5 +356,38 @@ class _ViewOrgHeadsScreenState extends State<ViewOrgHeadsScreen> {
                     ),
                   )),
             ));
+  }
+
+  Widget _navigatorButtons() {
+    return SizedBox(
+        width: MediaQuery.of(context).size.height * 0.6,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            previousPageButton(context,
+                onPress: pageNumber == 1
+                    ? null
+                    : () {
+                        if (pageNumber == 1) {
+                          return;
+                        }
+                        setState(() {
+                          pageNumber--;
+                        });
+                      }),
+            AutoSizeText(pageNumber.toString(), style: blackBoldStyle()),
+            nextPageButton(context,
+                onPress: pageNumber == maxPageNumber
+                    ? null
+                    : () {
+                        if (pageNumber == maxPageNumber) {
+                          return;
+                        }
+                        setState(() {
+                          pageNumber++;
+                        });
+                      })
+          ],
+        ));
   }
 }

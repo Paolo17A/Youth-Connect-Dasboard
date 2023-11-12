@@ -136,6 +136,8 @@ class _OrgHomeScreenState extends State<OrgHomeScreen> {
         'formName': _formAccreditationSelectedFileName,
         'accreditationForm': accreditationFormDownloadURL,
         'certification': '',
+        'certificateName': '',
+        'finalizeData': DateTime(1970),
         'status': 'PENDING'
       });
       await FirebaseFirestore.instance
@@ -209,13 +211,24 @@ class _OrgHomeScreenState extends State<OrgHomeScreen> {
           }
         }),
         orgDashboardWidget(context,
-            label: _accreditationStatus,
+            label: _accreditationStatus.isNotEmpty
+                ? _accreditationStatus
+                : 'NO AVAILABLE ACCREDITATION STATUS',
             buttonLabel: 'History',
             displayIcon: Icon(
-              Icons.thumb_up,
-              color: Colors.green,
+              _accreditationStatus == 'APPROVED' || _accreditationStatus == ''
+                  ? Icons.thumb_up
+                  : _accreditationStatus == 'DISAPPROVED'
+                      ? Icons.thumb_down
+                      : Icons.pending,
+              color: _accreditationStatus == 'APPROVED' ||
+                      _accreditationStatus == ''
+                  ? Colors.green
+                  : _accreditationStatus == 'DISAPPROVED'
+                      ? Colors.red
+                      : Colors.yellow,
             ),
-            onPress: () {})
+            onPress: () => GoRouter.of(context).go('/orgRenewalHistory'))
       ],
     );
   }

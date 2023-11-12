@@ -15,6 +15,8 @@ import 'package:ywda_dashboard/widgets/custom_text_widgets.dart';
 import 'package:ywda_dashboard/widgets/youth_connect_textfield_widget.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
+import '../widgets/custom_button_widgets.dart';
+
 class AddAnnouncementScreen extends StatefulWidget {
   //final VoidCallback refreshCallback;
   const AddAnnouncementScreen({super.key /*, required this.refreshCallback*/});
@@ -134,24 +136,36 @@ class _AddAnnouncementScreenState extends State<AddAnnouncementScreen> {
                 stackedLoadingContainer(
                   context,
                   _isLoading,
-                  horizontalPadding5Percent(
-                      context,
-                      SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            _announcementHeader(),
-                            _announcementTitle(),
-                            Gap(50),
-                            _announcementContent(),
-                            _announcementImage(),
-                            Gap(60),
-                            _announcementBottomButtons(),
-                          ],
-                        ),
-                      )),
+                  SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        _backButton(),
+                        horizontalPadding5Percent(
+                            context,
+                            Column(
+                              children: [
+                                _announcementHeader(),
+                                _announcementTitle(),
+                                Gap(50),
+                                _announcementContent(),
+                                _announcementImage(),
+                                Gap(60),
+                                _announcementBottomButtons(),
+                              ],
+                            )),
+                      ],
+                    ),
+                  ),
                 ))
           ],
         ));
+  }
+
+  Widget _backButton() {
+    return Row(children: [
+      backToViewScreenButton(context,
+          onPress: () => GoRouter.of(context).go('/announcement'))
+    ]);
   }
 
   Widget _announcementHeader() {

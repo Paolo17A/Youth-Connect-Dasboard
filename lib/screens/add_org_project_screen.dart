@@ -18,6 +18,8 @@ import 'package:ywda_dashboard/widgets/custom_text_widgets.dart';
 import 'package:ywda_dashboard/widgets/youth_connect_textfield_widget.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
+import '../widgets/custom_button_widgets.dart';
+
 class AddOrgProjectScreen extends StatefulWidget {
   const AddOrgProjectScreen({super.key});
 
@@ -152,24 +154,37 @@ class _AddOrgProjectScreenState extends State<AddOrgProjectScreen> {
                     context,
                     _isLoading,
                     SingleChildScrollView(
-                      child: horizontalPadding5Percent(
-                          context,
-                          Column(
-                            children: [
-                              _newProjectHeader(),
-                              _projectTitle(),
-                              Gap(50),
-                              _projectContent(),
-                              _projectDateSelect(),
-                              if (currentSelectedFile != null) _projectImages(),
-                              Gap(60),
-                              _submitButton(),
-                              Gap(40)
-                            ],
-                          )),
+                      child: Column(
+                        children: [
+                          _backButton(),
+                          horizontalPadding5Percent(
+                              context,
+                              Column(
+                                children: [
+                                  _newProjectHeader(),
+                                  _projectTitle(),
+                                  Gap(50),
+                                  _projectContent(),
+                                  _projectDateSelect(),
+                                  if (currentSelectedFile != null)
+                                    _projectImages(),
+                                  Gap(60),
+                                  _submitButton(),
+                                  Gap(40)
+                                ],
+                              )),
+                        ],
+                      ),
                     )))
           ],
         ));
+  }
+
+  Widget _backButton() {
+    return Row(children: [
+      backToViewScreenButton(context,
+          onPress: () => GoRouter.of(context).go('/orgProjects'))
+    ]);
   }
 
   Widget _newProjectHeader() {

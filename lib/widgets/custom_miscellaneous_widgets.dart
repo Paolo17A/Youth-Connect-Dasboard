@@ -124,6 +124,7 @@ Widget orgDashboardWidget(BuildContext context,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   AutoSizeText(label,
+                      textAlign: TextAlign.center,
                       style: GoogleFonts.inter(textStyle: blackBoldStyle())),
                   SizedBox(
                     width: MediaQuery.of(context).size.width * 0.07,

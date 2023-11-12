@@ -13,6 +13,7 @@ import 'package:ywda_dashboard/widgets/youth_connect_textfield_widget.dart';
 import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
+import '../widgets/custom_button_widgets.dart';
 import '../widgets/custom_text_widgets.dart';
 
 class AddFormScreen extends StatefulWidget {
@@ -119,19 +120,32 @@ class _AddFormScreenState extends State<AddFormScreen> {
               stackedLoadingContainer(
                   context,
                   _isLoading,
-                  horizontalPadding5Percent(
-                      context,
-                      SingleChildScrollView(
-                          child: Column(children: [
-                        _newFormHeaderWidget(),
-                        _formTitleWidget(),
-                        _fileSelectorWidget(),
-                        const SizedBox(height: 30),
-                        _submitButtonWidget()
-                      ])))))
+                  SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        _backButton(),
+                        horizontalPadding5Percent(
+                            context,
+                            Column(children: [
+                              _newFormHeaderWidget(),
+                              _formTitleWidget(),
+                              _fileSelectorWidget(),
+                              const SizedBox(height: 30),
+                              _submitButtonWidget()
+                            ])),
+                      ],
+                    ),
+                  )))
         ],
       ),
     );
+  }
+
+  Widget _backButton() {
+    return Row(children: [
+      backToViewScreenButton(context,
+          onPress: () => GoRouter.of(context).go('/forms'))
+    ]);
   }
 
   Widget _newFormHeaderWidget() {

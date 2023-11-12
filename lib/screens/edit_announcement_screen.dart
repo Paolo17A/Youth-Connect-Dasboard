@@ -9,8 +9,11 @@ import 'package:image_picker_web/image_picker_web.dart';
 import 'package:ywda_dashboard/widgets/app_bar_widget.dart';
 import 'package:ywda_dashboard/widgets/custom_container_widgets.dart';
 import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
+import 'package:ywda_dashboard/widgets/custom_text_widgets.dart';
 import 'package:ywda_dashboard/widgets/youth_connect_textfield_widget.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
+
+import '../widgets/custom_button_widgets.dart';
 
 class EditAnnouncementScreen extends StatefulWidget {
   final String announcementID;
@@ -188,45 +191,62 @@ class _EditAnnouncementScreenState extends State<EditAnnouncementScreen> {
                 stackedLoadingContainer(
                     context,
                     _isLoading,
-                    horizontalPadding5Percent(
-                        context,
-                        SingleChildScrollView(
-                          child: Column(
-                            children: [
-                              _editAnnouncementHeader(),
-                              _announcementTitle(),
-                              const SizedBox(height: 50),
-                              _announcementContent(),
-                              _announcementImageHandlers(),
-                              const SizedBox(height: 60),
-                              Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    ElevatedButton(
-                                        onPressed: uploadChangesToAnnouncement,
-                                        style: ElevatedButton.styleFrom(
-                                            backgroundColor:
-                                                const Color.fromARGB(
-                                                    255, 88, 147, 201),
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(20))),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(11),
-                                          child: AutoSizeText('SUBMIT',
-                                              style: GoogleFonts.poppins(
-                                                  textStyle: const TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 18,
-                                                      fontWeight:
-                                                          FontWeight.bold))),
-                                        ))
-                                  ]),
-                            ],
-                          ),
-                        ))))
+                    SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          _backButton(),
+                          horizontalPadding5Percent(
+                              context,
+                              Column(
+                                children: [
+                                  _editAnnouncementHeader(),
+                                  _announcementTitle(),
+                                  const SizedBox(height: 50),
+                                  _announcementContent(),
+                                  _announcementImageHandlers(),
+                                  const SizedBox(height: 60),
+                                  Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        ElevatedButton(
+                                            onPressed:
+                                                uploadChangesToAnnouncement,
+                                            style: ElevatedButton.styleFrom(
+                                                backgroundColor:
+                                                    const Color.fromARGB(
+                                                        255, 88, 147, 201),
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20))),
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(11),
+                                              child: AutoSizeText('SUBMIT',
+                                                  style: GoogleFonts.poppins(
+                                                      textStyle:
+                                                          const TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontSize: 18,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold))),
+                                            ))
+                                      ]),
+                                ],
+                              )),
+                        ],
+                      ),
+                    )))
           ],
         ));
+  }
+
+  Widget _backButton() {
+    return Row(children: [
+      backToViewScreenButton(context,
+          onPress: () => GoRouter.of(context).go('/announcement'))
+    ]);
   }
 
   Widget _editAnnouncementHeader() {
@@ -290,10 +310,7 @@ class _EditAnnouncementScreenState extends State<EditAnnouncementScreen> {
                     padding: const EdgeInsets.all(7),
                     child: AutoSizeText('UPLOAD IMAGE',
                         style: GoogleFonts.poppins(
-                            textStyle: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold))),
+                            textStyle: whiteBoldStyle(size: 15))),
                   )),
             ],
           ),

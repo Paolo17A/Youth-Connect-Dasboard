@@ -4,6 +4,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker_web/image_picker_web.dart';
@@ -15,6 +16,8 @@ import 'package:ywda_dashboard/widgets/app_bar_widget.dart';
 import 'package:ywda_dashboard/widgets/custom_text_widgets.dart';
 import 'package:ywda_dashboard/widgets/youth_connect_textfield_widget.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
+
+import '../widgets/custom_button_widgets.dart';
 
 class EditProjectScreen extends StatefulWidget {
   final String projectID;
@@ -200,28 +203,34 @@ class _EditProjectScreenState extends State<EditProjectScreen> {
                     context,
                     _isLoading,
                     SingleChildScrollView(
-                      child: horizontalPadding5Percent(
-                          context,
-                          Column(
-                            children: [
-                              _editProjectHeaderWidget(),
-                              _projectTitleWidget(),
-                              const SizedBox(height: 50),
-                              _projectContentWidget(),
-                              Padding(
-                                padding: const EdgeInsets.all(22),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    _projectDatePickerWidget(),
-                                    _projectImageHandlerWidgets()
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(height: 60),
-                              _projectSubmitButtonWidget()
-                            ],
-                          )),
+                      child: Column(
+                        children: [
+                          _backButton(),
+                          horizontalPadding5Percent(
+                              context,
+                              Column(
+                                children: [
+                                  _editProjectHeaderWidget(),
+                                  _projectTitleWidget(),
+                                  Gap(50),
+                                  _projectContentWidget(),
+                                  Padding(
+                                    padding: const EdgeInsets.all(22),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        _projectDatePickerWidget(),
+                                        _projectImageHandlerWidgets()
+                                      ],
+                                    ),
+                                  ),
+                                  Gap(60),
+                                  _projectSubmitButtonWidget()
+                                ],
+                              )),
+                        ],
+                      ),
                     )))
           ],
         ));
@@ -229,6 +238,13 @@ class _EditProjectScreenState extends State<EditProjectScreen> {
 
   //  COMPONENT WIDGETS
   //============================================================================
+  Widget _backButton() {
+    return Row(children: [
+      backToViewScreenButton(context,
+          onPress: () => GoRouter.of(context).go('/project'))
+    ]);
+  }
+
   Widget _editProjectHeaderWidget() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 50),

@@ -18,6 +18,8 @@ import 'package:ywda_dashboard/widgets/custom_text_widgets.dart';
 import 'package:ywda_dashboard/widgets/youth_connect_textfield_widget.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
+import '../widgets/custom_button_widgets.dart';
+
 class AddProjectScreen extends StatefulWidget {
   const AddProjectScreen({super.key});
 
@@ -151,24 +153,37 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
                 stackedLoadingContainer(
                     context,
                     _isLoading,
-                    horizontalPadding5Percent(
-                        context,
-                        SingleChildScrollView(
-                          child: Column(
-                            children: [
-                              _newProjectHeader(),
-                              _projectTitle(),
-                              Gap(50),
-                              _projectContent(),
-                              _projectDateSelect(),
-                              if (currentSelectedFile != null) _projectImages(),
-                              Gap(60),
-                              _submitButton()
-                            ],
-                          ),
-                        ))))
+                    SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          _backButton(),
+                          horizontalPadding5Percent(
+                              context,
+                              Column(
+                                children: [
+                                  _newProjectHeader(),
+                                  _projectTitle(),
+                                  Gap(50),
+                                  _projectContent(),
+                                  _projectDateSelect(),
+                                  if (currentSelectedFile != null)
+                                    _projectImages(),
+                                  Gap(60),
+                                  _submitButton()
+                                ],
+                              )),
+                        ],
+                      ),
+                    )))
           ],
         ));
+  }
+
+  Widget _backButton() {
+    return Row(children: [
+      backToViewScreenButton(context,
+          onPress: () => GoRouter.of(context).go('/project'))
+    ]);
   }
 
   Widget _newProjectHeader() {

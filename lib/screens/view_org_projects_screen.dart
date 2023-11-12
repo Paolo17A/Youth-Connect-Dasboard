@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -12,6 +13,8 @@ import 'package:ywda_dashboard/widgets/custom_miscellaneous_widgets.dart';
 import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
+import '../widgets/custom_text_widgets.dart';
+
 class ViewOrgProjectsScreen extends StatefulWidget {
   const ViewOrgProjectsScreen({super.key});
 
@@ -22,6 +25,9 @@ class ViewOrgProjectsScreen extends StatefulWidget {
 class _ViewOrgProjectsScreenState extends State<ViewOrgProjectsScreen> {
   bool _isLoading = true;
   List<DocumentSnapshot> allProjects = [];
+
+  int pageNumber = 1;
+  int maxPageNumber = 1;
 
   @override
   void didChangeDependencies() {
@@ -37,6 +43,8 @@ class _ViewOrgProjectsScreenState extends State<ViewOrgProjectsScreen> {
           .where('organizer', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
           .get();
       allProjects = announcements.docs;
+      maxPageNumber = (allProjects.length / 10).ceil();
+
       setState(() {
         _isLoading = false;
       });
@@ -117,15 +125,21 @@ class _ViewOrgProjectsScreenState extends State<ViewOrgProjectsScreen> {
   }
 
   Widget _projectsContainerWidget() {
-    return viewContentContainer(context,
-        child: Column(
-          children: [
-            _projectLabelRow(),
-            allProjects.isNotEmpty
-                ? _projectEntries()
-                : viewContentUnavailable(context, text: 'NO PROJECTS AVAILABLE')
-          ],
-        ));
+    return Column(
+      children: [
+        viewContentContainer(context,
+            child: Column(
+              children: [
+                _projectLabelRow(),
+                allProjects.isNotEmpty
+                    ? _projectEntries()
+                    : viewContentUnavailable(context,
+                        text: 'NO PROJECTS AVAILABLE')
+              ],
+            )),
+        if (allProjects.length > 10) _navigatorButtons()
+      ],
+    );
   }
 
   Widget _projectLabelRow() {
@@ -162,61 +176,100 @@ class _ViewOrgProjectsScreenState extends State<ViewOrgProjectsScreen> {
   }
 
   Widget _projectEntries() {
-    return ListView.builder(
-        shrinkWrap: true,
-        itemCount: allProjects.length,
-        itemBuilder: (context, index) {
-          Color entryColor = index % 2 == 0 ? Colors.black : Colors.white;
-          Color backgroundColor = index % 2 == 0 ? Colors.white : Colors.grey;
-          Color borderColor = index % 2 == 0 ? Colors.grey : Colors.white;
-          final announcementData =
-              allProjects[index].data() as Map<dynamic, dynamic>;
-          return viewContentEntryRow(context,
-              children: [
-                viewFlexTextCell('${index + 1}',
-                    flex: 1,
-                    backgroundColor: backgroundColor,
-                    borderColor: borderColor,
-                    textColor: entryColor),
-                viewFlexTextCell(announcementData['title'],
-                    flex: 2,
-                    backgroundColor: backgroundColor,
-                    borderColor: borderColor,
-                    textColor: entryColor),
-                viewFlexTextCell(announcementData['content'],
-                    flex: 5,
-                    backgroundColor: backgroundColor,
-                    borderColor: borderColor,
-                    textColor: entryColor),
-                viewFlexTextCell(
-                    DateFormat('dd MMM yyyy').format(
-                        (announcementData['projectDate'] as Timestamp)
-                            .toDate()),
-                    flex: 2,
-                    backgroundColor: backgroundColor,
-                    borderColor: borderColor,
-                    textColor: entryColor),
-                viewFlexActionsCell([
-                  editEntryButton(context,
-                      onPress: () => GoRouter.of(context)
-                              .goNamed('editOrgProject', pathParameters: {
-                            'projectID': allProjects[index].id
-                          })),
-                  deleteEntryButton(context, onPress: () {
-                    displayDeleteEntryDialog(context,
-                        message:
-                            'Are you sure you want to delete this project?',
-                        deleteWord: 'Delete',
-                        deleteEntry: () =>
-                            deleteThisProject(allProjects[index]));
-                  })
+    return SizedBox(
+      height: MediaQuery.of(context).size.height * 0.52,
+      child: ListView.builder(
+          shrinkWrap: true,
+          itemCount: pageNumber == maxPageNumber ? allProjects.length % 10 : 10,
+          itemBuilder: (context, index) {
+            Color entryColor = index % 2 == 0 ? Colors.black : Colors.white;
+            Color backgroundColor = index % 2 == 0 ? Colors.white : Colors.grey;
+            Color borderColor = index % 2 == 0 ? Colors.grey : Colors.white;
+            final announcementData =
+                allProjects[index + ((pageNumber - 1) * 10)].data()
+                    as Map<dynamic, dynamic>;
+            return viewContentEntryRow(context,
+                children: [
+                  viewFlexTextCell('${(index + 1) + ((pageNumber - 1) * 10)}',
+                      flex: 1,
+                      backgroundColor: backgroundColor,
+                      borderColor: borderColor,
+                      textColor: entryColor),
+                  viewFlexTextCell(announcementData['title'],
+                      flex: 2,
+                      backgroundColor: backgroundColor,
+                      borderColor: borderColor,
+                      textColor: entryColor),
+                  viewFlexTextCell(announcementData['content'],
+                      flex: 5,
+                      backgroundColor: backgroundColor,
+                      borderColor: borderColor,
+                      textColor: entryColor),
+                  viewFlexTextCell(
+                      DateFormat('dd MMM yyyy').format(
+                          (announcementData['projectDate'] as Timestamp)
+                              .toDate()),
+                      flex: 2,
+                      backgroundColor: backgroundColor,
+                      borderColor: borderColor,
+                      textColor: entryColor),
+                  viewFlexActionsCell([
+                    editEntryButton(context,
+                        onPress: () => GoRouter.of(context)
+                                .goNamed('editOrgProject', pathParameters: {
+                              'projectID':
+                                  allProjects[index + ((pageNumber - 1) * 10)]
+                                      .id
+                            })),
+                    deleteEntryButton(context, onPress: () {
+                      displayDeleteEntryDialog(context,
+                          message:
+                              'Are you sure you want to delete this project?',
+                          deleteWord: 'Delete',
+                          deleteEntry: () => deleteThisProject(
+                              allProjects[index + ((pageNumber - 1) * 10)]));
+                    })
+                  ],
+                      flex: 2,
+                      backgroundColor: backgroundColor,
+                      borderColor: borderColor)
                 ],
-                    flex: 2,
-                    backgroundColor: backgroundColor,
-                    borderColor: borderColor)
-              ],
-              borderColor: borderColor,
-              isLastEntry: index == allProjects.length - 1);
-        });
+                borderColor: borderColor,
+                isLastEntry: index == allProjects.length - 1);
+          }),
+    );
+  }
+
+  Widget _navigatorButtons() {
+    return SizedBox(
+        width: MediaQuery.of(context).size.height * 0.6,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            previousPageButton(context,
+                onPress: pageNumber == 1
+                    ? null
+                    : () {
+                        if (pageNumber == 1) {
+                          return;
+                        }
+                        setState(() {
+                          pageNumber--;
+                        });
+                      }),
+            AutoSizeText(pageNumber.toString(), style: blackBoldStyle()),
+            nextPageButton(context,
+                onPress: pageNumber == maxPageNumber
+                    ? null
+                    : () {
+                        if (pageNumber == maxPageNumber) {
+                          return;
+                        }
+                        setState(() {
+                          pageNumber++;
+                        });
+                      })
+          ],
+        ));
   }
 }

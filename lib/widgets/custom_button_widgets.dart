@@ -111,9 +111,11 @@ Widget registerActionButton(String text, Function onPress) {
   );
 }
 
-Widget backToViewScreenButton(BuildContext context, Function onPress) {
+Widget backToViewScreenButton(BuildContext context,
+    {required Function onPress}) {
   return SizedBox(
     width: MediaQuery.of(context).size.width * 0.1,
+    height: 50,
     child: Padding(
       padding: const EdgeInsets.all(10),
       child: ElevatedButton(
@@ -124,6 +126,48 @@ Widget backToViewScreenButton(BuildContext context, Function onPress) {
                   borderRadius: BorderRadius.circular(10))),
           child: Text(
             'BACK',
+            style: whiteBoldStyle(),
+          )),
+    ),
+  );
+}
+
+Widget previousPageButton(BuildContext context, {required Function? onPress}) {
+  return SizedBox(
+    width: MediaQuery.of(context).size.width * 0.1,
+    height: 75,
+    child: Padding(
+      padding: const EdgeInsets.all(10),
+      child: ElevatedButton(
+          onPressed: onPress != null ? () => onPress() : null,
+          style: ElevatedButton.styleFrom(
+              backgroundColor: CustomColors.darkBlue,
+              disabledBackgroundColor: CustomColors.darkBlue.withOpacity(0.5),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10))),
+          child: AutoSizeText(
+            'PREVIOUS',
+            style: whiteBoldStyle(),
+          )),
+    ),
+  );
+}
+
+Widget nextPageButton(BuildContext context, {required Function? onPress}) {
+  return SizedBox(
+    width: MediaQuery.of(context).size.width * 0.1,
+    height: 75,
+    child: Padding(
+      padding: const EdgeInsets.all(10),
+      child: ElevatedButton(
+          onPressed: onPress != null ? () => onPress() : null,
+          style: ElevatedButton.styleFrom(
+              backgroundColor: CustomColors.darkBlue,
+              disabledBackgroundColor: CustomColors.darkBlue.withOpacity(0.5),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10))),
+          child: AutoSizeText(
+            'NEXT',
             style: whiteBoldStyle(),
           )),
     ),

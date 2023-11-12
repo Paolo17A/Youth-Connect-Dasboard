@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -12,6 +13,7 @@ import 'package:ywda_dashboard/widgets/custom_miscellaneous_widgets.dart';
 import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
+import '../widgets/custom_text_widgets.dart';
 import '../widgets/dropdown_widget.dart';
 
 class ViewProjectsScreen extends StatefulWidget {
@@ -26,6 +28,11 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
   List<DocumentSnapshot> allProjects = [];
   List<DocumentSnapshot> filteredProjects = [];
   String _selectedCategory = '';
+  Map<String, String> associatedHeads = {}; //  userID - orgID
+  Map<String, String> associatedOrgs = {}; //  orgID - orgName
+
+  int pageNumber = 1;
+  int maxPageNumber = 1;
 
   @override
   void didChangeDependencies() {
@@ -34,7 +41,6 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
   }
 
   void _onSelectFilter() {
-    print('current uid: ${FirebaseAuth.instance.currentUser!.uid}');
     setState(() {
       if (_selectedCategory == 'ALL') {
         filteredProjects = allProjects;
@@ -44,8 +50,7 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
           String organizer = projectData['organizer'].toString();
           return organizer == FirebaseAuth.instance.currentUser!.uid;
         }).toList();
-      } else {
-        //print('ORG PROJECTS');
+      } else if (_selectedCategory == 'ORG PROJECTS') {
         filteredProjects = allProjects.where((project) {
           final projectData = project.data()! as Map<dynamic, dynamic>;
           String organizer = projectData['organizer'];
@@ -53,10 +58,8 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
               '$organizer: ${organizer != FirebaseAuth.instance.currentUser!.uid}');
           return organizer != FirebaseAuth.instance.currentUser!.uid;
         }).toList();
-        for (var proj in filteredProjects) {
-          print(proj.id);
-        }
       }
+      maxPageNumber = (filteredProjects.length / 10).ceil();
     });
   }
 
@@ -67,6 +70,49 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
           await FirebaseFirestore.instance.collection('projects').get();
       allProjects = announcements.docs;
       filteredProjects = List.from(allProjects);
+      maxPageNumber = (filteredProjects.length / 10).ceil();
+
+      associatedHeads.clear();
+      for (var project in allProjects) {
+        final projectData = project.data() as Map<dynamic, dynamic>;
+        final headID = projectData['organizer'];
+        if (headID == FirebaseAuth.instance.currentUser!.uid) {
+          associatedHeads[headID] = 'ADMIN PROJECT';
+        } else {
+          if (associatedHeads.containsKey(headID)) {
+            continue;
+          }
+          final user = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(headID)
+              .get();
+
+          final userData = user.data() as Map<dynamic, dynamic>;
+          print('userData: $userData');
+          associatedHeads[headID] = userData['organization'];
+        }
+      }
+      print(associatedHeads);
+
+      associatedOrgs.clear();
+      for (var head in associatedHeads.entries) {
+        final orgID = head.value;
+        if (orgID == 'ADMIN PROJECT') {
+          associatedOrgs[orgID] = 'ADMIN PROJECT';
+        } else {
+          if (associatedHeads.containsKey(orgID)) {
+            continue;
+          }
+          final org = await FirebaseFirestore.instance
+              .collection('orgs')
+              .doc(orgID)
+              .get();
+          final orgData = org.data() as Map<dynamic, dynamic>;
+          final orgName = orgData['name'];
+          associatedOrgs[orgID] = orgName;
+        }
+      }
+
       setState(() {
         _isLoading = false;
       });
@@ -162,15 +208,21 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
   }
 
   Widget _projectsContainerWidget() {
-    return viewContentContainer(context,
-        child: Column(
-          children: [
-            _projectLabelRow(),
-            allProjects.isNotEmpty
-                ? _projectEntries()
-                : viewContentUnavailable(context, text: 'NO PROJECTS AVAILABLE')
-          ],
-        ));
+    return Column(
+      children: [
+        viewContentContainer(context,
+            child: Column(
+              children: [
+                _projectLabelRow(),
+                allProjects.isNotEmpty
+                    ? _projectEntries()
+                    : viewContentUnavailable(context,
+                        text: 'NO PROJECTS AVAILABLE')
+              ],
+            )),
+        if (filteredProjects.length > 10) _navigatorButtons()
+      ],
+    );
   }
 
   Widget _projectLabelRow() {
@@ -187,7 +239,7 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
             backgroundColor: Colors.grey,
             borderColor: Colors.white,
             textColor: Colors.white),
-        viewFlexTextCell('Content',
+        viewFlexTextCell('Organizer',
             flex: 5,
             backgroundColor: Colors.grey,
             borderColor: Colors.white,
@@ -207,61 +259,102 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
   }
 
   Widget _projectEntries() {
-    return ListView.builder(
-        shrinkWrap: true,
-        itemCount: filteredProjects.length,
-        itemBuilder: (context, index) {
-          Color entryColor = index % 2 == 0 ? Colors.black : Colors.white;
-          Color backgroundColor = index % 2 == 0 ? Colors.white : Colors.grey;
-          Color borderColor = index % 2 == 0 ? Colors.grey : Colors.white;
-          final announcementData =
-              allProjects[index].data() as Map<dynamic, dynamic>;
-          return viewContentEntryRow(context,
-              children: [
-                viewFlexTextCell('${index + 1}',
-                    flex: 1,
-                    backgroundColor: backgroundColor,
-                    borderColor: borderColor,
-                    textColor: entryColor),
-                viewFlexTextCell(announcementData['title'],
-                    flex: 2,
-                    backgroundColor: backgroundColor,
-                    borderColor: borderColor,
-                    textColor: entryColor),
-                viewFlexTextCell(announcementData['content'],
-                    flex: 5,
-                    backgroundColor: backgroundColor,
-                    borderColor: borderColor,
-                    textColor: entryColor),
-                viewFlexTextCell(
-                    DateFormat('dd MMM yyyy').format(
-                        (announcementData['projectDate'] as Timestamp)
-                            .toDate()),
-                    flex: 2,
-                    backgroundColor: backgroundColor,
-                    borderColor: borderColor,
-                    textColor: entryColor),
-                viewFlexActionsCell([
-                  editEntryButton(context,
-                      onPress: () => GoRouter.of(context).goNamed('editProject',
-                              pathParameters: {
-                                'projectID': filteredProjects[index].id
-                              })),
-                  deleteEntryButton(context, onPress: () {
-                    displayDeleteEntryDialog(context,
-                        message:
-                            'Are you sure you want to delete this project?',
-                        deleteWord: 'Delete',
-                        deleteEntry: () =>
-                            deleteThisProject(filteredProjects[index]));
-                  })
+    return SizedBox(
+      height: MediaQuery.of(context).size.height * 0.52,
+      child: ListView.builder(
+          shrinkWrap: true,
+          itemCount:
+              pageNumber == maxPageNumber ? filteredProjects.length % 10 : 10,
+          itemBuilder: (context, index) {
+            Color entryColor = index % 2 == 0 ? Colors.black : Colors.white;
+            Color backgroundColor = index % 2 == 0 ? Colors.white : Colors.grey;
+            Color borderColor = index % 2 == 0 ? Colors.grey : Colors.white;
+            final projectData =
+                filteredProjects[index + ((pageNumber - 1) * 10)].data()
+                    as Map<dynamic, dynamic>;
+            return viewContentEntryRow(context,
+                children: [
+                  viewFlexTextCell('#${(index + 1) + ((pageNumber - 1) * 10)}',
+                      flex: 1,
+                      backgroundColor: backgroundColor,
+                      borderColor: borderColor,
+                      textColor: entryColor),
+                  viewFlexTextCell(projectData['title'],
+                      flex: 2,
+                      backgroundColor: backgroundColor,
+                      borderColor: borderColor,
+                      textColor: entryColor),
+                  viewFlexTextCell(
+                      associatedOrgs[
+                          associatedHeads[projectData['organizer']]]!,
+                      flex: 5,
+                      backgroundColor: backgroundColor,
+                      borderColor: borderColor,
+                      textColor: entryColor),
+                  viewFlexTextCell(
+                      DateFormat('dd MMM yyyy').format(
+                          (projectData['projectDate'] as Timestamp).toDate()),
+                      flex: 2,
+                      backgroundColor: backgroundColor,
+                      borderColor: borderColor,
+                      textColor: entryColor),
+                  viewFlexActionsCell([
+                    editEntryButton(context,
+                        onPress: () => GoRouter.of(context)
+                                .goNamed('editProject', pathParameters: {
+                              'projectID': filteredProjects[
+                                      index + ((pageNumber - 1) * 10)]
+                                  .id
+                            })),
+                    deleteEntryButton(context, onPress: () {
+                      displayDeleteEntryDialog(context,
+                          message:
+                              'Are you sure you want to delete this project?',
+                          deleteWord: 'Delete',
+                          deleteEntry: () => deleteThisProject(filteredProjects[
+                              index + ((pageNumber - 1) * 10)]));
+                    })
+                  ],
+                      flex: 2,
+                      backgroundColor: backgroundColor,
+                      borderColor: borderColor)
                 ],
-                    flex: 2,
-                    backgroundColor: backgroundColor,
-                    borderColor: borderColor)
-              ],
-              borderColor: borderColor,
-              isLastEntry: index == filteredProjects.length - 1);
-        });
+                borderColor: borderColor,
+                isLastEntry: index == filteredProjects.length - 1);
+          }),
+    );
+  }
+
+  Widget _navigatorButtons() {
+    return SizedBox(
+        width: MediaQuery.of(context).size.height * 0.6,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            previousPageButton(context,
+                onPress: pageNumber == 1
+                    ? null
+                    : () {
+                        if (pageNumber == 1) {
+                          return;
+                        }
+                        setState(() {
+                          pageNumber--;
+                        });
+                      }),
+            AutoSizeText(pageNumber.toString(), style: blackBoldStyle()),
+            nextPageButton(context,
+                onPress: pageNumber == maxPageNumber
+                    ? null
+                    : () {
+                        if (pageNumber == maxPageNumber) {
+                          return;
+                        }
+                        setState(() {
+                          pageNumber++;
+                        });
+                      })
+          ],
+        ));
   }
 }

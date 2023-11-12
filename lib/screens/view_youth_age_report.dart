@@ -1,27 +1,26 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:ywda_dashboard/widgets/app_bar_widget.dart';
 import 'package:ywda_dashboard/widgets/custom_container_widgets.dart';
-import 'package:ywda_dashboard/widgets/custom_miscellaneous_widgets.dart';
 import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
-import 'package:ywda_dashboard/widgets/custom_text_widgets.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
 import '../utils/delete_entry_dialog_util.dart';
 import '../widgets/custom_button_widgets.dart';
+import '../widgets/custom_miscellaneous_widgets.dart';
+import '../widgets/custom_text_widgets.dart';
 import '../widgets/dropdown_widget.dart';
 
-class ViewUserAccountsScreen extends StatefulWidget {
-  const ViewUserAccountsScreen({super.key});
+class ViewYouthAgeReportScreen extends StatefulWidget {
+  const ViewYouthAgeReportScreen({super.key});
 
   @override
-  State<ViewUserAccountsScreen> createState() => _ViewUserAccountsScreenState();
+  State<ViewYouthAgeReportScreen> createState() => _ViewYouthAgeReportState();
 }
 
-class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
-  bool _isLoading = false;
+class _ViewYouthAgeReportState extends State<ViewYouthAgeReportScreen> {
+  bool _isLoading = true;
   bool _isInitialized = false;
   List<DocumentSnapshot> allUsers = [];
   List<DocumentSnapshot> filteredUsers = [];
@@ -29,6 +28,11 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
 
   int pageNumber = 1;
   int maxPageNumber = 1;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   void didChangeDependencies() {
@@ -40,11 +44,23 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
     setState(() {
       if (_selectedCategory == 'NO FILTER') {
         filteredUsers = allUsers;
-      } else {
+      } else if (_selectedCategory == 'CHILD YOUTH (15-17 YEARS OLD)') {
         filteredUsers = allUsers.where((user) {
           final userData = user.data()! as Map<dynamic, dynamic>;
-          String userType = userData['userType'].toString().toUpperCase();
-          return userType == _selectedCategory;
+          int age = _calculateAge((userData['birthday'] as Timestamp).toDate());
+          return age >= 15 && age <= 17;
+        }).toList();
+      } else if (_selectedCategory == 'CORE YOUTH (18-24 YEARS OLD)') {
+        filteredUsers = allUsers.where((user) {
+          final userData = user.data()! as Map<dynamic, dynamic>;
+          int age = _calculateAge((userData['birthday'] as Timestamp).toDate());
+          return age >= 18 && age <= 24;
+        }).toList();
+      } else if (_selectedCategory == 'ADULT YOUTH (25-30 YEARS OLD)') {
+        filteredUsers = allUsers.where((user) {
+          final userData = user.data()! as Map<dynamic, dynamic>;
+          int age = _calculateAge((userData['birthday'] as Timestamp).toDate());
+          return age >= 25 && age <= 30;
         }).toList();
       }
       maxPageNumber = (filteredUsers.length / 10).ceil();
@@ -60,21 +76,11 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
     try {
       final users = await FirebaseFirestore.instance
           .collection('users')
-          .where('userType', isNotEqualTo: 'ADMIN')
+          .where('userType', isEqualTo: 'CLIENT')
           .get();
       allUsers = users.docs;
       filteredUsers = List.from(allUsers);
       maxPageNumber = (filteredUsers.length / 10).ceil();
-
-      for (var user in filteredUsers) {
-        final userData = user.data() as Map<dynamic, dynamic>;
-        if (!userData.containsKey('isSuspended')) {
-          await FirebaseFirestore.instance
-              .collection('users')
-              .doc(user.id)
-              .update({'isSuspended': false});
-        }
-      }
       setState(() {
         _isInitialized = true;
         _isLoading = false;
@@ -104,13 +110,25 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
     }
   }
 
+  int _calculateAge(DateTime birthDate) {
+    final now = DateTime.now();
+    int age = now.year - birthDate.year;
+
+    if (now.month < birthDate.month ||
+        (now.month == birthDate.month && now.day < birthDate.day)) {
+      age--;
+    }
+
+    return age;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBarWidget(context),
       body: Row(
         children: [
-          leftNavigator(context, 4),
+          leftNavigator(context, 1.1),
           bodyWidgetWhiteBG(
               context,
               switchedLoadingContainer(
@@ -120,8 +138,8 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
                         context,
                         Column(
                           children: [
-                            _newUserHeaderWidget(),
-                            _usersContainerWidget()
+                            _ageReportHeaderWidget(),
+                            _ageReportContainerWidget()
                           ],
                         )),
                   )))
@@ -130,7 +148,7 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
     );
   }
 
-  Widget _newUserHeaderWidget() {
+  Widget _ageReportHeaderWidget() {
     return Padding(
       padding: const EdgeInsets.all(25),
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -141,35 +159,28 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
               _selectedCategory = selected!;
               _onSelectFilter();
             });
-          }, ['NO FILTER', 'CLIENT', 'ORG HEAD'], _selectedCategory, false),
-        ),
-        ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 88, 147, 201),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30))),
-            child: Padding(
-              padding: const EdgeInsets.all(11),
-              child: AutoSizeText('NEW USER',
-                  style:
-                      GoogleFonts.poppins(textStyle: whiteBoldStyle(size: 18))),
-            ))
+          }, [
+            'NO FILTER',
+            'CHILD YOUTH (15-17 YEARS OLD)',
+            'CORE YOUTH (18-24 YEARS OLD)',
+            'ADULT YOUTH (25-30 YEARS OLD)'
+          ], _selectedCategory, false),
+        )
       ]),
     );
   }
 
-  Widget _usersContainerWidget() {
+  Widget _ageReportContainerWidget() {
     return Column(
       children: [
         viewContentContainer(context,
             child: Column(
               children: [
-                _usersLabelRow(),
+                _ageReportLabelRow(),
                 filteredUsers.isNotEmpty
                     ? _userEntries()
                     : viewContentUnavailable(context,
-                        text: 'NO USERS AVAILABLE')
+                        text: 'NO YOUTH INFORMATION AVAILABLE')
               ],
             )),
         if (filteredUsers.length > 10) _navigatorButtons()
@@ -177,19 +188,14 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
     );
   }
 
-  Widget _usersLabelRow() {
+  Widget _ageReportLabelRow() {
     return viewContentLabelRow(context, children: [
       viewFlexTextCell('Name',
           flex: 3,
           backgroundColor: Colors.grey,
           borderColor: Colors.white,
           textColor: Colors.white),
-      viewFlexTextCell('Username',
-          flex: 3,
-          backgroundColor: Colors.grey,
-          borderColor: Colors.white,
-          textColor: Colors.white),
-      viewFlexTextCell('Type',
+      viewFlexTextCell('Age',
           flex: 2,
           backgroundColor: Colors.grey,
           borderColor: Colors.white,
@@ -212,8 +218,10 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
           itemBuilder: (context, index) {
             final userData = filteredUsers[index + ((pageNumber - 1) * 10)]
                 .data() as Map<dynamic, dynamic>;
-            String fullName = userData['fullName'] ??
-                '${userData['firstName']} ${userData['middleName']} ${userData['lastName']}';
+            String fullName = userData['fullName'];
+            int age =
+                _calculateAge((userData['birthday'] as Timestamp).toDate());
+
             Color entryColor = index % 2 == 0 ? Colors.black : Colors.white;
             Color backgroundColor = index % 2 == 0 ? Colors.white : Colors.grey;
             Color borderColor = index % 2 == 0 ? Colors.grey : Colors.white;
@@ -225,12 +233,7 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
                       backgroundColor: backgroundColor,
                       borderColor: borderColor,
                       textColor: entryColor),
-                  viewFlexTextCell(userData['username'],
-                      flex: 3,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),
-                  viewFlexTextCell(userData['userType'],
+                  viewFlexTextCell('${age} years old',
                       flex: 2,
                       backgroundColor: backgroundColor,
                       borderColor: borderColor,
@@ -248,7 +251,7 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
                         displayDeleteEntryDialog(context,
                             message:
                                 'Are you sure you want to suspend this user?',
-                            deleteWord: 'Delete', deleteEntry: () {
+                            deleteWord: 'Suspend', deleteEntry: () {
                           setUserSuspendedState(
                               filteredUsers[index + ((pageNumber - 1) * 10)].id,
                               true);

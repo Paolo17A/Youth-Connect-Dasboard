@@ -16,9 +16,7 @@ Widget leftNavigator(BuildContext context, double index) {
                   color: index == 0 ? Colors.white : null,
                   child: ListTile(
                       title: Text('Dashboard', style: blackBoldStyle()),
-                      onTap: () {
-                        GoRouter.of(context).go('/home');
-                      })),
+                      onTap: () => GoRouter.of(context).go('/home'))),
               Container(
                   color: index == 1 ? Colors.white : null,
                   child: ListTile(
@@ -26,68 +24,67 @@ Widget leftNavigator(BuildContext context, double index) {
                         'Youth Information',
                         style: blackBoldStyle(),
                       ),
-                      onTap: () {
-                        GoRouter.of(context).goNamed('youthInformation',
-                            pathParameters: {'category': 'NO FILTER'});
-                      })),
+                      onTap: () => GoRouter.of(context).goNamed(
+                          'youthInformation',
+                          pathParameters: {'category': 'NO FILTER'}))),
+              Container(
+                  color: index == 1.1 ? Colors.white : null,
+                  child: ListTile(
+                      title: Text('\t\t\tAge Report', style: blackThinStyle()),
+                      onTap: () => GoRouter.of(context).go('/ageReport'))),
+              Container(
+                  color: index == 1.2 ? Colors.white : null,
+                  child: ListTile(
+                      title:
+                          Text('\t\t\Gender Report', style: blackThinStyle()),
+                      onTap: () => GoRouter.of(context).go('/genderReport'))),
               Container(
                   color: index == 2 ? Colors.white : null,
                   child: ListTile(
                       title: Text('Organizations', style: blackBoldStyle()),
-                      onTap: () {
-                        GoRouter.of(context).go('/orgHeads');
-                      })),
+                      onTap: () => GoRouter.of(context).go('/orgHeads'))),
               Container(
                   color: index == 2.1 ? Colors.white : null,
                   child: ListTile(
                       title:
                           Text('\t\t\tOrg. Renewal', style: blackThinStyle()),
-                      onTap: () {
-                        GoRouter.of(context).go('/orgRenewals');
-                      })),
+                      onTap: () => GoRouter.of(context).go('/orgRenewals'))),
               Container(
                   color: index == 2.2 ? Colors.white : null,
                   child: ListTile(
                       title:
                           Text('\t\t\tOrg. Profiles', style: blackThinStyle()),
-                      onTap: () {
-                        GoRouter.of(context).go('/orgs');
-                      })),
+                      onTap: () => GoRouter.of(context).go('/orgs'))),
               Container(
                   color: index == 3 ? Colors.white : null,
                   child: ListTile(
                       title: Text('Forms', style: blackBoldStyle()),
-                      onTap: () {
-                        GoRouter.of(context).go('/forms');
-                      })),
+                      onTap: () => GoRouter.of(context).go('/forms'))),
               Container(
                   color: index == 4 ? Colors.white : null,
                   child: ListTile(
                       title: Text('User Accounts', style: blackBoldStyle()),
-                      onTap: () {
-                        GoRouter.of(context).go('/users');
-                      })),
+                      onTap: () => GoRouter.of(context).go('/users'))),
               Container(
                   color: index == 5 ? Colors.white : null,
                   child: ListTile(
                       title: Text('Projects', style: blackBoldStyle()),
-                      onTap: () {
-                        GoRouter.of(context).go('/project');
-                      })),
+                      onTap: () => GoRouter.of(context).go('/project'))),
               Container(
                   color: index == 6 ? Colors.white : null,
                   child: ListTile(
                       title: Text('Announcements', style: blackBoldStyle()),
-                      onTap: () {
-                        GoRouter.of(context).go('/announcement');
-                      })),
+                      onTap: () => GoRouter.of(context).go('/announcement'))),
               Container(
                   color: index == 7 ? Colors.white : null,
                   child: ListTile(
                       title: Text('Submissions', style: blackBoldStyle()),
-                      onTap: () {
-                        GoRouter.of(context).go('/submissions');
-                      }))
+                      onTap: () => GoRouter.of(context).go('/submissions'))),
+              Container(
+                  color: index == 8 ? Colors.white : null,
+                  child: ListTile(
+                      title: Text('FAQs', style: blackBoldStyle()),
+                      onTap: () => GoRouter.of(context).go('/faqs')))
             ])),
         ListTile(
             leading: const Icon(
@@ -123,7 +120,8 @@ Widget orgLeftNavigator(BuildContext context, int index) {
                         'Org Renewal',
                         style: blackBoldStyle(),
                       ),
-                      onTap: () {})),
+                      onTap: () =>
+                          GoRouter.of(context).go('/orgRenewalHistory'))),
               Container(
                   color: index == 2 ? Colors.white : null,
                   child: ListTile(

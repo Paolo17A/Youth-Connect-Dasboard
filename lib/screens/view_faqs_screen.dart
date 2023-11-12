@@ -1,9 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:ywda_dashboard/utils/delete_entry_dialog_util.dart';
 import 'package:ywda_dashboard/widgets/app_bar_widget.dart';
 import 'package:ywda_dashboard/widgets/custom_button_widgets.dart';
@@ -14,74 +12,61 @@ import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
 import '../widgets/custom_text_widgets.dart';
 
-class ViewAnnouncementScreen extends StatefulWidget {
-  const ViewAnnouncementScreen({super.key});
+class ViewFAQSscreen extends StatefulWidget {
+  const ViewFAQSscreen({super.key});
 
   @override
-  State<ViewAnnouncementScreen> createState() => _ViewAnnouncementScreenState();
+  State<ViewFAQSscreen> createState() => _ViewFAQsScreenState();
 }
 
-class _ViewAnnouncementScreenState extends State<ViewAnnouncementScreen> {
+class _ViewFAQsScreenState extends State<ViewFAQSscreen> {
   bool _isLoading = true;
-  List<DocumentSnapshot> allAnnouncements = [];
+  bool _isInitialized = false;
+  List<DocumentSnapshot> allFAQs = [];
+
   int pageNumber = 1;
   int maxPageNumber = 1;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    getAllAnnouncements();
+    if (!_isInitialized) getAllFAQs();
   }
 
-  void getAllAnnouncements() async {
+  void getAllFAQs() async {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     try {
       final announcements =
-          await FirebaseFirestore.instance.collection('announcements').get();
-      allAnnouncements = announcements.docs;
-      maxPageNumber = (allAnnouncements.length / 10).ceil();
+          await FirebaseFirestore.instance.collection('faqs').get();
+      allFAQs = announcements.docs;
+      maxPageNumber = (allFAQs.length / 10).ceil();
       setState(() {
         _isLoading = false;
+        _isInitialized = true;
       });
     } catch (error) {
       scaffoldMessenger.showSnackBar(
-          SnackBar(content: Text('Error getting all announcements: $error')));
+          SnackBar(content: Text('Error getting all FAQs: $error')));
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
-  void deleteThisAnnouncement(DocumentSnapshot announcement) async {
+  void deleteThisFAQ(DocumentSnapshot faq) async {
     final scafffoldMessenger = ScaffoldMessenger.of(context);
     try {
       setState(() {
         _isLoading = true;
       });
 
-      List<dynamic> images =
-          (announcement.data() as Map<dynamic, dynamic>)['imageURLs'];
-
-      await FirebaseFirestore.instance
-          .collection('announcements')
-          .doc(announcement.id)
-          .delete();
-
-      if (images.isNotEmpty) {
-        for (int i = 0; i < images.length; i++) {
-          final storageRef = FirebaseStorage.instance
-              .ref()
-              .child('posts')
-              .child('announcements')
-              .child(announcement.id);
-
-          await storageRef.delete();
-        }
-      }
-      getAllAnnouncements();
-
+      await FirebaseFirestore.instance.collection('faqs').doc(faq.id).delete();
       scafffoldMessenger.showSnackBar(
-          const SnackBar(content: Text('Successfully deleted announcement!')));
+          const SnackBar(content: Text('Successfully deleted FAQ!')));
+      getAllFAQs();
     } catch (error) {
-      scafffoldMessenger.showSnackBar(
-          SnackBar(content: Text('Error deleting announcement: $error')));
+      scafffoldMessenger
+          .showSnackBar(SnackBar(content: Text('Error deleting FAQ: $error')));
       setState(() {
         _isLoading = false;
       });
@@ -93,7 +78,7 @@ class _ViewAnnouncementScreenState extends State<ViewAnnouncementScreen> {
     return Scaffold(
         appBar: appBarWidget(context),
         body: Row(children: [
-          leftNavigator(context, 6),
+          leftNavigator(context, 8),
           bodyWidgetWhiteBG(
               context,
               switchedLoadingContainer(
@@ -102,62 +87,49 @@ class _ViewAnnouncementScreenState extends State<ViewAnnouncementScreen> {
                       context,
                       Column(
                         children: [
-                          _newAnnouncementHeaderWidget(),
-                          _announcementContainerWidget()
+                          _newFAQHeaderWidget(),
+                          _FAQContainerWidget()
                         ],
                       ))))
         ]));
   }
 
-  Widget _newAnnouncementHeaderWidget() {
+  Widget _newFAQHeaderWidget() {
     return viewHeaderAddButton(
-        addFunction: () {
-          GoRouter.of(context).go('/announcement/addAnnouncement');
-        },
-        addLabel: 'ADD ANNOUNCEMENT');
+        addFunction: () => GoRouter.of(context).go('/faqs/add'),
+        addLabel: 'ADD FAQ');
   }
 
-  Widget _announcementContainerWidget() {
+  Widget _FAQContainerWidget() {
     return Column(
       children: [
         viewContentContainer(
           context,
           child: Column(
             children: [
-              _announcementLabelRow(),
-              allAnnouncements.isNotEmpty
-                  ? _announcementEntries()
-                  : viewContentUnavailable(context,
-                      text: 'NO ANNOUNCEMENTS AVAILABLE')
+              _FAQLabelRow(),
+              allFAQs.isNotEmpty
+                  ? _FAQEntries()
+                  : viewContentUnavailable(context, text: 'NO FAQS AVAILABLE')
             ],
           ),
         ),
-        if (allAnnouncements.length > 10) _navigatorButtons()
+        if (allFAQs.length > 10) _navigatorButtons()
       ],
     );
   }
 
-  Widget _announcementLabelRow() {
+  Widget _FAQLabelRow() {
     return viewContentLabelRow(
       context,
       children: [
-        viewFlexTextCell('#',
-            flex: 1,
+        viewFlexTextCell('Question',
+            flex: 3,
             backgroundColor: Colors.grey,
             borderColor: Colors.white,
             textColor: Colors.white),
-        viewFlexTextCell('Title',
-            flex: 2,
-            backgroundColor: Colors.grey,
-            borderColor: Colors.white,
-            textColor: Colors.white),
-        viewFlexTextCell('Content',
+        viewFlexTextCell('Answer',
             flex: 5,
-            backgroundColor: Colors.grey,
-            borderColor: Colors.white,
-            textColor: Colors.white),
-        viewFlexTextCell('Date Created',
-            flex: 2,
             backgroundColor: Colors.grey,
             borderColor: Colors.white,
             textColor: Colors.white),
@@ -170,62 +142,45 @@ class _ViewAnnouncementScreenState extends State<ViewAnnouncementScreen> {
     );
   }
 
-  Widget _announcementEntries() {
+  Widget _FAQEntries() {
     return SizedBox(
       height: MediaQuery.of(context).size.height * 0.52,
       child: ListView.builder(
           shrinkWrap: true,
-          itemCount:
-              pageNumber == maxPageNumber ? allAnnouncements.length % 10 : 10,
+          itemCount: pageNumber == maxPageNumber ? allFAQs.length % 10 : 10,
           itemBuilder: (context, index) {
             Color entryColor = index % 2 == 0 ? Colors.black : Colors.white;
             Color backgroundColor = index % 2 == 0 ? Colors.white : Colors.grey;
             Color borderColor = index % 2 == 0 ? Colors.grey : Colors.white;
-            final announcementData =
-                allAnnouncements[index + ((pageNumber - 1) * 10)].data()
-                    as Map<dynamic, dynamic>;
-            String convertedDateAdded = DateFormat('dd MMM yyyy')
-                .format((announcementData['dateAdded'] as Timestamp).toDate());
+            final announcementData = allFAQs[index + ((pageNumber - 1) * 10)]
+                .data() as Map<dynamic, dynamic>;
             return viewContentEntryRow(context,
                 borderColor: borderColor,
-                isLastEntry: index == allAnnouncements.length - 1,
+                isLastEntry: index == allFAQs.length - 1,
                 children: [
-                  viewFlexTextCell('${(index + 1) + ((pageNumber - 1) * 10)}',
-                      flex: 1,
+                  viewFlexTextCell(announcementData['question'],
+                      flex: 3,
                       backgroundColor: backgroundColor,
                       borderColor: borderColor,
                       textColor: entryColor),
-                  viewFlexTextCell(announcementData['title'],
-                      flex: 2,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),
-                  viewFlexTextCell(announcementData['content'],
+                  viewFlexTextCell(announcementData['answer'],
                       flex: 5,
                       backgroundColor: backgroundColor,
                       borderColor: borderColor,
                       textColor: entryColor),
-                  viewFlexTextCell(convertedDateAdded,
-                      flex: 2,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),
                   viewFlexActionsCell([
-                    editEntryButton(context, onPress: () {
-                      GoRouter.of(context)
-                          .goNamed('editAnnouncement', pathParameters: {
-                        'announcementID':
-                            allAnnouncements[index + ((pageNumber - 1) * 10)].id
-                      });
-                    }),
+                    editEntryButton(context,
+                        onPress: () => GoRouter.of(context)
+                                .goNamed('editFAQ', pathParameters: {
+                              'faqID':
+                                  allFAQs[index + ((pageNumber - 1) * 10)].id
+                            })),
                     deleteEntryButton(context, onPress: () {
                       displayDeleteEntryDialog(context,
-                          message:
-                              'Are you sure you want to delete this announcement?',
+                          message: 'Are you sure you want to delete this FAQ?',
                           deleteWord: 'Delete',
-                          deleteEntry: () => deleteThisAnnouncement(
-                              allAnnouncements[
-                                  index + ((pageNumber - 1) * 10)]));
+                          deleteEntry: () => deleteThisFAQ(
+                              allFAQs[index + ((pageNumber - 1) * 10)]));
                     })
                   ],
                       flex: 2,

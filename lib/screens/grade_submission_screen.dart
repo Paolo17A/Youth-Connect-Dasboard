@@ -10,6 +10,7 @@ import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 import 'package:ywda_dashboard/widgets/youth_connect_textfield_widget.dart';
 
+import '../widgets/custom_button_widgets.dart';
 import '../widgets/custom_text_widgets.dart';
 
 class GradeSubmissionScreen extends StatefulWidget {
@@ -172,24 +173,36 @@ class _GradeSubmissionScreenState extends State<GradeSubmissionScreen> {
                     context,
                     _isLoading,
                     SingleChildScrollView(
-                      child: horizontalPadding5Percent(
-                          context,
-                          Column(
-                            children: [
-                              _skillAndSubksillHeaderWidget(),
-                              _entryTitleWidget(),
-                              const SizedBox(height: 30),
-                              if (taskType == 'VIDEO') _entryVideoWidget(),
-                              if (taskType == 'ESSAY') _entryEssayWidget(),
-                              const SizedBox(height: 50),
-                              _selectableActionsWidget(),
-                              _remarksWidget(),
-                              const SizedBox(height: 50)
-                            ],
-                          )),
+                      child: Column(
+                        children: [
+                          _backButton(),
+                          horizontalPadding5Percent(
+                              context,
+                              Column(
+                                children: [
+                                  _skillAndSubksillHeaderWidget(),
+                                  _entryTitleWidget(),
+                                  const SizedBox(height: 30),
+                                  if (taskType == 'VIDEO') _entryVideoWidget(),
+                                  if (taskType == 'ESSAY') _entryEssayWidget(),
+                                  const SizedBox(height: 50),
+                                  _selectableActionsWidget(),
+                                  _remarksWidget(),
+                                  const SizedBox(height: 50)
+                                ],
+                              )),
+                        ],
+                      ),
                     )))
           ],
         ));
+  }
+
+  Widget _backButton() {
+    return Row(children: [
+      backToViewScreenButton(context,
+          onPress: () => GoRouter.of(context).go('/submissions'))
+    ]);
   }
 
   Widget _skillAndSubksillHeaderWidget() {
