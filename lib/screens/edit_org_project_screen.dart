@@ -397,65 +397,70 @@ class _EditOrgProjectScreenState extends State<EditOrgProjectScreen> {
           ],
         ),
         const SizedBox(height: 30),
-        if (imageURLs.isNotEmpty)
-          Wrap(
-              children: imageURLs
-                  .map((imageURL) => Container(
-                        decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: Column(
-                            children: [
-                              squareBox150(Image.network(imageURL)),
-                              const SizedBox(height: 5),
-                              SizedBox(
-                                width: 90,
-                                child: ElevatedButton(
-                                    onPressed: () => _deleteImage(
-                                        widget.projectID, imageURLs[0], 0),
-                                    style: ElevatedButton.styleFrom(
+        Wrap(
+          children: [
+            if (imageURLs.isNotEmpty)
+              Wrap(
+                  children: imageURLs
+                      .map((imageURL) => Container(
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.black)),
+                            child: Padding(
+                              padding: const EdgeInsets.all(10),
+                              child: Column(
+                                children: [
+                                  squareBox150(Image.network(imageURL)),
+                                  const SizedBox(height: 5),
+                                  SizedBox(
+                                    width: 90,
+                                    child: ElevatedButton(
+                                        onPressed: () => _deleteImage(
+                                            widget.projectID, imageURLs[0], 0),
+                                        style: ElevatedButton.styleFrom(
+                                            backgroundColor:
+                                                const Color.fromARGB(
+                                                    255, 24, 44, 63)),
+                                        child: const Icon(Icons.delete)),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ))
+                      .toList()),
+            if (selectedItemImages.isNotEmpty)
+              Wrap(
+                children: selectedItemImages
+                    .map((itemImage) => Container(
+                          decoration: BoxDecoration(
+                              border: Border.all(color: Colors.black)),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Column(
+                              children: [
+                                squareBox150(Image.memory(itemImage!)),
+                                const SizedBox(height: 5),
+                                SizedBox(
+                                  width: 90,
+                                  child: ElevatedButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          selectedItemImages.remove(itemImage);
+                                        });
+                                      },
+                                      style: ElevatedButton.styleFrom(
                                         backgroundColor: const Color.fromARGB(
-                                            255, 24, 44, 63)),
-                                    child: const Icon(Icons.delete)),
-                              )
-                            ],
+                                            255, 24, 44, 63),
+                                      ),
+                                      child: const Icon(Icons.delete)),
+                                )
+                              ],
+                            ),
                           ),
-                        ),
-                      ))
-                  .toList()),
-        if (selectedItemImages.isNotEmpty)
-          Wrap(
-            children: selectedItemImages
-                .map((itemImage) => Container(
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black)),
-                      child: Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Column(
-                          children: [
-                            squareBox150(Image.memory(itemImage!)),
-                            const SizedBox(height: 5),
-                            SizedBox(
-                              width: 90,
-                              child: ElevatedButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      selectedItemImages.remove(itemImage);
-                                    });
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                        const Color.fromARGB(255, 24, 44, 63),
-                                  ),
-                                  child: const Icon(Icons.delete)),
-                            )
-                          ],
-                        ),
-                      ),
-                    ))
-                .toList(),
-          ),
+                        ))
+                    .toList(),
+              ),
+          ],
+        )
       ]),
     );
   }
