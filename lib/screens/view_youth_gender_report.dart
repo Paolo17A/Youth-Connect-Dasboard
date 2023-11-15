@@ -198,61 +198,67 @@ class _ViewYouthGenderReportState extends State<ViewYouthGenderReportScreen> {
   }
 
   Widget _userEntries() {
-    return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.52,
-      child: ListView.builder(
-          shrinkWrap: true,
-          itemCount:
-              pageNumber == maxPageNumber ? filteredUsers.length % 10 : 10,
-          itemBuilder: (context, index) {
-            final userData = filteredUsers[index + ((pageNumber - 1) * 10)]
-                .data() as Map<dynamic, dynamic>;
-            String fullName = userData['fullName'];
-            String gender = userData['gender'];
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 20),
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height * 0.52,
+        child: ListView.builder(
+            shrinkWrap: true,
+            itemCount:
+                pageNumber == maxPageNumber ? filteredUsers.length % 10 : 10,
+            itemBuilder: (context, index) {
+              final userData = filteredUsers[index + ((pageNumber - 1) * 10)]
+                  .data() as Map<dynamic, dynamic>;
+              String fullName =
+                  '${userData['firstName']} ${userData['lastName']}';
+              String gender = userData['gender'];
 
-            Color entryColor = index % 2 == 0 ? Colors.black : Colors.white;
-            Color backgroundColor = index % 2 == 0 ? Colors.white : Colors.grey;
-            Color borderColor = index % 2 == 0 ? Colors.grey : Colors.white;
+              Color entryColor = index % 2 == 0 ? Colors.black : Colors.white;
+              Color backgroundColor =
+                  index % 2 == 0 ? Colors.white : Colors.grey;
+              Color borderColor = index % 2 == 0 ? Colors.grey : Colors.white;
 
-            return viewContentEntryRow(context,
-                children: [
-                  viewFlexTextCell(fullName.isNotEmpty ? fullName : 'N/A',
-                      flex: 3,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),
-                  viewFlexTextCell(gender,
-                      flex: 2,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),
-                  viewFlexActionsCell([
-                    editEntryButton(context, onPress: () {}),
-                    if (userData['isSuspended'] == true)
-                      restoreEntryButton(context, onPress: () {
-                        setUserSuspendedState(
-                            filteredUsers[index + ((pageNumber - 1) * 10)].id,
-                            false);
-                      })
-                    else if (userData['isSuspended'] == false)
-                      deleteEntryButton(context, onPress: () {
-                        displayDeleteEntryDialog(context,
-                            message:
-                                'Are you sure you want to suspend this user?',
-                            deleteWord: 'Suspend', deleteEntry: () {
+              return viewContentEntryRow(context,
+                  children: [
+                    viewFlexTextCell(fullName.isNotEmpty ? fullName : 'N/A',
+                        flex: 3,
+                        backgroundColor: backgroundColor,
+                        borderColor: borderColor,
+                        textColor: entryColor),
+                    viewFlexTextCell(gender,
+                        flex: 2,
+                        backgroundColor: backgroundColor,
+                        borderColor: borderColor,
+                        textColor: entryColor),
+                    viewFlexActionsCell([
+                      editEntryButton(context, onPress: () {}),
+                      if (userData['isSuspended'] == true)
+                        restoreEntryButton(context, onPress: () {
                           setUserSuspendedState(
                               filteredUsers[index + ((pageNumber - 1) * 10)].id,
-                              true);
-                        });
-                      })
+                              false);
+                        })
+                      else if (userData['isSuspended'] == false)
+                        deleteEntryButton(context, onPress: () {
+                          displayDeleteEntryDialog(context,
+                              message:
+                                  'Are you sure you want to suspend this user?',
+                              deleteWord: 'Suspend', deleteEntry: () {
+                            setUserSuspendedState(
+                                filteredUsers[index + ((pageNumber - 1) * 10)]
+                                    .id,
+                                true);
+                          });
+                        })
+                    ],
+                        flex: 2,
+                        backgroundColor: backgroundColor,
+                        borderColor: borderColor)
                   ],
-                      flex: 2,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor)
-                ],
-                borderColor: borderColor,
-                isLastEntry: index == filteredUsers.length - 1);
-          }),
+                  borderColor: borderColor,
+                  isLastEntry: index == filteredUsers.length - 1);
+            }),
+      ),
     );
   }
 

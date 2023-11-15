@@ -172,7 +172,7 @@ class _ViewRenewalHistoryScreenState extends State<ViewRenewalHistoryScreen> {
 
   Widget _accredEntries() {
     return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.52,
+      height: 500,
       child: ListView.builder(
           shrinkWrap: true,
           itemCount: pageNumber == maxPageNumber
@@ -266,35 +266,38 @@ class _ViewRenewalHistoryScreenState extends State<ViewRenewalHistoryScreen> {
   }
 
   Widget _navigatorButtons() {
-    return SizedBox(
-        width: MediaQuery.of(context).size.height * 0.6,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            previousPageButton(context,
-                onPress: pageNumber == 1
-                    ? null
-                    : () {
-                        if (pageNumber == 1) {
-                          return;
-                        }
-                        setState(() {
-                          pageNumber--;
-                        });
-                      }),
-            AutoSizeText(pageNumber.toString(), style: blackBoldStyle()),
-            nextPageButton(context,
-                onPress: pageNumber == maxPageNumber
-                    ? null
-                    : () {
-                        if (pageNumber == maxPageNumber) {
-                          return;
-                        }
-                        setState(() {
-                          pageNumber++;
-                        });
-                      })
-          ],
-        ));
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 20),
+      child: SizedBox(
+          width: MediaQuery.of(context).size.height * 0.6,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              previousPageButton(context,
+                  onPress: pageNumber == 1
+                      ? null
+                      : () {
+                          if (pageNumber == 1) {
+                            return;
+                          }
+                          setState(() {
+                            pageNumber--;
+                          });
+                        }),
+              AutoSizeText(pageNumber.toString(), style: blackBoldStyle()),
+              nextPageButton(context,
+                  onPress: pageNumber == maxPageNumber
+                      ? null
+                      : () {
+                          if (pageNumber == maxPageNumber) {
+                            return;
+                          }
+                          setState(() {
+                            pageNumber++;
+                          });
+                        })
+            ],
+          )),
+    );
   }
 }

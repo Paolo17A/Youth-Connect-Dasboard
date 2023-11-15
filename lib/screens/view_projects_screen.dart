@@ -54,8 +54,6 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
         filteredProjects = allProjects.where((project) {
           final projectData = project.data()! as Map<dynamic, dynamic>;
           String organizer = projectData['organizer'];
-          print(
-              '$organizer: ${organizer != FirebaseAuth.instance.currentUser!.uid}');
           return organizer != FirebaseAuth.instance.currentUser!.uid;
         }).toList();
       }
@@ -69,6 +67,7 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
       final announcements =
           await FirebaseFirestore.instance.collection('projects').get();
       allProjects = announcements.docs;
+      allProjects = allProjects.reversed.toList();
       filteredProjects = List.from(allProjects);
       maxPageNumber = (filteredProjects.length / 10).ceil();
 
@@ -88,11 +87,9 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
               .get();
 
           final userData = user.data() as Map<dynamic, dynamic>;
-          print('userData: $userData');
           associatedHeads[headID] = userData['organization'];
         }
       }
-      print(associatedHeads);
 
       associatedOrgs.clear();
       for (var head in associatedHeads.entries) {
@@ -240,11 +237,21 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
             borderColor: Colors.white,
             textColor: Colors.white),
         viewFlexTextCell('Organizer',
-            flex: 5,
+            flex: 4,
             backgroundColor: Colors.grey,
             borderColor: Colors.white,
             textColor: Colors.white),
-        viewFlexTextCell('Project Date',
+        viewFlexTextCell('Date Created',
+            flex: 2,
+            backgroundColor: Colors.grey,
+            borderColor: Colors.white,
+            textColor: Colors.white),
+        viewFlexTextCell('Start Date',
+            flex: 2,
+            backgroundColor: Colors.grey,
+            borderColor: Colors.white,
+            textColor: Colors.white),
+        viewFlexTextCell('End Date',
             flex: 2,
             backgroundColor: Colors.grey,
             borderColor: Colors.white,
@@ -260,7 +267,7 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
 
   Widget _projectEntries() {
     return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.52,
+      height: 500,
       child: ListView.builder(
           shrinkWrap: true,
           itemCount:
@@ -287,7 +294,14 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
                   viewFlexTextCell(
                       associatedOrgs[
                           associatedHeads[projectData['organizer']]]!,
-                      flex: 5,
+                      flex: 4,
+                      backgroundColor: backgroundColor,
+                      borderColor: borderColor,
+                      textColor: entryColor),
+                  viewFlexTextCell(
+                      DateFormat('dd MMM yyyy').format(
+                          (projectData['dateAdded'] as Timestamp).toDate()),
+                      flex: 2,
                       backgroundColor: backgroundColor,
                       borderColor: borderColor,
                       textColor: entryColor),
@@ -298,6 +312,15 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
                       backgroundColor: backgroundColor,
                       borderColor: borderColor,
                       textColor: entryColor),
+                  if (projectData.containsKey('projectDateEnd'))
+                    viewFlexTextCell(
+                        DateFormat('dd MMM yyyy').format(
+                            (projectData['projectDateEnd'] as Timestamp)
+                                .toDate()),
+                        flex: 2,
+                        backgroundColor: backgroundColor,
+                        borderColor: borderColor,
+                        textColor: entryColor),
                   viewFlexActionsCell([
                     editEntryButton(context,
                         onPress: () => GoRouter.of(context)
@@ -326,35 +349,38 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
   }
 
   Widget _navigatorButtons() {
-    return SizedBox(
-        width: MediaQuery.of(context).size.height * 0.6,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            previousPageButton(context,
-                onPress: pageNumber == 1
-                    ? null
-                    : () {
-                        if (pageNumber == 1) {
-                          return;
-                        }
-                        setState(() {
-                          pageNumber--;
-                        });
-                      }),
-            AutoSizeText(pageNumber.toString(), style: blackBoldStyle()),
-            nextPageButton(context,
-                onPress: pageNumber == maxPageNumber
-                    ? null
-                    : () {
-                        if (pageNumber == maxPageNumber) {
-                          return;
-                        }
-                        setState(() {
-                          pageNumber++;
-                        });
-                      })
-          ],
-        ));
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 20),
+      child: SizedBox(
+          width: MediaQuery.of(context).size.height * 0.6,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              previousPageButton(context,
+                  onPress: pageNumber == 1
+                      ? null
+                      : () {
+                          if (pageNumber == 1) {
+                            return;
+                          }
+                          setState(() {
+                            pageNumber--;
+                          });
+                        }),
+              AutoSizeText(pageNumber.toString(), style: blackBoldStyle()),
+              nextPageButton(context,
+                  onPress: pageNumber == maxPageNumber
+                      ? null
+                      : () {
+                          if (pageNumber == maxPageNumber) {
+                            return;
+                          }
+                          setState(() {
+                            pageNumber++;
+                          });
+                        })
+            ],
+          )),
+    );
   }
 }

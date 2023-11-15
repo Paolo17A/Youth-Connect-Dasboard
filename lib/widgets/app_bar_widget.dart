@@ -65,85 +65,19 @@ AppBar loginAppBar(BuildContext context) {
     automaticallyImplyLeading: false,
     toolbarHeight: MediaQuery.of(context).size.height * 0.08,
     title: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
+        Image.asset('assets/images/ywda_admin_logo.png', scale: 30),
+        Gap(10),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.asset('assets/images/ywda_admin_logo.png', scale: 30),
-            Gap(10),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('YDA',
-                    style: GoogleFonts.poppins(textStyle: whiteBoldStyle())),
-                Text('LAGUNA',
-                    style: GoogleFonts.poppins(textStyle: yellowBoldStyle()))
-              ],
-            ),
+            Text('YDA',
+                style: GoogleFonts.poppins(textStyle: whiteBoldStyle())),
+            Text('LAGUNA',
+                style: GoogleFonts.poppins(textStyle: yellowBoldStyle()))
           ],
         ),
-        Row(
-          children: [
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.1,
-              child: TextButton(
-                  onPressed: () => GoRouter.of(context).go('/login'),
-                  child: Text('Login',
-                      textAlign: TextAlign.center,
-                      style:
-                          GoogleFonts.poppins(textStyle: yellowBoldStyle()))),
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.1,
-              child: TextButton(
-                  onPressed: () {},
-                  child: Text('Home',
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(textStyle: whiteThinStyle()))),
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.1,
-              child: TextButton(
-                  onPressed: () {},
-                  child: Text('About Us',
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(textStyle: whiteThinStyle()))),
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.1,
-              child: TextButton(
-                  onPressed: () {},
-                  child: Text('Programs & \n Services',
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(textStyle: whiteThinStyle()))),
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.1,
-              child: TextButton(
-                  onPressed: () {},
-                  child: Text('Event \n Updates',
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(textStyle: whiteThinStyle()))),
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.1,
-              child: TextButton(
-                  onPressed: () {},
-                  child: Text('Forms',
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(textStyle: whiteThinStyle()))),
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.1,
-              child: TextButton(
-                  onPressed: () {},
-                  child: Text('About Us',
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(textStyle: whiteThinStyle()))),
-            ),
-          ],
-        )
       ],
     ),
   );

@@ -85,8 +85,11 @@ class _ViewSubmissionsScreenState extends State<ViewSubmissionsScreen> {
             leftNavigator(context, 7),
             bodyWidgetWhiteBG(
                 context,
-                switchedLoadingContainer(_isLoading,
-                    allPadding5Percent(context, _submissionsContainerWidget())))
+                switchedLoadingContainer(
+                    _isLoading,
+                    SingleChildScrollView(
+                        child: allPadding5Percent(
+                            context, _submissionsContainerWidget()))))
           ],
         ));
   }
@@ -144,7 +147,7 @@ class _ViewSubmissionsScreenState extends State<ViewSubmissionsScreen> {
 
   Widget _submissionEntries() {
     return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.52,
+      height: 500,
       child: ListView.builder(
           shrinkWrap: true,
           itemCount:
@@ -198,35 +201,38 @@ class _ViewSubmissionsScreenState extends State<ViewSubmissionsScreen> {
   }
 
   Widget _navigatorButtons() {
-    return SizedBox(
-        width: MediaQuery.of(context).size.height * 0.6,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            previousPageButton(context,
-                onPress: pageNumber == 1
-                    ? null
-                    : () {
-                        if (pageNumber == 1) {
-                          return;
-                        }
-                        setState(() {
-                          pageNumber--;
-                        });
-                      }),
-            AutoSizeText(pageNumber.toString(), style: blackBoldStyle()),
-            nextPageButton(context,
-                onPress: pageNumber == maxPageNumber
-                    ? null
-                    : () {
-                        if (pageNumber == maxPageNumber) {
-                          return;
-                        }
-                        setState(() {
-                          pageNumber++;
-                        });
-                      })
-          ],
-        ));
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 20),
+      child: SizedBox(
+          width: MediaQuery.of(context).size.height * 0.6,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              previousPageButton(context,
+                  onPress: pageNumber == 1
+                      ? null
+                      : () {
+                          if (pageNumber == 1) {
+                            return;
+                          }
+                          setState(() {
+                            pageNumber--;
+                          });
+                        }),
+              AutoSizeText(pageNumber.toString(), style: blackBoldStyle()),
+              nextPageButton(context,
+                  onPress: pageNumber == maxPageNumber
+                      ? null
+                      : () {
+                          if (pageNumber == maxPageNumber) {
+                            return;
+                          }
+                          setState(() {
+                            pageNumber++;
+                          });
+                        })
+            ],
+          )),
+    );
   }
 }

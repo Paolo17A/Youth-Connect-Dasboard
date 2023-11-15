@@ -43,6 +43,7 @@ class _ViewOrgProjectsScreenState extends State<ViewOrgProjectsScreen> {
           .where('organizer', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
           .get();
       allProjects = announcements.docs;
+      allProjects = allProjects.reversed.toList();
       maxPageNumber = (allProjects.length / 10).ceil();
 
       setState(() {
@@ -105,14 +106,16 @@ class _ViewOrgProjectsScreenState extends State<ViewOrgProjectsScreen> {
               context,
               switchedLoadingContainer(
                   _isLoading,
-                  horizontalPadding5Percent(
-                      context,
-                      Column(
-                        children: [
-                          _newProjectHeaderWidget(),
-                          _projectsContainerWidget()
-                        ],
-                      ))))
+                  SingleChildScrollView(
+                    child: horizontalPadding5Percent(
+                        context,
+                        Column(
+                          children: [
+                            _newProjectHeaderWidget(),
+                            _projectsContainerWidget()
+                          ],
+                        )),
+                  )))
         ]));
   }
 
@@ -157,11 +160,21 @@ class _ViewOrgProjectsScreenState extends State<ViewOrgProjectsScreen> {
             borderColor: Colors.white,
             textColor: Colors.white),
         viewFlexTextCell('Content',
-            flex: 5,
+            flex: 4,
             backgroundColor: Colors.grey,
             borderColor: Colors.white,
             textColor: Colors.white),
         viewFlexTextCell('Project Date',
+            flex: 2,
+            backgroundColor: Colors.grey,
+            borderColor: Colors.white,
+            textColor: Colors.white),
+        viewFlexTextCell('Start Date',
+            flex: 2,
+            backgroundColor: Colors.grey,
+            borderColor: Colors.white,
+            textColor: Colors.white),
+        viewFlexTextCell('End Date',
             flex: 2,
             backgroundColor: Colors.grey,
             borderColor: Colors.white,
@@ -177,7 +190,7 @@ class _ViewOrgProjectsScreenState extends State<ViewOrgProjectsScreen> {
 
   Widget _projectEntries() {
     return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.52,
+      height: 500,
       child: ListView.builder(
           shrinkWrap: true,
           itemCount: pageNumber == maxPageNumber ? allProjects.length % 10 : 10,
@@ -201,13 +214,29 @@ class _ViewOrgProjectsScreenState extends State<ViewOrgProjectsScreen> {
                       borderColor: borderColor,
                       textColor: entryColor),
                   viewFlexTextCell(announcementData['content'],
-                      flex: 5,
+                      flex: 4,
+                      backgroundColor: backgroundColor,
+                      borderColor: borderColor,
+                      textColor: entryColor),
+                  viewFlexTextCell(
+                      DateFormat('dd MMM yyyy').format(
+                          (announcementData['dateAdded'] as Timestamp)
+                              .toDate()),
+                      flex: 2,
                       backgroundColor: backgroundColor,
                       borderColor: borderColor,
                       textColor: entryColor),
                   viewFlexTextCell(
                       DateFormat('dd MMM yyyy').format(
                           (announcementData['projectDate'] as Timestamp)
+                              .toDate()),
+                      flex: 2,
+                      backgroundColor: backgroundColor,
+                      borderColor: borderColor,
+                      textColor: entryColor),
+                  viewFlexTextCell(
+                      DateFormat('dd MMM yyyy').format(
+                          (announcementData['projectDateEnd'] as Timestamp)
                               .toDate()),
                       flex: 2,
                       backgroundColor: backgroundColor,
@@ -241,35 +270,38 @@ class _ViewOrgProjectsScreenState extends State<ViewOrgProjectsScreen> {
   }
 
   Widget _navigatorButtons() {
-    return SizedBox(
-        width: MediaQuery.of(context).size.height * 0.6,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            previousPageButton(context,
-                onPress: pageNumber == 1
-                    ? null
-                    : () {
-                        if (pageNumber == 1) {
-                          return;
-                        }
-                        setState(() {
-                          pageNumber--;
-                        });
-                      }),
-            AutoSizeText(pageNumber.toString(), style: blackBoldStyle()),
-            nextPageButton(context,
-                onPress: pageNumber == maxPageNumber
-                    ? null
-                    : () {
-                        if (pageNumber == maxPageNumber) {
-                          return;
-                        }
-                        setState(() {
-                          pageNumber++;
-                        });
-                      })
-          ],
-        ));
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 20),
+      child: SizedBox(
+          width: MediaQuery.of(context).size.height * 0.6,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              previousPageButton(context,
+                  onPress: pageNumber == 1
+                      ? null
+                      : () {
+                          if (pageNumber == 1) {
+                            return;
+                          }
+                          setState(() {
+                            pageNumber--;
+                          });
+                        }),
+              AutoSizeText(pageNumber.toString(), style: blackBoldStyle()),
+              nextPageButton(context,
+                  onPress: pageNumber == maxPageNumber
+                      ? null
+                      : () {
+                          if (pageNumber == maxPageNumber) {
+                            return;
+                          }
+                          setState(() {
+                            pageNumber++;
+                          });
+                        })
+            ],
+          )),
+    );
   }
 }

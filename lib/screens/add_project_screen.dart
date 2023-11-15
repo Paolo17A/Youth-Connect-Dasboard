@@ -18,6 +18,7 @@ import 'package:ywda_dashboard/widgets/custom_text_widgets.dart';
 import 'package:ywda_dashboard/widgets/youth_connect_textfield_widget.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
+import '../utils/string_util.dart';
 import '../widgets/custom_button_widgets.dart';
 
 class AddProjectScreen extends StatefulWidget {
@@ -33,8 +34,10 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
 
-  Uint8List? currentSelectedFile;
-  DateTime? _selectedDate;
+  //Uint8List? currentSelectedFile;
+  DateTime? _selectedDateStart;
+  DateTime? _selectedDateEnd;
+  List<Uint8List?> selectedItemImages = [];
 
   @override
   void dispose() {
@@ -43,16 +46,24 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
     _contentController.dispose();
   }
 
-  Future<void> _pickImage() async {
-    final pickedFile = await ImagePickerWeb.getImageAsBytes();
-    if (pickedFile != null) {
+  Future<void> _pickImages() async {
+    final pickedFiles = await ImagePickerWeb.getMultiImagesAsBytes();
+
+    if (pickedFiles != null) {
+      if (selectedItemImages.length + pickedFiles.length > 5) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('You may only have up a max of five images')));
+        return;
+      }
       setState(() {
-        currentSelectedFile = pickedFile;
+        for (var image in pickedFiles) {
+          selectedItemImages.add(image);
+        }
       });
     }
   }
 
-  Future<void> _selectDate(BuildContext context) async {
+  Future<void> _selectDateStart(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
         context: context,
         initialDate: DateTime.now(),
@@ -60,7 +71,20 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
         lastDate: DateTime(2100));
     if (picked != null && picked != DateTime.now()) {
       setState(() {
-        _selectedDate = picked;
+        _selectedDateStart = picked;
+      });
+    }
+  }
+
+  Future<void> _selectDateEnd(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime.now(),
+        lastDate: DateTime(2100));
+    if (picked != null && picked != DateTime.now()) {
+      setState(() {
+        _selectedDateEnd = picked;
       });
     }
   }
@@ -72,19 +96,28 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
       scaffoldMessenger.showSnackBar(
           const SnackBar(content: Text('Please fill up all fields.')));
       return;
-    } else if (_titleController.text.length < 10) {
+    }
+    if (_titleController.text.length < 10) {
       scaffoldMessenger.showSnackBar(const SnackBar(
           content:
               Text('The project title must be at least 10 characters long.')));
       return;
-    } else if (_contentController.text.length < 30) {
+    }
+    if (_contentController.text.length < 30) {
       scaffoldMessenger.showSnackBar(const SnackBar(
           content: Text(
               'The project content must be at least 30 characters long.')));
       return;
-    } else if (_selectedDate == null) {
+    }
+    if (_selectedDateStart == null && _selectedDateEnd == null) {
       scaffoldMessenger.showSnackBar(const SnackBar(
-          content: Text('Please select a date for this project.')));
+          content:
+              Text('Please select the start and end dates for this project.')));
+      return;
+    }
+    if (_selectedDateStart!.isAfter(_selectedDateEnd!)) {
+      scaffoldMessenger.showSnackBar(const SnackBar(
+          content: Text('The end date must be after the start date.')));
       return;
     }
     try {
@@ -102,30 +135,34 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
         'content': _contentController.text.trim(),
         'imageURLs': [],
         'organizer': FirebaseAuth.instance.currentUser!.uid,
-        'projectDate': _selectedDate!,
+        'projectDate': _selectedDateStart!,
+        'projectDateEnd': _selectedDateEnd!,
         'participants': []
       });
 
-      if (currentSelectedFile != null) {
-        List<String> imageURLs = [];
+      if (selectedItemImages.isNotEmpty) {
+        for (int i = 0; i < selectedItemImages.length; i++) {
+          //  Upload all the selected image bytes to Firebase Storage and add them to a local List of URL strings
+          final storageRef = FirebaseStorage.instance
+              .ref()
+              .child('posts')
+              .child('projects')
+              .child(projectID)
+              .child('${generateRandomHexString(6)}.png');
 
-        //  Upload all the selected image bytes to Firebase Storage and add them to a local List of URL strings
-        final storageRef = FirebaseStorage.instance
-            .ref()
-            .child('posts')
-            .child('projects')
-            .child(projectID);
+          final uploadTask = storageRef.putData(selectedItemImages[i]!);
+          final taskSnapshot = await uploadTask.whenComplete(() {});
+          final downloadURL = await taskSnapshot.ref.getDownloadURL();
 
-        final uploadTask = storageRef.putData(currentSelectedFile!);
-        final taskSnapshot = await uploadTask.whenComplete(() {});
-        final downloadURL = await taskSnapshot.ref.getDownloadURL();
-        imageURLs.add(downloadURL);
+          //  Update Firestore to include the references of the uploaded images in Firebase Storage
 
-        //  Update Firestore to include the references of the uploaded images in Firebase Storage
-        await FirebaseFirestore.instance
-            .collection('projects')
-            .doc(projectID)
-            .update({'imageURLs': imageURLs});
+          await FirebaseFirestore.instance
+              .collection('projects')
+              .doc(projectID)
+              .update({
+            'imageURLs': FieldValue.arrayUnion([downloadURL])
+          });
+        }
       }
 
       setState(() {
@@ -165,11 +202,11 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
                                   _projectTitle(),
                                   Gap(50),
                                   _projectContent(),
-                                  _projectDateSelect(),
-                                  if (currentSelectedFile != null)
-                                    _projectImages(),
+                                  _projectDatesSelect(),
+                                  _projectImages(),
                                   Gap(60),
-                                  _submitButton()
+                                  _submitButton(),
+                                  Gap(40)
                                 ],
                               )),
                         ],
@@ -231,7 +268,7 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
     ]);
   }
 
-  Widget _projectDateSelect() {
+  Widget _projectDatesSelect() {
     return Row(
       children: [
         Padding(
@@ -240,7 +277,7 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ElevatedButton(
-                  onPressed: () => _selectDate(context),
+                  onPressed: () => _selectDateStart(context),
                   style: ElevatedButton.styleFrom(
                       backgroundColor: CustomColors.veniceBlue,
                       shape: RoundedRectangleBorder(
@@ -248,9 +285,10 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
                   child: Padding(
                     padding: const EdgeInsets.all(7),
                     child: AutoSizeText(
-                        _selectedDate != null
-                            ? DateFormat('MMM dd, yyyy').format(_selectedDate!)
-                            : 'SELECT DATE',
+                        _selectedDateStart != null
+                            ? DateFormat('MMM dd, yyyy')
+                                .format(_selectedDateStart!)
+                            : 'SELECT START DATE',
                         style: GoogleFonts.poppins(
                             textStyle: whiteBoldStyle(size: 15))),
                   )),
@@ -263,14 +301,18 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ElevatedButton(
-                  onPressed: _pickImage,
+                  onPressed: () => _selectDateEnd(context),
                   style: ElevatedButton.styleFrom(
                       backgroundColor: CustomColors.veniceBlue,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30))),
                   child: Padding(
                     padding: const EdgeInsets.all(7),
-                    child: AutoSizeText('UPLOAD IMAGE',
+                    child: AutoSizeText(
+                        _selectedDateEnd != null
+                            ? DateFormat('MMM dd, yyyy')
+                                .format(_selectedDateEnd!)
+                            : 'SELECT END DATE',
                         style: GoogleFonts.poppins(
                             textStyle: whiteBoldStyle(size: 15))),
                   )),
@@ -282,32 +324,67 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
   }
 
   Widget _projectImages() {
-    return Container(
-      decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-      child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          children: [
-            SizedBox(
-                width: 150,
-                height: 150,
-                child: Image.memory(currentSelectedFile!)),
-            const SizedBox(height: 5),
-            SizedBox(
-              width: 90,
-              child: ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      currentSelectedFile = null;
-                    });
-                  },
+    return Padding(
+      padding: const EdgeInsets.all(22),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ElevatedButton(
+                  onPressed: _pickImages,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 24, 44, 63),
-                  ),
-                  child: const Icon(Icons.delete)),
-            )
-          ],
-        ),
+                      backgroundColor: CustomColors.veniceBlue,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30))),
+                  child: Padding(
+                    padding: const EdgeInsets.all(7),
+                    child: AutoSizeText('UPLOAD IMAGES',
+                        style: GoogleFonts.poppins(
+                            textStyle: whiteBoldStyle(size: 15))),
+                  )),
+            ],
+          ),
+          if (selectedItemImages.isNotEmpty)
+            Wrap(
+                children: selectedItemImages
+                    .map((itemBytes) => Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.black)),
+                            child: Padding(
+                              padding: const EdgeInsets.all(10),
+                              child: Column(
+                                children: [
+                                  SizedBox(
+                                      width: 150,
+                                      height: 150,
+                                      child: Image.memory(itemBytes!)),
+                                  const SizedBox(height: 5),
+                                  SizedBox(
+                                    width: 90,
+                                    child: ElevatedButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            selectedItemImages
+                                                .remove(itemBytes);
+                                          });
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: const Color.fromARGB(
+                                              255, 24, 44, 63),
+                                        ),
+                                        child: const Icon(Icons.delete)),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ))
+                    .toList()),
+        ],
       ),
     );
   }

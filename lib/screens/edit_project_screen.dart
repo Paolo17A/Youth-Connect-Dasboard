@@ -17,6 +17,7 @@ import 'package:ywda_dashboard/widgets/custom_text_widgets.dart';
 import 'package:ywda_dashboard/widgets/youth_connect_textfield_widget.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
+import '../utils/string_util.dart';
 import '../widgets/custom_button_widgets.dart';
 
 class EditProjectScreen extends StatefulWidget {
@@ -34,8 +35,9 @@ class _EditProjectScreenState extends State<EditProjectScreen> {
   final _contentController = TextEditingController();
 
   List<dynamic> imageURLs = [];
-  Uint8List? currentSelectedFile;
-  DateTime? _selectedDate;
+  List<Uint8List?> selectedItemImages = [];
+  DateTime? _selectedDateStart;
+  DateTime? _selectedDateEnd;
 
   @override
   void didChangeDependencies() {
@@ -62,7 +64,8 @@ class _EditProjectScreenState extends State<EditProjectScreen> {
       _titleController.text = projectData['title'];
       _contentController.text = projectData['content'];
       imageURLs = projectData['imageURLs'];
-      _selectedDate = (projectData['projectDate'] as Timestamp).toDate();
+      _selectedDateStart = (projectData['projectDate'] as Timestamp).toDate();
+      _selectedDateEnd = (projectData['projectDateEnd'] as Timestamp).toDate();
 
       setState(() {
         _isLoading = false;
@@ -73,11 +76,20 @@ class _EditProjectScreenState extends State<EditProjectScreen> {
     }
   }
 
-  Future<void> _pickImage() async {
-    final pickedFile = await ImagePickerWeb.getImageAsBytes();
-    if (pickedFile != null) {
+  Future<void> _pickImages() async {
+    final pickedFiles = await ImagePickerWeb.getMultiImagesAsBytes();
+
+    if (pickedFiles != null) {
+      if (imageURLs.length + selectedItemImages.length + pickedFiles.length >
+          5) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('You may only have up a max of five images')));
+        return;
+      }
       setState(() {
-        currentSelectedFile = pickedFile;
+        for (var image in pickedFiles) {
+          selectedItemImages.add(image);
+        }
       });
     }
   }
@@ -85,22 +97,19 @@ class _EditProjectScreenState extends State<EditProjectScreen> {
   Future<void> _deleteImage(String projectID, String url, int index) async {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     try {
-      setState(() {
-        _isLoading = true;
-      });
       imageURLs.remove(url);
       await FirebaseFirestore.instance
           .collection('projects')
           .doc(projectID)
           .update({'imageURLs': imageURLs});
 
-      final storageRef = FirebaseStorage.instance
+      /*final storageRef = FirebaseStorage.instance
           .ref()
           .child('posts')
           .child('projects')
-          .child(projectID);
+          .child(widget.projectID);
 
-      await storageRef.delete();
+      await storageRef.delete();*/
 
       setState(() {
         _isLoading = false;
@@ -114,15 +123,28 @@ class _EditProjectScreenState extends State<EditProjectScreen> {
     }
   }
 
-  Future<void> _selectDate(BuildContext context) async {
+  Future<void> _selectDateStart(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
         context: context,
-        initialDate: _selectedDate!,
+        initialDate: DateTime.now(),
         firstDate: DateTime.now(),
         lastDate: DateTime(2100));
     if (picked != null && picked != DateTime.now()) {
       setState(() {
-        _selectedDate = picked;
+        _selectedDateStart = picked;
+      });
+    }
+  }
+
+  Future<void> _selectDateEnd(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime.now(),
+        lastDate: DateTime(2100));
+    if (picked != null && picked != DateTime.now()) {
+      setState(() {
+        _selectedDateEnd = picked;
       });
     }
   }
@@ -134,22 +156,34 @@ class _EditProjectScreenState extends State<EditProjectScreen> {
       scaffoldMessenger.showSnackBar(
           const SnackBar(content: Text('Please fill up all fields.')));
       return;
-    } else if (_titleController.text.length < 10) {
+    }
+    if (_titleController.text.length < 10) {
       scaffoldMessenger.showSnackBar(const SnackBar(
           content:
               Text('The project title must be at least 10 characters long.')));
       return;
-    } else if (_contentController.text.length < 30) {
+    }
+    if (_contentController.text.length < 30) {
       scaffoldMessenger.showSnackBar(const SnackBar(
           content: Text(
               'The project content must be at least 30 characters long.')));
       return;
-    } else if (_selectedDate == null) {
+    }
+    if (_selectedDateStart == null && _selectedDateEnd == null) {
       scaffoldMessenger.showSnackBar(const SnackBar(
-          content: Text('Please select a date for this project.')));
+          content:
+              Text('Please select the start and end dates for this project.')));
+      return;
+    }
+    if (_selectedDateStart!.isAfter(_selectedDateEnd!)) {
+      scaffoldMessenger.showSnackBar(const SnackBar(
+          content: Text('The end date must be after the start date.')));
       return;
     }
     try {
+      setState(() {
+        _isLoading = true;
+      });
       await FirebaseFirestore.instance
           .collection('projects')
           .doc(widget.projectID)
@@ -157,30 +191,35 @@ class _EditProjectScreenState extends State<EditProjectScreen> {
         'dateAdded': DateTime.now(),
         'title': _titleController.text.trim(),
         'content': _contentController.text.trim(),
-        'projectDate': _selectedDate!
+        'projectDate': _selectedDateStart!,
+        'projectDateEnd': _selectedDateEnd!,
       });
-      if (currentSelectedFile != null) {
-        //  Upload all the selected image bytes to Firebase Storage and add them to a local List of URL strings
-        final storageRef = FirebaseStorage.instance
-            .ref()
-            .child('posts')
-            .child('projects')
-            .child(widget.projectID);
 
-        final uploadTask = storageRef.putData(currentSelectedFile!);
-        final taskSnapshot = await uploadTask.whenComplete(() {});
-        final downloadURL = await taskSnapshot.ref.getDownloadURL();
-        imageURLs.add(downloadURL);
+      if (selectedItemImages.isNotEmpty) {
+        for (int i = 0; i < selectedItemImages.length; i++) {
+          //  Upload all the selected image bytes to Firebase Storage and add them to a local List of URL strings
+          final storageRef = FirebaseStorage.instance
+              .ref()
+              .child('posts')
+              .child('projects')
+              .child(widget.projectID)
+              .child('${generateRandomHexString(6)}.png');
 
-        //  Update Firestore to include the references of the uploaded images in Firebase Storage
-        await FirebaseFirestore.instance
-            .collection('projects')
-            .doc(widget.projectID)
-            .update({'imageURLs': imageURLs});
+          final uploadTask = storageRef.putData(selectedItemImages[i]!);
+          final taskSnapshot = await uploadTask.whenComplete(() {});
+          final downloadURL = await taskSnapshot.ref.getDownloadURL();
+
+          //  Update Firestore to include the references of the uploaded images in Firebase Storage
+
+          await FirebaseFirestore.instance
+              .collection('projects')
+              .doc(widget.projectID)
+              .update({
+            'imageURLs': FieldValue.arrayUnion([downloadURL])
+          });
+        }
       }
-      setState(() {
-        _isLoading = true;
-      });
+
       scaffoldMessenger.showSnackBar(
           const SnackBar(content: Text('Successfully edited this project!')));
       goRouter.go('/project');
@@ -220,11 +259,12 @@ class _EditProjectScreenState extends State<EditProjectScreen> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        _projectDatePickerWidget(),
-                                        _projectImageHandlerWidgets()
+                                        _projectDateStartPickerWidget(),
+                                        _projectDateEndPickerWidget(),
                                       ],
                                     ),
                                   ),
+                                  _projectImageHandlerWidgets(),
                                   Gap(60),
                                   _projectSubmitButtonWidget()
                                 ],
@@ -296,11 +336,11 @@ class _EditProjectScreenState extends State<EditProjectScreen> {
     ]);
   }
 
-  Widget _projectDatePickerWidget() {
+  Widget _projectDateStartPickerWidget() {
     return Padding(
         padding: const EdgeInsets.all(8.0),
         child: ElevatedButton(
-          onPressed: () => _selectDate(context),
+          onPressed: () => _selectDateStart(context),
           style: ElevatedButton.styleFrom(
               backgroundColor: CustomColors.veniceBlue,
               shape: RoundedRectangleBorder(
@@ -308,9 +348,29 @@ class _EditProjectScreenState extends State<EditProjectScreen> {
           child: Padding(
               padding: const EdgeInsets.all(7),
               child: AutoSizeText(
-                _selectedDate != null
-                    ? DateFormat('MMM dd, yyyy').format(_selectedDate!)
-                    : 'SELECT DATE',
+                _selectedDateStart != null
+                    ? DateFormat('MMM dd, yyyy').format(_selectedDateStart!)
+                    : 'SELECT START DATE',
+                style: GoogleFonts.poppins(textStyle: whiteBoldStyle(size: 15)),
+              )),
+        ));
+  }
+
+  Widget _projectDateEndPickerWidget() {
+    return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ElevatedButton(
+          onPressed: () => _selectDateEnd(context),
+          style: ElevatedButton.styleFrom(
+              backgroundColor: CustomColors.veniceBlue,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30))),
+          child: Padding(
+              padding: const EdgeInsets.all(7),
+              child: AutoSizeText(
+                _selectedDateEnd != null
+                    ? DateFormat('MMM dd, yyyy').format(_selectedDateEnd!)
+                    : 'SELECT END DATE',
                 style: GoogleFonts.poppins(textStyle: whiteBoldStyle(size: 15)),
               )),
         ));
@@ -318,76 +378,85 @@ class _EditProjectScreenState extends State<EditProjectScreen> {
 
   Widget _projectImageHandlerWidgets() {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(children: [
+      padding: const EdgeInsets.all(30),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ElevatedButton(
-                onPressed: _pickImage,
+                onPressed: _pickImages,
                 style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromARGB(255, 51, 86, 119),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30))),
                 child: Padding(
                   padding: const EdgeInsets.all(7),
-                  child: AutoSizeText('UPLOAD IMAGE',
+                  child: AutoSizeText('UPLOAD IMAGES',
                       style: GoogleFonts.poppins(
                           textStyle: whiteBoldStyle(size: 15))),
                 )),
           ],
         ),
         const SizedBox(height: 30),
-        if (currentSelectedFile != null)
-          Container(
-            decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-            child: Padding(
-              padding: const EdgeInsets.all(10),
-              child: Column(
-                children: [
-                  squareBox150(Image.memory(currentSelectedFile!)),
-                  const SizedBox(height: 5),
-                  SizedBox(
-                    width: 90,
-                    child: ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            currentSelectedFile = null;
-                          });
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              const Color.fromARGB(255, 24, 44, 63),
+        if (imageURLs.isNotEmpty)
+          Wrap(
+              children: imageURLs
+                  .map((imageURL) => Container(
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Column(
+                            children: [
+                              squareBox150(Image.network(imageURL)),
+                              const SizedBox(height: 5),
+                              SizedBox(
+                                width: 90,
+                                child: ElevatedButton(
+                                    onPressed: () => _deleteImage(
+                                        widget.projectID, imageURLs[0], 0),
+                                    style: ElevatedButton.styleFrom(
+                                        backgroundColor: const Color.fromARGB(
+                                            255, 24, 44, 63)),
+                                    child: const Icon(Icons.delete)),
+                              )
+                            ],
+                          ),
                         ),
-                        child: const Icon(Icons.delete)),
-                  )
-                ],
-              ),
-            ),
+                      ))
+                  .toList()),
+        if (selectedItemImages.isNotEmpty)
+          Wrap(
+            children: selectedItemImages
+                .map((itemImage) => Container(
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Column(
+                          children: [
+                            squareBox150(Image.memory(itemImage!)),
+                            const SizedBox(height: 5),
+                            SizedBox(
+                              width: 90,
+                              child: ElevatedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      selectedItemImages.remove(itemImage);
+                                    });
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                        const Color.fromARGB(255, 24, 44, 63),
+                                  ),
+                                  child: const Icon(Icons.delete)),
+                            )
+                          ],
+                        ),
+                      ),
+                    ))
+                .toList(),
           ),
-        if (currentSelectedFile == null && imageURLs.isNotEmpty)
-          Container(
-            decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-            child: Padding(
-              padding: const EdgeInsets.all(10),
-              child: Column(
-                children: [
-                  squareBox150(Image.network(imageURLs[0])),
-                  const SizedBox(height: 5),
-                  SizedBox(
-                    width: 90,
-                    child: ElevatedButton(
-                        onPressed: () =>
-                            _deleteImage(widget.projectID, imageURLs[0], 0),
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                const Color.fromARGB(255, 24, 44, 63)),
-                        child: const Icon(Icons.delete)),
-                  )
-                ],
-              ),
-            ),
-          )
       ]),
     );
   }

@@ -146,7 +146,7 @@ Widget previousPageButton(BuildContext context, {required Function? onPress}) {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10))),
           child: AutoSizeText(
-            'PREVIOUS',
+            'PREV',
             style: whiteBoldStyle(),
           )),
     ),

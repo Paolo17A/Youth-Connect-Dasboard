@@ -28,6 +28,7 @@ class _ViewYouthInformationScreenState
   bool _isLoading = false;
   bool _isInitialized = false;
   List<DocumentSnapshot> allUsers = [];
+  Map<String, String> associatedOrgs = {};
   String _selectedCategory = 'NO FILTER';
 
   int pageNumber = 1;
@@ -58,7 +59,18 @@ class _ViewYouthInformationScreenState
           .get();
       allUsers = users.docs;
       maxPageNumber = (allUsers.length / 10).ceil();
-
+      for (var user in allUsers) {
+        final userData = user.data() as Map<dynamic, dynamic>;
+        if (associatedOrgs.containsKey(userData['organization'])) {
+          continue;
+        }
+        final org = await FirebaseFirestore.instance
+            .collection('orgs')
+            .doc(userData['organization'])
+            .get();
+        final orgData = org.data() as Map<dynamic, dynamic>;
+        associatedOrgs[userData['organization']] = orgData['name'];
+      }
       setState(() {
         _isInitialized = true;
         _isLoading = false;
@@ -254,11 +266,11 @@ class _ViewYouthInformationScreenState
           itemBuilder: (context, index) {
             final userData = allUsers[index + ((pageNumber - 1) * 10)].data()
                 as Map<dynamic, dynamic>;
-            String fullName = userData['fullName'];
+            String fullName =
+                '${userData['firstName']} ${userData['lastName']}';
             Color entryColor = index % 2 == 0 ? Colors.black : Colors.white;
             Color backgroundColor = index % 2 == 0 ? Colors.white : Colors.grey;
             Color borderColor = index % 2 == 0 ? Colors.grey : Colors.white;
-
             return viewContentEntryRow(context,
                 children: [
                   viewFlexTextCell(fullName.isNotEmpty ? fullName : 'N/A',
@@ -293,7 +305,7 @@ class _ViewYouthInformationScreenState
                       backgroundColor: backgroundColor,
                       borderColor: borderColor,
                       textColor: entryColor),
-                  viewFlexTextCell(userData['organization'],
+                  viewFlexTextCell(associatedOrgs[userData['organization']]!,
                       flex: 2,
                       backgroundColor: backgroundColor,
                       borderColor: borderColor,
@@ -342,7 +354,8 @@ class _ViewYouthInformationScreenState
           itemBuilder: (context, index) {
             final userData = allUsers[index + ((pageNumber - 1) * 10)].data()
                 as Map<dynamic, dynamic>;
-            String fullName = userData['fullName'];
+            String fullName =
+                '${userData['firstName']} ${userData['lastName']}';
             String education = userData['categorySpecific'];
             String city = userData['city'];
             Color entryColor = index % 2 == 0 ? Colors.black : Colors.white;
@@ -399,35 +412,38 @@ class _ViewYouthInformationScreenState
   }
 
   Widget _navigatorButtons() {
-    return SizedBox(
-        width: MediaQuery.of(context).size.height * 0.6,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            previousPageButton(context,
-                onPress: pageNumber == 1
-                    ? null
-                    : () {
-                        if (pageNumber == 1) {
-                          return;
-                        }
-                        setState(() {
-                          pageNumber--;
-                        });
-                      }),
-            AutoSizeText(pageNumber.toString(), style: blackBoldStyle()),
-            nextPageButton(context,
-                onPress: pageNumber == maxPageNumber
-                    ? null
-                    : () {
-                        if (pageNumber == maxPageNumber) {
-                          return;
-                        }
-                        setState(() {
-                          pageNumber++;
-                        });
-                      })
-          ],
-        ));
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 20),
+      child: SizedBox(
+          width: MediaQuery.of(context).size.height * 0.6,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              previousPageButton(context,
+                  onPress: pageNumber == 1
+                      ? null
+                      : () {
+                          if (pageNumber == 1) {
+                            return;
+                          }
+                          setState(() {
+                            pageNumber--;
+                          });
+                        }),
+              AutoSizeText(pageNumber.toString(), style: blackBoldStyle()),
+              nextPageButton(context,
+                  onPress: pageNumber == maxPageNumber
+                      ? null
+                      : () {
+                          if (pageNumber == maxPageNumber) {
+                            return;
+                          }
+                          setState(() {
+                            pageNumber++;
+                          });
+                        })
+            ],
+          )),
+    );
   }
 }
