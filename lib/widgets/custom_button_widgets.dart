@@ -32,6 +32,24 @@ Widget restoreEntryButton(BuildContext context, {required Function onPress}) {
       child: const Icon(Icons.restart_alt, color: Colors.white));
 }
 
+Widget grantBadgeButton(BuildContext context, {required Function onPress}) {
+  return ElevatedButton(
+      onPressed: () {
+        onPress();
+      },
+      style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+      child: const Icon(Icons.check, color: Colors.white));
+}
+
+Widget revokeBadgeButton(BuildContext context, {required Function onPress}) {
+  return ElevatedButton(
+      onPressed: () {
+        onPress();
+      },
+      style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+      child: const Icon(Icons.cancel, color: Colors.white));
+}
+
 Widget viewEntryPopUpButton(BuildContext context, {required Function onPress}) {
   return ElevatedButton(
       onPressed: () {

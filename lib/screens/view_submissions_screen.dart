@@ -1,7 +1,11 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:ywda_dashboard/utils/color_util.dart';
+import 'package:ywda_dashboard/utils/delete_entry_dialog_util.dart';
 import 'package:ywda_dashboard/widgets/app_bar_widget.dart';
 import 'package:ywda_dashboard/widgets/custom_button_widgets.dart';
 import 'package:ywda_dashboard/widgets/custom_container_widgets.dart';
@@ -43,25 +47,35 @@ class _ViewSubmissionsScreenState extends State<ViewSubmissionsScreen> {
           .where('userType', isEqualTo: 'CLIENT')
           .get();
       final userDocs = users.docs;
+      allSubmissions.clear();
       for (final doc in userDocs) {
-        Map<dynamic, dynamic> userData = doc.data();
-        if (!userData.containsKey('skillsDeveloped')) {
-          continue;
+        final userData = doc.data();
+        final personalShield =
+            userData['personalShield'] as Map<dynamic, dynamic>;
+        final twentyStatements =
+            userData['twentyStatements']['entries'] as List<dynamic>;
+        bool twentyStatementsComplete = !twentyStatements.contains('');
+        print(
+            'client ID: ${doc.id} \t statemnt count: ${twentyStatements.length}');
+        if (personalShield.length == 6) {
+          allSubmissions.add({
+            'clientID': doc.id,
+            'name': userData['firstName'],
+            'parameter': 'personalShield',
+            'entries': personalShield,
+            'accepted': userData['hasPersonalShieldBadge'],
+            'badgeBool': 'hasPersonalShieldBadge'
+          });
         }
-        Map<dynamic, dynamic> skillsDeveloped = userData['skillsDeveloped'];
-        for (final skill in skillsDeveloped.keys) {
-          Map<dynamic, dynamic> thisSkill = skillsDeveloped[skill];
-          for (final subskill in thisSkill.keys) {
-            Map<dynamic, dynamic> thisSubskill = thisSkill[subskill];
-            if (thisSubskill['status'] == 'PENDING') {
-              allSubmissions.add({
-                'clientID': doc.id,
-                'name': userData['fullName'],
-                'skill': skill,
-                'subskill': subskill
-              });
-            }
-          }
+        if (twentyStatementsComplete && twentyStatements.length == 20) {
+          allSubmissions.add({
+            'clientID': doc.id,
+            'name': userData['firstName'],
+            'parameter': 'twentyStatements',
+            'entries': twentyStatements,
+            'accepted': userData['hasTwentyStatementsBadge'],
+            'badgeBool': 'hasTwentyStatementsBadge'
+          });
         }
       }
       maxPageNumber = (allSubmissions.length / 10).ceil();
@@ -73,6 +87,28 @@ class _ViewSubmissionsScreenState extends State<ViewSubmissionsScreen> {
     } catch (error) {
       scaffoldMessenger.showSnackBar(
           SnackBar(content: Text('Error getting all users: $error')));
+    }
+  }
+
+  void toggleBadge(
+      String youthID, String hasBadgeParameter, bool badgeBool) async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(youthID)
+          .update({hasBadgeParameter: !badgeBool});
+      _alreadyInitialized = false;
+      getAllUsers();
+    } catch (error) {
+      scaffoldMessenger.showSnackBar(
+          SnackBar(content: Text('Error granting badge: $error')));
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -126,12 +162,7 @@ class _ViewSubmissionsScreenState extends State<ViewSubmissionsScreen> {
             backgroundColor: Colors.grey,
             borderColor: Colors.white,
             textColor: Colors.white),
-        viewFlexTextCell('Skill',
-            flex: 2,
-            backgroundColor: Colors.grey,
-            borderColor: Colors.white,
-            textColor: Colors.white),
-        viewFlexTextCell('Subskill',
+        viewFlexTextCell('Assessment Skill',
             flex: 2,
             backgroundColor: Colors.grey,
             borderColor: Colors.white,
@@ -170,25 +201,39 @@ class _ViewSubmissionsScreenState extends State<ViewSubmissionsScreen> {
                       backgroundColor: backgroundColor,
                       borderColor: borderColor,
                       textColor: entryColor),
-                  viewFlexTextCell(submissionData['skill'],
-                      flex: 2,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),
-                  viewFlexTextCell(submissionData['subskill'],
+                  viewFlexTextCell(
+                      submissionData['parameter'] == 'personalShield'
+                          ? 'PERSONAL SHIELD'
+                          : 'TWENTY STATEMENTS',
                       flex: 2,
                       backgroundColor: backgroundColor,
                       borderColor: borderColor,
                       textColor: entryColor),
                   viewFlexActionsCell([
-                    Center(child: viewEntryButton(() {
-                      GoRouter.of(context)
-                          .goNamed('gradeSubmissions', pathParameters: {
-                        'skill': submissionData['skill'],
-                        'subskill': submissionData['subskill'],
-                        'clientID': submissionData['clientID']
-                      });
-                    }))
+                    viewEntryPopUpButton(context, onPress: () {
+                      if (submissionData['parameter'] == 'personalShield') {
+                        showPersonalShieldDialog(submissionData['entries']);
+                      } else {
+                        showTwentyStatementsDialog(submissionData['entries']);
+                      }
+                    }),
+                    if (submissionData['accepted'])
+                      revokeBadgeButton(context, onPress: () {
+                        displayDeleteEntryDialog(context,
+                            message:
+                                'Are you sure you want to revoke this youth\'s badge?',
+                            deleteWord: 'Revoke',
+                            deleteEntry: () => toggleBadge(
+                                submissionData['clientID'],
+                                submissionData['badgeBool'],
+                                submissionData['accepted']));
+                      })
+                    else
+                      grantBadgeButton(context,
+                          onPress: () => toggleBadge(
+                              submissionData['clientID'],
+                              submissionData['badgeBool'],
+                              submissionData['accepted']))
                   ],
                       flex: 2,
                       backgroundColor: backgroundColor,
@@ -234,5 +279,117 @@ class _ViewSubmissionsScreenState extends State<ViewSubmissionsScreen> {
             ],
           )),
     );
+  }
+
+  void showPersonalShieldDialog(Map<dynamic, dynamic> shieldEntries) {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              content: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.8,
+                height: MediaQuery.of(context).size.height * 0.8,
+                child: Column(children: [
+                  AutoSizeText('PERSONAL SHIELD ENTRIES',
+                      style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.bold, fontSize: 50)),
+                  SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.7,
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              _shieldSectionEntry('Best Compliment',
+                                  shieldEntries['bestCompliment']['imageURL']),
+                              _shieldSectionEntry('Favorite People',
+                                  shieldEntries['favoritePeople']['imageURL']),
+                              _shieldSectionEntry(
+                                  'My Greatest Character Strength',
+                                  shieldEntries['myGreatestCharacterStrength']
+                                      ['imageURL'])
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              _shieldSectionEntry(
+                                  'Something I Do Well',
+                                  shieldEntries['somethingIDoWell']
+                                      ['imageURL']),
+                              _shieldSectionEntry(
+                                  'What Makes Me Unique',
+                                  shieldEntries['whatMakesMeUnique']
+                                      ['imageURL']),
+                              _shieldSectionEntry(
+                                  'Worst Character Flaw',
+                                  shieldEntries['worstCharacterFlaw']
+                                      ['imageURL'])
+                            ],
+                          )
+                        ],
+                      )),
+                  Gap(40),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.15,
+                    height: 40,
+                    child: ElevatedButton(
+                        onPressed: () => GoRouter.of(context).pop(),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: CustomColors.veniceBlue),
+                        child: AutoSizeText('CLOSE')),
+                  )
+                ]),
+              ),
+            ));
+  }
+
+  void showTwentyStatementsDialog(List<dynamic> statements) {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+            content: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.6,
+                height: MediaQuery.of(context).size.height * 0.8,
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      AutoSizeText('TWENTY STATMENT ENTRIES',
+                          style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold, fontSize: 50)),
+                      Gap(20),
+                      Column(
+                          children: statements.map((statement) {
+                        return SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.7,
+                          child: AutoSizeText('I am $statement',
+                              style: GoogleFonts.poppins()),
+                        );
+                      }).toList()),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.15,
+                        height: 40,
+                        child: ElevatedButton(
+                            onPressed: () => GoRouter.of(context).pop(),
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: CustomColors.veniceBlue),
+                            child: AutoSizeText('CLOSE')),
+                      )
+                    ],
+                  ),
+                ))));
+  }
+
+  Widget _shieldSectionEntry(String label, String url) {
+    return Column(children: [
+      AutoSizeText(label,
+          style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+      Container(
+        width: MediaQuery.of(context).size.width * 0.15,
+        height: MediaQuery.of(context).size.height * 0.25,
+        decoration:
+            BoxDecoration(border: Border.all(width: 2), color: Colors.black),
+        child: Image.network(url),
+      )
+    ]);
   }
 }

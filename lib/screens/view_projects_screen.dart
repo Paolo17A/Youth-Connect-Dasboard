@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:ywda_dashboard/utils/delete_entry_dialog_util.dart';
 import 'package:ywda_dashboard/widgets/app_bar_widget.dart';
@@ -30,6 +31,7 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
   String _selectedCategory = '';
   Map<String, String> associatedHeads = {}; //  userID - orgID
   Map<String, String> associatedOrgs = {}; //  orgID - orgName
+  Map<String, String> associatedParticipants = {}; //   userID - user name
 
   int pageNumber = 1;
   int maxPageNumber = 1;
@@ -72,11 +74,14 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
       maxPageNumber = (filteredProjects.length / 10).ceil();
 
       associatedHeads.clear();
+      associatedParticipants.clear();
       for (var project in allProjects) {
         final projectData = project.data() as Map<dynamic, dynamic>;
         final headID = projectData['organizer'];
+
+        //  get all associated heads
         if (headID == FirebaseAuth.instance.currentUser!.uid) {
-          associatedHeads[headID] = 'ADMIN PROJECT';
+          associatedHeads[headID] = 'YDA PROJECT';
         } else {
           if (associatedHeads.containsKey(headID)) {
             continue;
@@ -88,6 +93,23 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
 
           final userData = user.data() as Map<dynamic, dynamic>;
           associatedHeads[headID] = userData['organization'];
+        }
+
+        //  get all associated participants
+        final participants = projectData['participants'] as List<dynamic>;
+        for (var participant in participants) {
+          if (associatedParticipants.containsKey(participant)) {
+            continue;
+          }
+          final getParticipant = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(participant)
+              .get();
+          final participantData =
+              getParticipant.data() as Map<dynamic, dynamic>;
+          String formattedName =
+              '${participantData['firstName']} ${participantData['lastName']}';
+          associatedParticipants[participant] = formattedName;
         }
       }
 
@@ -237,7 +259,7 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
             borderColor: Colors.white,
             textColor: Colors.white),
         viewFlexTextCell('Organizer',
-            flex: 4,
+            flex: 3,
             backgroundColor: Colors.grey,
             borderColor: Colors.white,
             textColor: Colors.white),
@@ -279,6 +301,13 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
             final projectData =
                 filteredProjects[index + ((pageNumber - 1) * 10)].data()
                     as Map<dynamic, dynamic>;
+            final participants = projectData['participants'] as List<dynamic>;
+            final names = [];
+            for (var element in associatedParticipants.entries) {
+              if (participants.contains(element.key)) {
+                names.add(element.value);
+              }
+            }
             return viewContentEntryRow(context,
                 children: [
                   viewFlexTextCell('#${(index + 1) + ((pageNumber - 1) * 10)}',
@@ -294,7 +323,7 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
                   viewFlexTextCell(
                       associatedOrgs[
                           associatedHeads[projectData['organizer']]]!,
-                      flex: 4,
+                      flex: 3,
                       backgroundColor: backgroundColor,
                       borderColor: borderColor,
                       textColor: entryColor),
@@ -322,6 +351,8 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
                         borderColor: borderColor,
                         textColor: entryColor),
                   viewFlexActionsCell([
+                    viewEntryPopUpButton(context,
+                        onPress: () => showParticipantsDialog(names)),
                     editEntryButton(context,
                         onPress: () => GoRouter.of(context)
                                 .goNamed('editProject', pathParameters: {
@@ -382,5 +413,41 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
             ],
           )),
     );
+  }
+
+  void showParticipantsDialog(List<dynamic> projectParticipants) {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              content: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.6,
+                height: MediaQuery.of(context).size.height * 0.6,
+                child: Column(children: [
+                  AutoSizeText('PROJECT PARTICIPANTS',
+                      style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.bold, fontSize: 50)),
+                  projectParticipants.isNotEmpty
+                      ? Row(
+                          children: [
+                            SingleChildScrollView(
+                              child: Column(
+                                  children: projectParticipants
+                                      .map((person) => AutoSizeText(person,
+                                          style: GoogleFonts.poppins(
+                                              fontSize: 30)))
+                                      .toList()),
+                            ),
+                          ],
+                        )
+                      : Padding(
+                          padding: EdgeInsets.all(50),
+                          child: AutoSizeText(
+                              'THIS PROJECT HAS NO PARTICIPANTS',
+                              style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.bold, fontSize: 30)),
+                        )
+                ]),
+              ),
+            ));
   }
 }

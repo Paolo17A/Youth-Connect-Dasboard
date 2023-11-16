@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:ywda_dashboard/utils/delete_entry_dialog_util.dart';
 import 'package:ywda_dashboard/widgets/app_bar_widget.dart';
@@ -25,6 +26,7 @@ class ViewOrgProjectsScreen extends StatefulWidget {
 class _ViewOrgProjectsScreenState extends State<ViewOrgProjectsScreen> {
   bool _isLoading = true;
   List<DocumentSnapshot> allProjects = [];
+  Map<String, String> associatedParticipants = {}; //   userID - user name
 
   int pageNumber = 1;
   int maxPageNumber = 1;
@@ -38,13 +40,33 @@ class _ViewOrgProjectsScreenState extends State<ViewOrgProjectsScreen> {
   void getAllProjects() async {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     try {
-      final announcements = await FirebaseFirestore.instance
+      final projects = await FirebaseFirestore.instance
           .collection('projects')
           .where('organizer', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
           .get();
-      allProjects = announcements.docs;
+      allProjects = projects.docs;
       allProjects = allProjects.reversed.toList();
       maxPageNumber = (allProjects.length / 10).ceil();
+
+      //  get all associated participants
+      for (var project in allProjects) {
+        final projectData = project.data() as Map<dynamic, dynamic>;
+        final participants = projectData['participants'] as List<dynamic>;
+        for (var participant in participants) {
+          if (associatedParticipants.containsKey(participant)) {
+            continue;
+          }
+          final getParticipant = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(participant)
+              .get();
+          final participantData =
+              getParticipant.data() as Map<dynamic, dynamic>;
+          String formattedName =
+              '${participantData['firstName']} ${participantData['lastName']}';
+          associatedParticipants[participant] = formattedName;
+        }
+      }
 
       setState(() {
         _isLoading = false;
@@ -198,9 +220,15 @@ class _ViewOrgProjectsScreenState extends State<ViewOrgProjectsScreen> {
             Color entryColor = index % 2 == 0 ? Colors.black : Colors.white;
             Color backgroundColor = index % 2 == 0 ? Colors.white : Colors.grey;
             Color borderColor = index % 2 == 0 ? Colors.grey : Colors.white;
-            final announcementData =
-                allProjects[index + ((pageNumber - 1) * 10)].data()
-                    as Map<dynamic, dynamic>;
+            final projectData = allProjects[index + ((pageNumber - 1) * 10)]
+                .data() as Map<dynamic, dynamic>;
+            final participants = projectData['participants'] as List<dynamic>;
+            final names = [];
+            for (var element in associatedParticipants.entries) {
+              if (participants.contains(element.key)) {
+                names.add(element.value);
+              }
+            }
             return viewContentEntryRow(context,
                 children: [
                   viewFlexTextCell('${(index + 1) + ((pageNumber - 1) * 10)}',
@@ -208,41 +236,41 @@ class _ViewOrgProjectsScreenState extends State<ViewOrgProjectsScreen> {
                       backgroundColor: backgroundColor,
                       borderColor: borderColor,
                       textColor: entryColor),
-                  viewFlexTextCell(announcementData['title'],
+                  viewFlexTextCell(projectData['title'],
                       flex: 2,
                       backgroundColor: backgroundColor,
                       borderColor: borderColor,
                       textColor: entryColor),
-                  viewFlexTextCell(announcementData['content'],
+                  viewFlexTextCell(projectData['content'],
                       flex: 4,
                       backgroundColor: backgroundColor,
                       borderColor: borderColor,
                       textColor: entryColor),
                   viewFlexTextCell(
                       DateFormat('dd MMM yyyy').format(
-                          (announcementData['dateAdded'] as Timestamp)
-                              .toDate()),
+                          (projectData['dateAdded'] as Timestamp).toDate()),
                       flex: 2,
                       backgroundColor: backgroundColor,
                       borderColor: borderColor,
                       textColor: entryColor),
                   viewFlexTextCell(
                       DateFormat('dd MMM yyyy').format(
-                          (announcementData['projectDate'] as Timestamp)
-                              .toDate()),
+                          (projectData['projectDate'] as Timestamp).toDate()),
                       flex: 2,
                       backgroundColor: backgroundColor,
                       borderColor: borderColor,
                       textColor: entryColor),
                   viewFlexTextCell(
                       DateFormat('dd MMM yyyy').format(
-                          (announcementData['projectDateEnd'] as Timestamp)
+                          (projectData['projectDateEnd'] as Timestamp)
                               .toDate()),
                       flex: 2,
                       backgroundColor: backgroundColor,
                       borderColor: borderColor,
                       textColor: entryColor),
                   viewFlexActionsCell([
+                    viewEntryPopUpButton(context,
+                        onPress: () => showParticipantsDialog(names)),
                     editEntryButton(context,
                         onPress: () => GoRouter.of(context)
                                 .goNamed('editOrgProject', pathParameters: {
@@ -303,5 +331,41 @@ class _ViewOrgProjectsScreenState extends State<ViewOrgProjectsScreen> {
             ],
           )),
     );
+  }
+
+  void showParticipantsDialog(List<dynamic> projectParticipants) {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              content: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.6,
+                height: MediaQuery.of(context).size.height * 0.6,
+                child: Column(children: [
+                  AutoSizeText('PROJECT PARTICIPANTS',
+                      style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.bold, fontSize: 50)),
+                  projectParticipants.isNotEmpty
+                      ? Row(
+                          children: [
+                            SingleChildScrollView(
+                              child: Column(
+                                  children: projectParticipants
+                                      .map((person) => AutoSizeText(person,
+                                          style: GoogleFonts.poppins(
+                                              fontSize: 30)))
+                                      .toList()),
+                            ),
+                          ],
+                        )
+                      : Padding(
+                          padding: EdgeInsets.all(50),
+                          child: AutoSizeText(
+                              'THIS PROJECT HAS NO PARTICIPANTS',
+                              style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.bold, fontSize: 30)),
+                        )
+                ]),
+              ),
+            ));
   }
 }
