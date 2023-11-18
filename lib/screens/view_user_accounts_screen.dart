@@ -40,6 +40,12 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
     setState(() {
       if (_selectedCategory == 'NO FILTER') {
         filteredUsers = allUsers;
+      } else if (_selectedCategory == 'YOUTH') {
+        filteredUsers = allUsers.where((user) {
+          final userData = user.data()! as Map<dynamic, dynamic>;
+          String userType = userData['userType'].toString().toUpperCase();
+          return userType == 'CLIENT';
+        }).toList();
       } else {
         filteredUsers = allUsers.where((user) {
           final userData = user.data()! as Map<dynamic, dynamic>;
@@ -133,7 +139,7 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
   Widget _newUserHeaderWidget() {
     return Padding(
       padding: const EdgeInsets.all(25),
-      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+      child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
         SizedBox(
           width: MediaQuery.of(context).size.width * 0.4,
           child: dropdownWidget(_selectedCategory, (selected) {
@@ -141,9 +147,9 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
               _selectedCategory = selected!;
               _onSelectFilter();
             });
-          }, ['NO FILTER', 'CLIENT', 'ORG HEAD'], _selectedCategory, false),
+          }, ['NO FILTER', 'YOUTH', 'ORG HEAD'], _selectedCategory, false),
         ),
-        ElevatedButton(
+        /*ElevatedButton(
             onPressed: () {},
             style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromARGB(255, 88, 147, 201),
@@ -154,7 +160,7 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
               child: AutoSizeText('NEW USER',
                   style:
                       GoogleFonts.poppins(textStyle: whiteBoldStyle(size: 18))),
-            ))
+            ))*/
       ]),
     );
   }

@@ -264,8 +264,8 @@ class _EditOrgHeadScreenState extends State<EditOrgHeadScreen> {
       setState(() {
         _isLoading = false;
       });
-      scaffoldMessenger.showSnackBar(
-          const SnackBar(content: Text('Successfully edit org head account')));
+      scaffoldMessenger.showSnackBar(const SnackBar(
+          content: Text('Successfully editted org head account')));
       goRouter.go('/orgHeads');
     } catch (error) {
       scaffoldMessenger.showSnackBar(

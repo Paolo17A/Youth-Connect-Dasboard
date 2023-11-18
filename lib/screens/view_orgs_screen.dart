@@ -254,8 +254,12 @@ class _ViewOrgsScreenState extends State<ViewOrgsScreen> {
                       textColor: entryColor),
                   viewFlexActionsCell([
                     editEntryButton(context,
-                        onPress: () => GoRouter.of(context).goNamed('editOrg',
-                            pathParameters: {'orgID': filteredOrgs[index].id})),
+                        onPress: () => GoRouter.of(context)
+                                .goNamed('editOrg', pathParameters: {
+                              'orgID':
+                                  filteredOrgs[index + ((pageNumber - 1) * 10)]
+                                      .id
+                            })),
                     if (orgData['isActive'] == true)
                       deleteEntryButton(context, onPress: () {
                         displayDeleteEntryDialog(context,

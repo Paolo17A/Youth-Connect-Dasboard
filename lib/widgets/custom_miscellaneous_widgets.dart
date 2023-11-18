@@ -107,7 +107,8 @@ Widget orgDashboardWidget(BuildContext context,
     {required String label,
     required String buttonLabel,
     required Widget displayIcon,
-    required Function onPress}) {
+    required Function onPress,
+    bool willHideButton = false}) {
   return Padding(
     padding: const EdgeInsets.all(8),
     child: Container(
@@ -126,27 +127,30 @@ Widget orgDashboardWidget(BuildContext context,
                   AutoSizeText(label,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.inter(textStyle: blackBoldStyle())),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.07,
-                    height: 45,
-                    child: ElevatedButton(
-                      onPressed: () => onPress(),
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          )),
-                      child: Center(
-                        child: AutoSizeText(buttonLabel,
-                            textAlign: TextAlign.center,
-                            overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.inter(
-                                color: Colors.black,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 15)),
+                  if (!willHideButton)
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.07,
+                      height: 45,
+                      child: ElevatedButton(
+                        onPressed: () => onPress(),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            )),
+                        child: Center(
+                          child: AutoSizeText(buttonLabel,
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.inter(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 15)),
+                        ),
                       ),
-                    ),
-                  )
+                    )
+                  else
+                    SizedBox(height: 45)
                 ],
               ),
             ),

@@ -221,7 +221,7 @@ class _EditOrgScreenState extends State<EditOrgScreen> {
         appBar: appBarWidget(context),
         body: Row(
           children: [
-            leftNavigator(context, 2),
+            leftNavigator(context, 2.2),
             bodyWidgetWhiteBG(
               context,
               stackedLoadingContainer(

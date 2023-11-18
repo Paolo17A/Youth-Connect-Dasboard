@@ -209,7 +209,7 @@ class _OrgHomeScreenState extends State<OrgHomeScreen> {
                   _accreditationStatus == 'DISAPPROVED')) {
             _displayRenewOrgDialog();
           }
-        }),
+        }, willHideButton: _isAccredited && _accreditationStatus == 'APPROVED'),
         orgDashboardWidget(context,
             label: _accreditationStatus.isNotEmpty
                 ? _accreditationStatus

@@ -192,14 +192,16 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
               context,
               switchedLoadingContainer(
                   _isLoading,
-                  horizontalPadding5Percent(
-                      context,
-                      Column(
-                        children: [
-                          _newProjectHeaderWidget(),
-                          _projectsContainerWidget(),
-                        ],
-                      ))))
+                  SingleChildScrollView(
+                    child: horizontalPadding3Percent(
+                        context,
+                        Column(
+                          children: [
+                            _newProjectHeaderWidget(),
+                            _projectsContainerWidget(),
+                          ],
+                        )),
+                  )))
         ]));
   }
 
@@ -248,11 +250,11 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
     return viewContentLabelRow(
       context,
       children: [
-        viewFlexTextCell('#',
+        /*viewFlexTextCell('#',
             flex: 1,
             backgroundColor: Colors.grey,
             borderColor: Colors.white,
-            textColor: Colors.white),
+            textColor: Colors.white),*/
         viewFlexTextCell('Title',
             flex: 2,
             backgroundColor: Colors.grey,
@@ -310,11 +312,11 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
             }
             return viewContentEntryRow(context,
                 children: [
-                  viewFlexTextCell('#${(index + 1) + ((pageNumber - 1) * 10)}',
+                  /*viewFlexTextCell('#${(index + 1) + ((pageNumber - 1) * 10)}',
                       flex: 1,
                       backgroundColor: backgroundColor,
                       borderColor: borderColor,
-                      textColor: entryColor),
+                      textColor: entryColor),*/
                   viewFlexTextCell(projectData['title'],
                       flex: 2,
                       backgroundColor: backgroundColor,

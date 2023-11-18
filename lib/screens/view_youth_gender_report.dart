@@ -201,7 +201,7 @@ class _ViewYouthGenderReportState extends State<ViewYouthGenderReportScreen> {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 20),
       child: SizedBox(
-        height: MediaQuery.of(context).size.height * 0.52,
+        height: 500,
         child: ListView.builder(
             shrinkWrap: true,
             itemCount:
