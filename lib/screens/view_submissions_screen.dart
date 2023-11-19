@@ -13,6 +13,7 @@ import 'package:ywda_dashboard/widgets/custom_miscellaneous_widgets.dart';
 import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
+import '../utils/firebase_util.dart';
 import '../widgets/custom_text_widgets.dart';
 
 class ViewSubmissionsScreen extends StatefulWidget {
@@ -31,9 +32,15 @@ class _ViewSubmissionsScreenState extends State<ViewSubmissionsScreen> {
   int maxPageNumber = 1;
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     super.didChangeDependencies();
-    getAllUsers();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!hasLoggedInUser()) {
+        GoRouter.of(context).go('/login');
+        return;
+      }
+      getAllUsers();
+    });
   }
 
   Future getAllUsers() async {

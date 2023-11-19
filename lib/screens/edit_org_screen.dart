@@ -14,6 +14,7 @@ import 'package:ywda_dashboard/widgets/youth_connect_textfield_widget.dart';
 import 'package:ywda_dashboard/widgets/dropdown_widget.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
+import '../utils/firebase_util.dart';
 import '../widgets/custom_button_widgets.dart';
 import '../widgets/custom_text_widgets.dart';
 
@@ -52,9 +53,15 @@ class _EditOrgScreenState extends State<EditOrgScreen> {
   String currentCoverURL = '';
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     super.didChangeDependencies();
-    getThisOrg();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!hasLoggedInUser()) {
+        GoRouter.of(context).go('/login');
+        return;
+      }
+      getThisOrg();
+    });
   }
 
   @override

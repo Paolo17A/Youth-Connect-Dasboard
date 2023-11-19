@@ -10,6 +10,7 @@ import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
 import '../utils/delete_entry_dialog_util.dart';
+import '../utils/firebase_util.dart';
 import '../widgets/custom_button_widgets.dart';
 import '../widgets/custom_miscellaneous_widgets.dart';
 import '../widgets/custom_text_widgets.dart';
@@ -32,9 +33,15 @@ class _ViewOrgHeadsScreenState extends State<ViewOrgHeadsScreen> {
   int maxPageNumber = 1;
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     super.didChangeDependencies();
-    if (!_isInitialized) getAllOrgHeads();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!hasLoggedInUser()) {
+        GoRouter.of(context).go('/login');
+        return;
+      }
+      if (!_isInitialized) getAllOrgHeads();
+    });
   }
 
   void getAllOrgHeads() async {

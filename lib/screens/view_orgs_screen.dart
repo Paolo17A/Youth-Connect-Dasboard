@@ -13,6 +13,8 @@ import 'package:ywda_dashboard/widgets/custom_text_widgets.dart';
 import 'package:ywda_dashboard/widgets/dropdown_widget.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
+import '../utils/firebase_util.dart';
+
 class ViewOrgsScreen extends StatefulWidget {
   const ViewOrgsScreen({super.key});
 
@@ -30,9 +32,15 @@ class _ViewOrgsScreenState extends State<ViewOrgsScreen> {
   String _selectedCategory = '';
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     super.didChangeDependencies();
-    getAllOrgs();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!hasLoggedInUser()) {
+        GoRouter.of(context).go('/login');
+        return;
+      }
+      getAllOrgs();
+    });
   }
 
   void getAllOrgs() async {

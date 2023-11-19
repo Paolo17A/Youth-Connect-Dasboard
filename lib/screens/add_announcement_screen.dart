@@ -15,6 +15,7 @@ import 'package:ywda_dashboard/widgets/custom_text_widgets.dart';
 import 'package:ywda_dashboard/widgets/youth_connect_textfield_widget.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
+import '../utils/firebase_util.dart';
 import '../widgets/custom_button_widgets.dart';
 
 class AddAnnouncementScreen extends StatefulWidget {
@@ -32,6 +33,17 @@ class _AddAnnouncementScreenState extends State<AddAnnouncementScreen> {
   final _contentController = TextEditingController();
 
   Uint8List? currentSelectedFile;
+
+  @override
+  void didChangeDependencies() async {
+    super.didChangeDependencies();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!hasLoggedInUser()) {
+        GoRouter.of(context).go('/login');
+        return;
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -56,16 +68,6 @@ class _AddAnnouncementScreenState extends State<AddAnnouncementScreen> {
     if (_titleController.text.isEmpty || _contentController.text.isEmpty) {
       scaffoldMessenger.showSnackBar(
           const SnackBar(content: Text('Please fill up all fields.')));
-      return;
-    } else if (_titleController.text.length < 10) {
-      scaffoldMessenger.showSnackBar(const SnackBar(
-          content: Text(
-              'The announcement title must be at least 10 characters long.')));
-      return;
-    } else if (_contentController.text.length < 30) {
-      scaffoldMessenger.showSnackBar(const SnackBar(
-          content: Text(
-              'The announcement content must be at least 30 characters long.')));
       return;
     }
     try {

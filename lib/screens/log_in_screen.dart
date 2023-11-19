@@ -202,26 +202,31 @@ class _LogInScreenState extends State<LogInScreen> {
       padding: const EdgeInsets.all(20),
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         TextButton(
-            onPressed: () {},
+            onPressed: () => GoRouter.of(context).go('/forgotPassword'),
             child: Text('Forgot Password?',
                 style: GoogleFonts.poppins(
                     textStyle: const TextStyle(
                         color: Colors.black, fontWeight: FontWeight.w400)))),
-        Wrap(
-          alignment: WrapAlignment.center,
+        Column(
           children: [
-            Text('New Here? ',
-                style: GoogleFonts.poppins(
-                    textStyle:
-                        const TextStyle(fontSize: 16, color: Colors.black))),
-            TextButton(
-                onPressed: () => GoRouter.of(context).go('/register'),
-                child: Text('Sign Up',
+            Wrap(
+              alignment: WrapAlignment.center,
+              children: [
+                Text('New Here? ',
                     style: GoogleFonts.poppins(
                         textStyle: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                            color: Color.fromARGB(255, 34, 52, 189)))))
+                            fontSize: 16, color: Colors.black))),
+                TextButton(
+                    onPressed: () => GoRouter.of(context).go('/register'),
+                    child: Text('Sign Up',
+                        style: GoogleFonts.poppins(
+                            textStyle: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                                color: Color.fromARGB(255, 34, 52, 189)))))
+              ],
+            ),
+            TextButton(onPressed: () {}, child: Text('Go To Website'))
           ],
         )
       ]),

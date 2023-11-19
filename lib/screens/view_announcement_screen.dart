@@ -12,6 +12,7 @@ import 'package:ywda_dashboard/widgets/custom_miscellaneous_widgets.dart';
 import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
+import '../utils/firebase_util.dart';
 import '../widgets/custom_text_widgets.dart';
 
 class ViewAnnouncementScreen extends StatefulWidget {
@@ -28,9 +29,16 @@ class _ViewAnnouncementScreenState extends State<ViewAnnouncementScreen> {
   int maxPageNumber = 1;
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     super.didChangeDependencies();
-    getAllAnnouncements();
+    super.didChangeDependencies();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!hasLoggedInUser()) {
+        GoRouter.of(context).go('/login');
+        return;
+      }
+      getAllAnnouncements();
+    });
   }
 
   void getAllAnnouncements() async {

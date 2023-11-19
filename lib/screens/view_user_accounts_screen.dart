@@ -1,7 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ywda_dashboard/widgets/app_bar_widget.dart';
 import 'package:ywda_dashboard/widgets/custom_container_widgets.dart';
 import 'package:ywda_dashboard/widgets/custom_miscellaneous_widgets.dart';
@@ -10,6 +10,7 @@ import 'package:ywda_dashboard/widgets/custom_text_widgets.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
 import '../utils/delete_entry_dialog_util.dart';
+import '../utils/firebase_util.dart';
 import '../widgets/custom_button_widgets.dart';
 import '../widgets/dropdown_widget.dart';
 
@@ -31,9 +32,15 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
   int maxPageNumber = 1;
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     super.didChangeDependencies();
-    getAllUsers();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!hasLoggedInUser()) {
+        GoRouter.of(context).go('/login');
+        return;
+      }
+      getAllUsers();
+    });
   }
 
   void _onSelectFilter() {

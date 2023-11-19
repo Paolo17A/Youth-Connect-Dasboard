@@ -55,11 +55,11 @@ Widget leftNavigator(BuildContext context, double index) {
                       title:
                           Text('\t\t\tOrg. Profiles', style: blackThinStyle()),
                       onTap: () => GoRouter.of(context).go('/orgs'))),
-              Container(
+              /*Container(
                   color: index == 3 ? Colors.white : null,
                   child: ListTile(
                       title: Text('Forms', style: blackBoldStyle()),
-                      onTap: () => GoRouter.of(context).go('/forms'))),
+                      onTap: () => GoRouter.of(context).go('/forms'))),*/
               Container(
                   color: index == 4 ? Colors.white : null,
                   child: ListTile(
@@ -78,7 +78,7 @@ Widget leftNavigator(BuildContext context, double index) {
               Container(
                   color: index == 7 ? Colors.white : null,
                   child: ListTile(
-                      title: Text('Submissions', style: blackBoldStyle()),
+                      title: Text('Tasks', style: blackBoldStyle()),
                       onTap: () => GoRouter.of(context).go('/submissions'))),
               Container(
                   color: index == 8 ? Colors.white : null,

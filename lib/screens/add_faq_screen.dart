@@ -10,6 +10,7 @@ import 'package:ywda_dashboard/widgets/youth_connect_textfield_widget.dart';
 import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
+import '../utils/firebase_util.dart';
 import '../widgets/custom_button_widgets.dart';
 import '../widgets/custom_text_widgets.dart';
 
@@ -24,6 +25,17 @@ class _AddFAQScreenState extends State<AddFAQScreen> {
   bool _isLoading = false;
   final _questionController = TextEditingController();
   final _answerController = TextEditingController();
+
+  @override
+  void didChangeDependencies() async {
+    super.didChangeDependencies();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!hasLoggedInUser()) {
+        GoRouter.of(context).go('/login');
+        return;
+      }
+    });
+  }
 
   @override
   void dispose() {

@@ -10,6 +10,7 @@ import 'package:ywda_dashboard/widgets/custom_container_widgets.dart';
 import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
+import '../utils/firebase_util.dart';
 import '../widgets/custom_miscellaneous_widgets.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -45,15 +46,21 @@ class _HomeScreenState extends State<HomeScreen> {
     'NON-BINARY': 0,
     'TRANSGENDER': 0,
     'INTERSEX': 0,
-    'OTHERS': 0
+    'PREFER NOT TO SAY': 0
   };
   List<DocumentSnapshot> allOrgs = [];
   List<String> allTowns = [];
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     super.didChangeDependencies();
-    initializeHome();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!hasLoggedInUser()) {
+        GoRouter.of(context).go('/login');
+        return;
+      }
+      initializeHome();
+    });
   }
 
   int _calculateAge(DateTime birthDate) {
@@ -110,7 +117,8 @@ class _HomeScreenState extends State<HomeScreen> {
           } else if (gender == 'INTERSEX') {
             genderMap['INTERSEX'] = genderMap['INTERSEX']! + 1;
           } else {
-            genderMap['OTHERS'] = genderMap['OTHERS']! + 1;
+            genderMap['PREFER NOT TO SAY'] =
+                genderMap['PREFER NOT TO SAY']! + 1;
           }
         }
 

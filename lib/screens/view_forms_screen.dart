@@ -14,6 +14,7 @@ import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 import 'dart:html' as html;
 
+import '../utils/firebase_util.dart';
 import '../widgets/custom_text_widgets.dart';
 
 class ViewFormsScreen extends StatefulWidget {
@@ -31,9 +32,15 @@ class _ViewFormsScreenState extends State<ViewFormsScreen> {
   int maxPageNumber = 1;
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     super.didChangeDependencies();
-    getAllForms();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!hasLoggedInUser()) {
+        GoRouter.of(context).go('/login');
+        return;
+      }
+      getAllForms();
+    });
   }
 
   Future getAllForms() async {

@@ -68,16 +68,9 @@ AppBar loginAppBar(BuildContext context) {
       children: [
         Image.asset('assets/images/ywda_admin_logo.png', scale: 30),
         Gap(10),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('YDA',
-                style: GoogleFonts.poppins(textStyle: whiteBoldStyle())),
-            Text('LAGUNA',
-                style: GoogleFonts.poppins(textStyle: yellowBoldStyle()))
-          ],
-        ),
+        Text('YDA ', style: GoogleFonts.poppins(textStyle: whiteBoldStyle())),
+        Text('LAGUNA',
+            style: GoogleFonts.poppins(textStyle: yellowBoldStyle())),
       ],
     ),
   );

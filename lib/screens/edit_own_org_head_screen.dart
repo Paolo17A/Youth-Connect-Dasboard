@@ -6,6 +6,7 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../utils/firebase_util.dart';
 import '../widgets/app_bar_widget.dart';
 import '../widgets/custom_button_widgets.dart';
 import '../widgets/custom_container_widgets.dart';
@@ -60,9 +61,15 @@ class _EditOwnOrgHeadScreenState extends State<EditOwnOrgHeadScreen> {
   final _orgDescriptionController = TextEditingController();
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     super.didChangeDependencies();
-    if (!_isInitialized) getOrgHeadData();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!hasLoggedInUser()) {
+        GoRouter.of(context).go('/login');
+        return;
+      }
+      if (!_isInitialized) getOrgHeadData();
+    });
   }
 
   void handlePreviousButton() {

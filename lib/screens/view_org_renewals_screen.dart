@@ -15,6 +15,7 @@ import 'package:ywda_dashboard/widgets/custom_container_widgets.dart';
 import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
+import '../utils/firebase_util.dart';
 import '../widgets/custom_miscellaneous_widgets.dart';
 import '../widgets/custom_text_widgets.dart';
 import '../widgets/dropdown_widget.dart';
@@ -41,9 +42,15 @@ class _ViewOrgRenewalsScreenState extends State<ViewOrgRenewalsScreen> {
   int maxPageNumber = 1;
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     super.didChangeDependencies();
-    if (!isInitialized) getAllRenewalRequests();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!hasLoggedInUser()) {
+        GoRouter.of(context).go('/login');
+        return;
+      }
+      if (!isInitialized) getAllRenewalRequests();
+    });
   }
 
   void _onSelectFilter() {

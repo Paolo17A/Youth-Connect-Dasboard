@@ -147,7 +147,7 @@ Container loginBackgroundContainer(BuildContext context,
               padding: const EdgeInsets.all(5),
               child: Row(children: [
                 AutoSizeText(
-                  'Youth Development Affairs Office of Laguna * Copyright All Rights Reserved 2023',
+                  'Youth Development Affairs Office of Laguna • Copyright All Rights Reserved 2023',
                   style: whiteBoldStyle(),
                 )
               ]),

@@ -17,6 +17,8 @@ import 'package:ywda_dashboard/screens/edit_org_project_screen.dart';
 import 'package:ywda_dashboard/screens/edit_org_screen.dart';
 import 'package:ywda_dashboard/screens/edit_own_org_head_screen.dart';
 import 'package:ywda_dashboard/screens/edit_project_screen.dart';
+import 'package:ywda_dashboard/screens/edit_youth_information.dart';
+import 'package:ywda_dashboard/screens/forgot_password_screen.dart';
 import 'package:ywda_dashboard/screens/grade_submission_screen.dart';
 import 'package:ywda_dashboard/screens/home_screen.dart';
 import 'package:ywda_dashboard/screens/log_in_screen.dart';
@@ -67,13 +69,29 @@ class MyApp extends StatelessWidget {
               pageBuilder: (context, state) {
                 return customTransition(context, state, const LogInScreen());
               }),
+          GoRoute(
+              path: 'forgotPassword',
+              pageBuilder: (context, state) {
+                return customTransition(
+                    context, state, const ForgotPasswordScreen());
+              }),
           //ADMIN SCREENS
           GoRoute(
               path: 'home',
               pageBuilder: (context, state) {
                 return customTransition(context, state, const HomeScreen());
               }),
-
+          GoRoute(
+              path: 'editYouth/:returnPoint/:youthID',
+              name: 'editYouth',
+              pageBuilder: (context, state) {
+                return customTransition(
+                    context,
+                    state,
+                    EditYouthInformationScreen(
+                        returnPoint: state.pathParameters['returnPoint']!,
+                        youthID: state.pathParameters['youthID']!));
+              }),
           GoRoute(
               path: 'youthInformation/:category',
               name: 'youthInformation',

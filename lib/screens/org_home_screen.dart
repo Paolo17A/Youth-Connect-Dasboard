@@ -17,6 +17,7 @@ import 'package:ywda_dashboard/widgets/custom_text_widgets.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
 import '../utils/color_util.dart';
+import '../utils/firebase_util.dart';
 import '../utils/url_util.dart';
 import '../widgets/custom_padding_widgets.dart';
 
@@ -39,9 +40,15 @@ class _OrgHomeScreenState extends State<OrgHomeScreen> {
   String? _formAccreditationSelectedFileExtension;
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     super.didChangeDependencies();
-    if (!_isInitialized) initializeOrgHome();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!hasLoggedInUser()) {
+        GoRouter.of(context).go('/login');
+        return;
+      }
+      if (!_isInitialized) initializeOrgHome();
+    });
   }
 
   void initializeOrgHome() async {
@@ -235,8 +242,8 @@ class _OrgHomeScreenState extends State<OrgHomeScreen> {
 
   Widget _announcementsContainer() {
     return Container(
-      width: MediaQuery.of(context).size.width * 0.55,
-      height: MediaQuery.of(context).size.height * 0.55,
+      width: MediaQuery.of(context).size.width * 0.75,
+      height: MediaQuery.of(context).size.height * 0.6,
       decoration: BoxDecoration(
           color: CustomColors.softBlue,
           borderRadius: BorderRadius.circular(30)),
@@ -251,25 +258,30 @@ class _OrgHomeScreenState extends State<OrgHomeScreen> {
               ),
             ]),
             allAnnouncements.isNotEmpty
-                ? ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: allAnnouncements.length,
-                    itemBuilder: (context, index) {
-                      //  Local variables for better readability
-                      final announcement = allAnnouncements[index].data()
-                          as Map<dynamic, dynamic>;
-                      String title = announcement['title'];
-                      String content = announcement['content'];
-                      Timestamp dateAdded = announcement['dateAdded'];
-                      DateTime dateAnnounced = dateAdded.toDate();
-                      String formattedDateAnnounced =
-                          DateFormat('dd MMM yyyy').format(dateAnnounced);
-                      List<dynamic> imageURLs = announcement['imageURLs'];
-                      return GestureDetector(
-                          onTap: () {},
-                          child: announcementEntryContainer(imageURLs,
-                              formattedDateAnnounced, title, content));
-                    })
+                ? SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.53,
+                    child: SingleChildScrollView(
+                      child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: allAnnouncements.length,
+                          itemBuilder: (context, index) {
+                            //  Local variables for better readability
+                            final announcement = allAnnouncements[index].data()
+                                as Map<dynamic, dynamic>;
+                            String title = announcement['title'];
+                            String content = announcement['content'];
+                            Timestamp dateAdded = announcement['dateAdded'];
+                            DateTime dateAnnounced = dateAdded.toDate();
+                            String formattedDateAnnounced =
+                                DateFormat('dd MMM yyyy').format(dateAnnounced);
+                            List<dynamic> imageURLs = announcement['imageURLs'];
+                            return GestureDetector(
+                                onTap: () {},
+                                child: announcementEntryContainer(imageURLs,
+                                    formattedDateAnnounced, title, content));
+                          }),
+                    ),
+                  )
                 : Center(
                     child:
                         Text('No ANNOUNCEMENTS YET', style: blackBoldStyle()))

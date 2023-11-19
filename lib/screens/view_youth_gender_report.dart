@@ -1,12 +1,14 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ywda_dashboard/widgets/app_bar_widget.dart';
 import 'package:ywda_dashboard/widgets/custom_container_widgets.dart';
 import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
 import '../utils/delete_entry_dialog_util.dart';
+import '../utils/firebase_util.dart';
 import '../widgets/custom_button_widgets.dart';
 import '../widgets/custom_miscellaneous_widgets.dart';
 import '../widgets/custom_text_widgets.dart';
@@ -36,9 +38,15 @@ class _ViewYouthGenderReportState extends State<ViewYouthGenderReportScreen> {
   }
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     super.didChangeDependencies();
-    getAllUsers();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!hasLoggedInUser()) {
+        GoRouter.of(context).go('/login');
+        return;
+      }
+      getAllUsers();
+    });
   }
 
   void _onSelectFilter() {
@@ -199,7 +207,7 @@ class _ViewYouthGenderReportState extends State<ViewYouthGenderReportScreen> {
 
   Widget _userEntries() {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 20),
+      padding: EdgeInsets.symmetric(vertical: 0),
       child: SizedBox(
         height: 500,
         child: ListView.builder(
@@ -231,7 +239,13 @@ class _ViewYouthGenderReportState extends State<ViewYouthGenderReportScreen> {
                         borderColor: borderColor,
                         textColor: entryColor),
                     viewFlexActionsCell([
-                      editEntryButton(context, onPress: () {}),
+                      editEntryButton(context,
+                          onPress: () => GoRouter.of(context)
+                                  .goNamed('editYouth', pathParameters: {
+                                'returnPoint': '1.2',
+                                'youthID':
+                                    allUsers[index + ((pageNumber - 1) * 10)].id
+                              })),
                       if (userData['isSuspended'] == true)
                         restoreEntryButton(context, onPress: () {
                           setUserSuspendedState(

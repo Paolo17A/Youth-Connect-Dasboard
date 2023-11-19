@@ -1,12 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ywda_dashboard/widgets/custom_container_widgets.dart';
 import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
 import 'package:ywda_dashboard/widgets/app_bar_widget.dart';
 import 'package:ywda_dashboard/widgets/youth_connect_textfield_widget.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
+
+import '../utils/firebase_util.dart';
 
 class AdminSettingsScreen extends StatefulWidget {
   const AdminSettingsScreen({super.key});
@@ -20,6 +23,17 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
   final currentPasswordController = TextEditingController();
   final newPasswordController = TextEditingController();
   final confirmNewPasswordController = TextEditingController();
+
+  @override
+  void didChangeDependencies() async {
+    super.didChangeDependencies();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!hasLoggedInUser()) {
+        GoRouter.of(context).go('/login');
+        return;
+      }
+    });
+  }
 
   @override
   void dispose() {

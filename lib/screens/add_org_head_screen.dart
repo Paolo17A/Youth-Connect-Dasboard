@@ -14,6 +14,7 @@ import 'package:ywda_dashboard/widgets/app_bar_widget.dart';
 import 'package:ywda_dashboard/widgets/custom_container_widgets.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
+import '../utils/firebase_util.dart';
 import '../utils/string_util.dart';
 import '../widgets/custom_button_widgets.dart';
 import '../widgets/custom_miscellaneous_widgets.dart';
@@ -30,6 +31,17 @@ class AddOrgHeadScreen extends StatefulWidget {
 enum RegisterStates { SIGNUP, MEMBERSHIP, ORGANIZATION, FORMS }
 
 class _AddOrgHeadScreenState extends State<AddOrgHeadScreen> {
+  @override
+  void didChangeDependencies() async {
+    super.didChangeDependencies();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!hasLoggedInUser()) {
+        GoRouter.of(context).go('/login');
+        return;
+      }
+    });
+  }
+
   bool _isLoading = false;
   RegisterStates currentRegisterState = RegisterStates.SIGNUP;
 
