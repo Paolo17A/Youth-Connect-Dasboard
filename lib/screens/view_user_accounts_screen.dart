@@ -252,7 +252,13 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
                       borderColor: borderColor,
                       textColor: entryColor),
                   viewFlexActionsCell([
-                    editEntryButton(context, onPress: () {}),
+                    editEntryButton(context,
+                        onPress: () => GoRouter.of(context)
+                                .goNamed('editYouth', pathParameters: {
+                              'returnPoint': '4',
+                              'youthID':
+                                  allUsers[index + ((pageNumber - 1) * 10)].id
+                            })),
                     if (userData['isSuspended'] == true)
                       restoreEntryButton(context, onPress: () {
                         setUserSuspendedState(

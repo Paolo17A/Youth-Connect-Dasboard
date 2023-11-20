@@ -158,8 +158,10 @@ class _EditYouthInformationScreenState
       String returnPath = '';
       if (widget.returnPoint == '1.1') {
         returnPath = '/ageReport';
-      } else {
+      } else if (widget.returnPoint == '1.2') {
         returnPath = '/genderReport';
+      } else {
+        returnPath = '/users';
       }
       widget.returnPoint == '1'
           ? GoRouter.of(context).goNamed('youthInformation',
@@ -220,8 +222,10 @@ class _EditYouthInformationScreenState
     String returnPath = '';
     if (widget.returnPoint == '1.1') {
       returnPath = '/ageReport';
-    } else {
+    } else if (widget.returnPoint == '1.2') {
       returnPath = '/genderReport';
+    } else {
+      returnPath = '/users';
     }
     return Row(children: [
       backToViewScreenButton(context,

@@ -109,18 +109,6 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
           const SnackBar(content: Text('Please fill up all fields.')));
       return;
     }
-    if (_titleController.text.length < 10) {
-      scaffoldMessenger.showSnackBar(const SnackBar(
-          content:
-              Text('The project title must be at least 10 characters long.')));
-      return;
-    }
-    if (_contentController.text.length < 30) {
-      scaffoldMessenger.showSnackBar(const SnackBar(
-          content: Text(
-              'The project content must be at least 30 characters long.')));
-      return;
-    }
     if (_selectedDateStart == null && _selectedDateEnd == null) {
       scaffoldMessenger.showSnackBar(const SnackBar(
           content:

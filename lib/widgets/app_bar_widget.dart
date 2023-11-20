@@ -73,5 +73,10 @@ AppBar loginAppBar(BuildContext context) {
             style: GoogleFonts.poppins(textStyle: yellowBoldStyle())),
       ],
     ),
+    actions: [
+      TextButton(
+          onPressed: () {},
+          child: Text('Go To Website', style: whiteBoldStyle()))
+    ],
   );
 }

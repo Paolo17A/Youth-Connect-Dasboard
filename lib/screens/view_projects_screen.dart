@@ -123,8 +123,8 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
       associatedOrgs.clear();
       for (var head in associatedHeads.entries) {
         final orgID = head.value;
-        if (orgID == 'ADMIN PROJECT') {
-          associatedOrgs[orgID] = 'ADMIN PROJECT';
+        if (orgID == 'YDA PROJECT') {
+          associatedOrgs[orgID] = 'YDA PROJECT';
         } else {
           if (associatedHeads.containsKey(orgID)) {
             continue;
@@ -145,6 +145,9 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
     } catch (error) {
       scaffoldMessenger.showSnackBar(
           SnackBar(content: Text('Error getting all projects: $error')));
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -242,7 +245,7 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
             child: Column(
               children: [
                 _projectLabelRow(),
-                allProjects.isNotEmpty
+                filteredProjects.isNotEmpty
                     ? _projectEntries()
                     : viewContentUnavailable(context,
                         text: 'NO PROJECTS AVAILABLE')

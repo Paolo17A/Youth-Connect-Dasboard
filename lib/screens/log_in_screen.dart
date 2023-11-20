@@ -226,7 +226,6 @@ class _LogInScreenState extends State<LogInScreen> {
                                 color: Color.fromARGB(255, 34, 52, 189)))))
               ],
             ),
-            TextButton(onPressed: () {}, child: Text('Go To Website'))
           ],
         )
       ]),
