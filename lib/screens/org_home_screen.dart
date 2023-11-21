@@ -144,7 +144,7 @@ class _OrgHomeScreenState extends State<OrgHomeScreen> {
         'accreditationForm': accreditationFormDownloadURL,
         'certification': '',
         'certificateName': '',
-        'finalizeData': DateTime(1970),
+        'finalizeDate': DateTime(1970),
         'status': 'PENDING'
       });
       await FirebaseFirestore.instance
