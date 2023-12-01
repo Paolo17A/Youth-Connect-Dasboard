@@ -11,6 +11,14 @@ Container bodyWidgetWhiteBG(BuildContext context, Widget child) {
       child: child);
 }
 
+Container bodyWidgetMercuryBG(BuildContext context, Widget child) {
+  return Container(
+      width: MediaQuery.of(context).size.width * 0.8,
+      height: MediaQuery.of(context).size.height,
+      color: CustomColors.mercury,
+      child: child);
+}
+
 Widget switchedLoadingContainer(bool isLoading, Widget child) {
   return isLoading ? const Center(child: CircularProgressIndicator()) : child;
 }
@@ -79,20 +87,17 @@ Widget viewContentEntryRow(BuildContext context,
 Widget viewFlexTextCell(String text,
     {required int flex,
     required Color backgroundColor,
-    required Color borderColor,
-    required Color textColor,
     BorderRadius? customBorderRadius}) {
   return Flexible(
     flex: flex,
     child: Container(
         height: 50,
-        decoration: BoxDecoration(
-            border: Border.all(color: borderColor), color: backgroundColor),
+        decoration: BoxDecoration(color: backgroundColor),
         child: ClipRRect(
           child: Center(
               child: AutoSizeText(text,
                   overflow: TextOverflow.ellipsis,
-                  style: viewEntryStyle(textColor))),
+                  style: viewEntryStyle(Colors.black))),
         )),
   );
 }
@@ -100,16 +105,13 @@ Widget viewFlexTextCell(String text,
 Widget viewFlexActionsCell(List<Widget> children,
     {required int flex,
     required Color backgroundColor,
-    required Color borderColor,
     BorderRadius? customBorderRadius}) {
   return Flexible(
       flex: flex,
       child: Container(
         height: 50,
         decoration: BoxDecoration(
-            border: Border.all(color: borderColor),
-            borderRadius: customBorderRadius,
-            color: backgroundColor),
+            borderRadius: customBorderRadius, color: backgroundColor),
         child: Center(
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -121,9 +123,9 @@ Container breakdownContainer(BuildContext context, {required Widget child}) {
   return Container(
       width: MediaQuery.of(context).size.width * 0.23,
       height: MediaQuery.of(context).size.height * 0.4,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          color: CustomColors.softBlue),
+      decoration: BoxDecoration(boxShadow: [
+        BoxShadow(offset: Offset(0, 3), color: Colors.grey.withOpacity(0.5))
+      ], borderRadius: BorderRadius.circular(20), color: Colors.white),
       child: Padding(padding: const EdgeInsets.all(11), child: child));
 }
 

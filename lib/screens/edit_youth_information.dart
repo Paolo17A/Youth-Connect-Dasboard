@@ -10,6 +10,7 @@ import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
 import '../utils/firebase_util.dart';
+import '../utils/go_router_util.dart';
 import '../widgets/custom_button_widgets.dart';
 import '../widgets/custom_text_widgets.dart';
 import '../widgets/dropdown_widget.dart';
@@ -54,7 +55,7 @@ class _EditYouthInformationScreenState
     super.didChangeDependencies();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!hasLoggedInUser()) {
-        GoRouter.of(context).go('/login');
+        GoRouter.of(context).goNamed(GoRoutes.login);
         return;
       }
       if (!_isInitialized) getYouthInformation();
@@ -251,6 +252,7 @@ class _EditYouthInformationScreenState
     return Column(children: [
       vertical10horizontal4(Row(children: [
         AutoSizeText('First Name', style: interSize19()),
+        AutoSizeText('*', style: interSize19(textColor: Colors.red))
       ])),
       YouthConnectTextField(
           text: 'First Name',
@@ -265,6 +267,7 @@ class _EditYouthInformationScreenState
     return Column(children: [
       vertical10horizontal4(Row(children: [
         AutoSizeText('Middle Name', style: interSize19()),
+        AutoSizeText('*', style: interSize19(textColor: Colors.red))
       ])),
       YouthConnectTextField(
           text: 'Middle Name',
@@ -279,6 +282,7 @@ class _EditYouthInformationScreenState
     return Column(children: [
       vertical10horizontal4(Row(children: [
         AutoSizeText('Last Name', style: interSize19()),
+        AutoSizeText('*', style: interSize19(textColor: Colors.red))
       ])),
       YouthConnectTextField(
           text: 'Last Name',
@@ -291,7 +295,10 @@ class _EditYouthInformationScreenState
 
   Widget _residingCityWidget() {
     return Column(children: [
-      Row(children: [AutoSizeText('Residing City', style: interSize19())]),
+      Row(children: [
+        AutoSizeText('Residing City', style: interSize19()),
+        AutoSizeText('*', style: interSize19(textColor: Colors.red))
+      ]),
       dropdownWidget(_residingCity, (selected) {
         setState(() {
           if (selected != null) {
@@ -337,7 +344,10 @@ class _EditYouthInformationScreenState
 
   Widget _genderWidget() {
     return Column(children: [
-      Row(children: [AutoSizeText('Gender', style: interSize19())]),
+      Row(children: [
+        AutoSizeText('Gender', style: interSize19()),
+        AutoSizeText('*', style: interSize19(textColor: Colors.red))
+      ]),
       dropdownWidget(_gender, (selected) {
         setState(() {
           if (selected != null) {
@@ -354,6 +364,7 @@ class _EditYouthInformationScreenState
         child: Column(children: [
           Row(children: [
             Text('Civil Status', style: GoogleFonts.poppins()),
+            AutoSizeText('*', style: interSize19(textColor: Colors.red))
           ]),
           dropdownWidget(_civilStatus, (selected) {
             setState(() {
@@ -376,6 +387,7 @@ class _EditYouthInformationScreenState
     return Column(children: [
       vertical10horizontal4(Row(children: [
         AutoSizeText('School', style: interSize19()),
+        AutoSizeText('*', style: interSize19(textColor: Colors.red))
       ])),
       YouthConnectTextField(
           text: 'School',

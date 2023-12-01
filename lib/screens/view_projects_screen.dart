@@ -14,7 +14,9 @@ import 'package:ywda_dashboard/widgets/custom_miscellaneous_widgets.dart';
 import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
+import '../utils/color_util.dart';
 import '../utils/firebase_util.dart';
+import '../utils/go_router_util.dart';
 import '../widgets/custom_text_widgets.dart';
 import '../widgets/dropdown_widget.dart';
 
@@ -30,9 +32,11 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
   List<DocumentSnapshot> allProjects = [];
   List<DocumentSnapshot> filteredProjects = [];
   String _selectedCategory = '';
+  List<DocumentSnapshot> participantDocs = [];
+  List<DocumentSnapshot> orgDocs = [];
   Map<String, String> associatedHeads = {}; //  userID - orgID
   Map<String, String> associatedOrgs = {}; //  orgID - orgName
-  Map<String, String> associatedParticipants = {}; //   userID - user name
+  // Map<String, String> associatedParticipants = {}; //   userID - user name
 
   int pageNumber = 1;
   int maxPageNumber = 1;
@@ -42,7 +46,7 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
     super.didChangeDependencies();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!hasLoggedInUser()) {
-        GoRouter.of(context).go('/login');
+        GoRouter.of(context).goNamed(GoRoutes.login);
         return;
       }
       getAllProjects();
@@ -81,7 +85,7 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
       maxPageNumber = (filteredProjects.length / 10).ceil();
 
       associatedHeads.clear();
-      associatedParticipants.clear();
+      List<dynamic> participantIDs = [];
       for (var project in allProjects) {
         final projectData = project.data() as Map<dynamic, dynamic>;
         final headID = projectData['organizer'];
@@ -105,18 +109,16 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
         //  get all associated participants
         final participants = projectData['participants'] as List<dynamic>;
         for (var participant in participants) {
-          if (associatedParticipants.containsKey(participant)) {
-            continue;
+          if (!participantIDs.contains(participant)) {
+            participantIDs.add(participant);
           }
-          final getParticipant = await FirebaseFirestore.instance
+        }
+        if (participantIDs.isNotEmpty) {
+          final allParticipants = await FirebaseFirestore.instance
               .collection('users')
-              .doc(participant)
+              .where(FieldPath.documentId, whereIn: participantIDs)
               .get();
-          final participantData =
-              getParticipant.data() as Map<dynamic, dynamic>;
-          String formattedName =
-              '${participantData['firstName']} ${participantData['lastName']}';
-          associatedParticipants[participant] = formattedName;
+          participantDocs = allParticipants.docs;
         }
       }
 
@@ -137,6 +139,23 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
           final orgName = orgData['name'];
           associatedOrgs[orgID] = orgName;
         }
+      }
+
+      List<dynamic> orgIDs = [];
+      for (var particant in participantDocs) {
+        final participantData = particant.data() as Map<dynamic, dynamic>;
+        final orgID = participantData['organization'];
+        if (!orgIDs.contains(orgID)) {
+          orgIDs.add(orgID);
+        }
+      }
+
+      if (orgIDs.isNotEmpty) {
+        final orgs = await FirebaseFirestore.instance
+            .collection('orgs')
+            .where(FieldPath.documentId, whereIn: orgIDs)
+            .get();
+        orgDocs = orgs.docs;
       }
 
       setState(() {
@@ -221,15 +240,21 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        SizedBox(
-          width: MediaQuery.of(context).size.width * 0.4,
-          child: dropdownWidget(_selectedCategory, (selected) {
-            setState(() {
-              _selectedCategory = selected!;
-              _onSelectFilter();
-            });
-          }, ['ALL', 'ADMIN PROJECTS', 'ORG PROJECTS'], _selectedCategory,
-              false),
+        Row(
+          children: [
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.4,
+              child: dropdownWidget(_selectedCategory, (selected) {
+                setState(() {
+                  _selectedCategory = selected!;
+                  _onSelectFilter();
+                });
+              }, ['ALL', 'ADMIN PROJECTS', 'ORG PROJECTS'], _selectedCategory,
+                  false),
+            ),
+            AutoSizeText('${filteredProjects.length} entries',
+                style: blackBoldStyle()),
+          ],
         ),
         viewHeaderAddButton(
             addFunction: () => GoRouter.of(context).go('/project/addProject'),
@@ -260,41 +285,20 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
     return viewContentLabelRow(
       context,
       children: [
-        /*viewFlexTextCell('#',
-            flex: 1,
-            backgroundColor: Colors.grey,
-            borderColor: Colors.white,
-            textColor: Colors.white),*/
+        viewFlexTextCell('#',
+            flex: 1, backgroundColor: Colors.grey.withOpacity(0.5)),
         viewFlexTextCell('Title',
-            flex: 2,
-            backgroundColor: Colors.grey,
-            borderColor: Colors.white,
-            textColor: Colors.white),
+            flex: 2, backgroundColor: Colors.grey.withOpacity(0.5)),
         viewFlexTextCell('Organizer',
-            flex: 3,
-            backgroundColor: Colors.grey,
-            borderColor: Colors.white,
-            textColor: Colors.white),
+            flex: 3, backgroundColor: Colors.grey.withOpacity(0.5)),
         viewFlexTextCell('Date Created',
-            flex: 2,
-            backgroundColor: Colors.grey,
-            borderColor: Colors.white,
-            textColor: Colors.white),
+            flex: 2, backgroundColor: Colors.grey.withOpacity(0.5)),
         viewFlexTextCell('Start Date',
-            flex: 2,
-            backgroundColor: Colors.grey,
-            borderColor: Colors.white,
-            textColor: Colors.white),
+            flex: 2, backgroundColor: Colors.grey.withOpacity(0.5)),
         viewFlexTextCell('End Date',
-            flex: 2,
-            backgroundColor: Colors.grey,
-            borderColor: Colors.white,
-            textColor: Colors.white),
+            flex: 2, backgroundColor: Colors.grey.withOpacity(0.5)),
         viewFlexTextCell('Actions',
-            flex: 2,
-            backgroundColor: Colors.grey,
-            borderColor: Colors.white,
-            textColor: Colors.white)
+            flex: 2, backgroundColor: Colors.grey.withOpacity(0.5))
       ],
     );
   }
@@ -307,64 +311,49 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
           itemCount:
               pageNumber == maxPageNumber ? filteredProjects.length % 10 : 10,
           itemBuilder: (context, index) {
-            Color entryColor = index % 2 == 0 ? Colors.black : Colors.white;
-            Color backgroundColor = index % 2 == 0 ? Colors.white : Colors.grey;
-            Color borderColor = index % 2 == 0 ? Colors.grey : Colors.white;
+            Color backgroundColor =
+                index % 2 == 0 ? Colors.white : Colors.grey.withOpacity(0.5);
+            Color borderColor =
+                index % 2 == 0 ? Colors.grey.withOpacity(0.5) : Colors.white;
             final projectData =
                 filteredProjects[index + ((pageNumber - 1) * 10)].data()
                     as Map<dynamic, dynamic>;
             final participants = projectData['participants'] as List<dynamic>;
-            final names = [];
-            for (var element in associatedParticipants.entries) {
-              if (participants.contains(element.key)) {
-                names.add(element.value);
-              }
-            }
+            List<DocumentSnapshot> filteredParticipants = participantDocs
+                .where((participant) => participants.contains(participant.id))
+                .toList();
             return viewContentEntryRow(context,
                 children: [
-                  /*viewFlexTextCell('#${(index + 1) + ((pageNumber - 1) * 10)}',
-                      flex: 1,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),*/
+                  viewFlexTextCell('#${(index + 1) + ((pageNumber - 1) * 10)}',
+                      flex: 1, backgroundColor: backgroundColor),
                   viewFlexTextCell(projectData['title'],
-                      flex: 2,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),
+                      flex: 2, backgroundColor: backgroundColor),
                   viewFlexTextCell(
                       associatedOrgs[
                           associatedHeads[projectData['organizer']]]!,
                       flex: 3,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),
+                      backgroundColor: backgroundColor),
                   viewFlexTextCell(
                       DateFormat('dd MMM yyyy').format(
                           (projectData['dateAdded'] as Timestamp).toDate()),
                       flex: 2,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),
+                      backgroundColor: backgroundColor),
                   viewFlexTextCell(
                       DateFormat('dd MMM yyyy').format(
                           (projectData['projectDate'] as Timestamp).toDate()),
                       flex: 2,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),
+                      backgroundColor: backgroundColor),
                   if (projectData.containsKey('projectDateEnd'))
                     viewFlexTextCell(
                         DateFormat('dd MMM yyyy').format(
                             (projectData['projectDateEnd'] as Timestamp)
                                 .toDate()),
                         flex: 2,
-                        backgroundColor: backgroundColor,
-                        borderColor: borderColor,
-                        textColor: entryColor),
+                        backgroundColor: backgroundColor),
                   viewFlexActionsCell([
                     viewEntryPopUpButton(context,
-                        onPress: () => showParticipantsDialog(names)),
+                        onPress: () =>
+                            showParticipantsDialog(filteredParticipants)),
                     editEntryButton(context,
                         onPress: () => GoRouter.of(context)
                                 .goNamed('editProject', pathParameters: {
@@ -380,10 +369,7 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
                           deleteEntry: () => deleteThisProject(filteredProjects[
                               index + ((pageNumber - 1) * 10)]));
                     })
-                  ],
-                      flex: 2,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor)
+                  ], flex: 2, backgroundColor: backgroundColor)
                 ],
                 borderColor: borderColor,
                 isLastEntry: index == filteredProjects.length - 1);
@@ -394,40 +380,46 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
   Widget _navigatorButtons() {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 20),
-      child: SizedBox(
-          width: MediaQuery.of(context).size.height * 0.6,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              previousPageButton(context,
-                  onPress: pageNumber == 1
-                      ? null
-                      : () {
-                          if (pageNumber == 1) {
-                            return;
-                          }
-                          setState(() {
-                            pageNumber--;
-                          });
-                        }),
-              AutoSizeText(pageNumber.toString(), style: blackBoldStyle()),
-              nextPageButton(context,
-                  onPress: pageNumber == maxPageNumber
-                      ? null
-                      : () {
-                          if (pageNumber == maxPageNumber) {
-                            return;
-                          }
-                          setState(() {
-                            pageNumber++;
-                          });
-                        })
-            ],
-          )),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          previousPageButton(context,
+              onPress: pageNumber == 1
+                  ? null
+                  : () {
+                      if (pageNumber == 1) {
+                        return;
+                      }
+                      setState(() {
+                        pageNumber--;
+                      });
+                    }),
+          Container(
+            decoration:
+                BoxDecoration(border: Border.all(color: CustomColors.darkBlue)),
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: AutoSizeText(pageNumber.toString(),
+                  style: TextStyle(color: CustomColors.darkBlue)),
+            ),
+          ),
+          nextPageButton(context,
+              onPress: pageNumber == maxPageNumber
+                  ? null
+                  : () {
+                      if (pageNumber == maxPageNumber) {
+                        return;
+                      }
+                      setState(() {
+                        pageNumber++;
+                      });
+                    })
+        ],
+      ),
     );
   }
 
-  void showParticipantsDialog(List<dynamic> projectParticipants) {
+  void showParticipantsDialog(List<DocumentSnapshot> projectParticipants) {
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -439,17 +431,49 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
                       style: GoogleFonts.poppins(
                           fontWeight: FontWeight.bold, fontSize: 50)),
                   projectParticipants.isNotEmpty
-                      ? Row(
-                          children: [
-                            SingleChildScrollView(
-                              child: Column(
-                                  children: projectParticipants
-                                      .map((person) => AutoSizeText(person,
-                                          style: GoogleFonts.poppins(
-                                              fontSize: 30)))
-                                      .toList()),
-                            ),
-                          ],
+                      ? SingleChildScrollView(
+                          child: Column(
+                              children: projectParticipants.map((person) {
+                            final participantData =
+                                person.data() as Map<dynamic, dynamic>;
+                            String formattedName =
+                                '${participantData['firstName']} ${participantData['lastName']}';
+                            String organization =
+                                participantData['organization'];
+                            DocumentSnapshot orgDoc = orgDocs
+                                .where((org) => org.id == organization)
+                                .first;
+                            final orgData =
+                                orgDoc.data() as Map<dynamic, dynamic>;
+                            String orgName = orgData['name'];
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.3,
+                                  decoration:
+                                      BoxDecoration(border: Border.all()),
+                                  child: Center(
+                                    child: AutoSizeText(formattedName,
+                                        style:
+                                            GoogleFonts.poppins(fontSize: 30)),
+                                  ),
+                                ),
+                                Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.3,
+                                  decoration:
+                                      BoxDecoration(border: Border.all()),
+                                  child: Center(
+                                    child: AutoSizeText(orgName,
+                                        style:
+                                            GoogleFonts.poppins(fontSize: 30)),
+                                  ),
+                                )
+                              ],
+                            );
+                          }).toList()),
                         )
                       : Padding(
                           padding: EdgeInsets.all(50),

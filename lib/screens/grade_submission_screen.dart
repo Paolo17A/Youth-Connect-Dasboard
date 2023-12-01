@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:ywda_dashboard/utils/go_router_util.dart';
 import 'package:ywda_dashboard/widgets/app_bar_widget.dart';
 import 'package:ywda_dashboard/widgets/custom_container_widgets.dart';
 import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
@@ -42,7 +43,7 @@ class _GradeSubmissionScreenState extends State<GradeSubmissionScreen> {
     super.didChangeDependencies();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!hasLoggedInUser()) {
-        GoRouter.of(context).go('/login');
+        GoRouter.of(context).goNamed(GoRoutes.login);
         return;
       }
       getSubskillEntry();

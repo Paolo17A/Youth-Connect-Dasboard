@@ -11,6 +11,7 @@ import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
 import '../utils/firebase_util.dart';
+import '../utils/go_router_util.dart';
 import '../widgets/custom_miscellaneous_widgets.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -56,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.didChangeDependencies();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!hasLoggedInUser()) {
-        GoRouter.of(context).go('/login');
+        GoRouter.of(context).goNamed(GoRoutes.login);
         return;
       }
       initializeHome();
@@ -156,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
         body: Row(
           children: [
             leftNavigator(context, 0),
-            bodyWidgetWhiteBG(
+            bodyWidgetMercuryBG(
                 context,
                 switchedLoadingContainer(
                     _isLoading,
@@ -295,11 +296,11 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              percentBarWidget(context, CustomColors.darkBlue,
+              percentBarWidget(context, CustomColors.veniceBlue,
                   (inSchool / allUsers.length), 'In School'),
-              percentBarWidget(context, CustomColors.darkBlue,
+              percentBarWidget(context, CustomColors.veniceBlue,
                   (outSchool / allUsers.length), 'Out of School'),
-              percentBarWidget(context, CustomColors.darkBlue,
+              percentBarWidget(context, CustomColors.veniceBlue,
                   (laborForce / allUsers.length), 'Labor Force')
             ],
           ),
@@ -310,30 +311,38 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _youthBreakdown() {
     return breakdownContainer(context,
-        child: Column(children: [
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.05,
-            child: Row(
-              children: [
-                AutoSizeText(
-                  'Youth Category',
-                  style: GoogleFonts.inter(
-                      textStyle: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 40)),
-                ),
-              ],
+        child: SingleChildScrollView(
+          child: Column(children: [
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.05,
+              child: Row(
+                children: [
+                  AutoSizeText(
+                    'Youth Category',
+                    style: GoogleFonts.inter(
+                        textStyle: const TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 40)),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 40),
-          PieChart(
-              dataMap: ageMap,
-              colorList: [
-                Colors.yellow,
-                Colors.deepOrange,
-                const Color.fromARGB(255, 240, 207, 159)
-              ],
-              chartValuesOptions: const ChartValuesOptions(decimalPlaces: 0))
-        ]));
+            semiCirclePercentWidget(context,
+                ageMap['CHILD YOUTH']! / allUsers.length, 'CHILD YOUTH'),
+            semiCirclePercentWidget(
+                context, ageMap['CORE YOUTH']! / allUsers.length, 'CORE YOUTH'),
+            semiCirclePercentWidget(context,
+                ageMap['ADULT YOUTH']! / allUsers.length, 'ADULT YOUTH')
+
+            /*PieChart(
+                dataMap: ageMap,
+                colorList: [
+                  Colors.yellow,
+                  Colors.deepOrange,
+                  const Color.fromARGB(255, 240, 207, 159)
+                ],
+                chartValuesOptions: const ChartValuesOptions(decimalPlaces: 0))*/
+          ]),
+        ));
   }
 
   Widget _genderBreakdown() {

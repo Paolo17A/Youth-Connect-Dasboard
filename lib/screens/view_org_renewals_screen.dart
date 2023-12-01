@@ -15,7 +15,9 @@ import 'package:ywda_dashboard/widgets/custom_container_widgets.dart';
 import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
+import '../utils/color_util.dart';
 import '../utils/firebase_util.dart';
+import '../utils/go_router_util.dart';
 import '../widgets/custom_miscellaneous_widgets.dart';
 import '../widgets/custom_text_widgets.dart';
 import '../widgets/dropdown_widget.dart';
@@ -46,7 +48,7 @@ class _ViewOrgRenewalsScreenState extends State<ViewOrgRenewalsScreen> {
     super.didChangeDependencies();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!hasLoggedInUser()) {
-        GoRouter.of(context).go('/login');
+        GoRouter.of(context).goNamed(GoRoutes.login);
         return;
       }
       if (!isInitialized) getAllRenewalRequests();
@@ -248,6 +250,8 @@ class _ViewOrgRenewalsScreenState extends State<ViewOrgRenewalsScreen> {
             _onSelectFilter();
           }, ['NO FILTER', 'DISAPPROVED', 'PENDING', 'APPROVED'], '', false),
         ),
+        AutoSizeText('${filteredAccreds.length} entries',
+            style: blackBoldStyle()),
       ]),
     );
   }
@@ -275,37 +279,17 @@ class _ViewOrgRenewalsScreenState extends State<ViewOrgRenewalsScreen> {
       context,
       children: [
         viewFlexTextCell('#',
-            flex: 1,
-            backgroundColor: Colors.grey,
-            borderColor: Colors.white,
-            textColor: Colors.white),
+            flex: 1, backgroundColor: Colors.grey.withOpacity(0.5)),
         viewFlexTextCell('Name',
-            flex: 3,
-            backgroundColor: Colors.grey,
-            borderColor: Colors.white,
-            textColor: Colors.white),
+            flex: 3, backgroundColor: Colors.grey.withOpacity(0.5)),
         viewFlexTextCell('Accreditation Form',
-            flex: 2,
-            backgroundColor: Colors.grey,
-            borderColor: Colors.white,
-            textColor: Colors.white),
+            flex: 2, backgroundColor: Colors.grey.withOpacity(0.5)),
         viewFlexTextCell('Status',
-            flex: 2,
-            backgroundColor: Colors.grey,
-            borderColor: Colors.white,
-            textColor: Colors.white),
-        if (_selectedCategory == 'APPROVED')
-          viewFlexTextCell('Certification',
-              flex: 2,
-              backgroundColor: Colors.grey,
-              borderColor: Colors.white,
-              textColor: Colors.white)
-        else
-          viewFlexTextCell('Actions',
-              flex: 2,
-              backgroundColor: Colors.grey,
-              borderColor: Colors.white,
-              textColor: Colors.white)
+            flex: 2, backgroundColor: Colors.grey.withOpacity(0.5)),
+        viewFlexTextCell('Certification',
+            flex: 2, backgroundColor: Colors.grey.withOpacity(0.5)),
+        viewFlexTextCell('Actions',
+            flex: 2, backgroundColor: Colors.grey.withOpacity(0.5))
       ],
     );
   }
@@ -322,25 +306,20 @@ class _ViewOrgRenewalsScreenState extends State<ViewOrgRenewalsScreen> {
                 .data() as Map<dynamic, dynamic>;
             final orgData =
                 associatedOrgs[accredData['orgID']] as Map<dynamic, dynamic>;
-            Color entryColor = index % 2 == 0 ? Colors.black : Colors.white;
-            Color backgroundColor = index % 2 == 0 ? Colors.white : Colors.grey;
-            Color borderColor = index % 2 == 0 ? Colors.grey : Colors.white;
+            Color backgroundColor =
+                index % 2 == 0 ? Colors.white : Colors.grey.withOpacity(0.5);
+            Color borderColor =
+                index % 2 == 0 ? Colors.grey.withOpacity(0.5) : Colors.white;
 
             return viewContentEntryRow(context,
                 children: [
                   viewFlexTextCell('#${(index + 1) + ((pageNumber - 1) * 10)}',
-                      flex: 1,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),
+                      flex: 1, backgroundColor: backgroundColor),
                   viewFlexTextCell(orgData['name'],
-                      flex: 3,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),
+                      flex: 3, backgroundColor: backgroundColor),
                   viewFlexActionsCell([
                     SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.13,
+                      width: MediaQuery.of(context).size.width * 0.1,
                       child: TextButton(
                           onPressed: () =>
                               launchURL(accredData['accreditationForm']),
@@ -354,32 +333,27 @@ class _ViewOrgRenewalsScreenState extends State<ViewOrgRenewalsScreen> {
                                 decoration: TextDecoration.underline),
                           )),
                     )
-                  ],
-                      flex: 2,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor),
+                  ], flex: 2, backgroundColor: backgroundColor),
                   viewFlexTextCell(accredData['status'],
-                      flex: 2,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),
+                      flex: 2, backgroundColor: backgroundColor),
                   viewFlexActionsCell([
-                    if (accredData['status'] == 'APPROVED')
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.13,
-                        child: TextButton(
-                            onPressed: () =>
-                                launchURL(accredData['certification']),
-                            child: Text(
-                              accredData['certificateName'],
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  overflow: TextOverflow.ellipsis,
-                                  decoration: TextDecoration.underline),
-                            )),
-                      ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.1,
+                      child: TextButton(
+                          onPressed: () =>
+                              launchURL(accredData['certification']),
+                          child: Text(
+                            accredData['certificateName'],
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                overflow: TextOverflow.ellipsis,
+                                decoration: TextDecoration.underline),
+                          )),
+                    ),
+                  ], flex: 2, backgroundColor: backgroundColor),
+                  viewFlexActionsCell([
                     if (accredData['status'] == 'PENDING')
                       appproveRenewalButton(context,
                           onPress: () => showUploadCertificationDialog(
@@ -397,10 +371,7 @@ class _ViewOrgRenewalsScreenState extends State<ViewOrgRenewalsScreen> {
                                     .id,
                                 accredData['orgID']));
                       }),
-                  ],
-                      flex: 2,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor)
+                  ], flex: 2, backgroundColor: backgroundColor)
                 ],
                 borderColor: borderColor,
                 isLastEntry: index == filteredAccreds.length - 1);
@@ -473,36 +444,42 @@ class _ViewOrgRenewalsScreenState extends State<ViewOrgRenewalsScreen> {
   Widget _navigatorButtons() {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 20),
-      child: SizedBox(
-          width: MediaQuery.of(context).size.height * 0.6,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              previousPageButton(context,
-                  onPress: pageNumber == 1
-                      ? null
-                      : () {
-                          if (pageNumber == 1) {
-                            return;
-                          }
-                          setState(() {
-                            pageNumber--;
-                          });
-                        }),
-              AutoSizeText(pageNumber.toString(), style: blackBoldStyle()),
-              nextPageButton(context,
-                  onPress: pageNumber == maxPageNumber
-                      ? null
-                      : () {
-                          if (pageNumber == maxPageNumber) {
-                            return;
-                          }
-                          setState(() {
-                            pageNumber++;
-                          });
-                        })
-            ],
-          )),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          previousPageButton(context,
+              onPress: pageNumber == 1
+                  ? null
+                  : () {
+                      if (pageNumber == 1) {
+                        return;
+                      }
+                      setState(() {
+                        pageNumber--;
+                      });
+                    }),
+          Container(
+            decoration:
+                BoxDecoration(border: Border.all(color: CustomColors.darkBlue)),
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: AutoSizeText(pageNumber.toString(),
+                  style: TextStyle(color: CustomColors.darkBlue)),
+            ),
+          ),
+          nextPageButton(context,
+              onPress: pageNumber == maxPageNumber
+                  ? null
+                  : () {
+                      if (pageNumber == maxPageNumber) {
+                        return;
+                      }
+                      setState(() {
+                        pageNumber++;
+                      });
+                    })
+        ],
+      ),
     );
   }
 }

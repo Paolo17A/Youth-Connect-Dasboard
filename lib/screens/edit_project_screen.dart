@@ -18,6 +18,7 @@ import 'package:ywda_dashboard/widgets/youth_connect_textfield_widget.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
 import '../utils/firebase_util.dart';
+import '../utils/go_router_util.dart';
 import '../utils/string_util.dart';
 import '../widgets/custom_button_widgets.dart';
 
@@ -45,7 +46,7 @@ class _EditProjectScreenState extends State<EditProjectScreen> {
     super.didChangeDependencies();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!hasLoggedInUser()) {
-        GoRouter.of(context).go('/login');
+        GoRouter.of(context).goNamed(GoRoutes.login);
         return;
       }
       getThisProject();
@@ -297,9 +298,8 @@ class _EditProjectScreenState extends State<EditProjectScreen> {
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
         child: Row(
           children: [
-            AutoSizeText('Project Title',
-                style: GoogleFonts.inter(
-                    textStyle: const TextStyle(fontSize: 19))),
+            AutoSizeText('Project Title', style: interSize19()),
+            AutoSizeText('*', style: interSize19(textColor: Colors.red))
           ],
         ),
       ),
@@ -317,9 +317,8 @@ class _EditProjectScreenState extends State<EditProjectScreen> {
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
         child: Row(
           children: [
-            AutoSizeText('Project Content',
-                style: GoogleFonts.inter(
-                    textStyle: const TextStyle(fontSize: 19))),
+            AutoSizeText('Project Content', style: interSize19()),
+            AutoSizeText('*', style: interSize19(textColor: Colors.red))
           ],
         ),
       ),

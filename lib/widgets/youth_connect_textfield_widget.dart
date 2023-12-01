@@ -5,6 +5,7 @@ class YouthConnectTextField extends StatefulWidget {
   final TextEditingController controller;
   final TextInputType textInputType;
   final Icon? displayPrefixIcon;
+  final Function? onSubmit;
   final bool enabled;
   const YouthConnectTextField(
       {super.key,
@@ -12,6 +13,7 @@ class YouthConnectTextField extends StatefulWidget {
       required this.controller,
       required this.textInputType,
       required this.displayPrefixIcon,
+      this.onSubmit,
       this.enabled = true});
 
   @override
@@ -34,6 +36,9 @@ class _YouthConnectTextFieldState extends State<YouthConnectTextField> {
         controller: widget.controller,
         obscureText: isObscured,
         cursorColor: Colors.black,
+        onSubmitted: (value) {
+          if (widget.onSubmit != null) widget.onSubmit!();
+        },
         style: TextStyle(color: Colors.black.withOpacity(0.9)),
         decoration: InputDecoration(
             alignLabelWithHint: true,

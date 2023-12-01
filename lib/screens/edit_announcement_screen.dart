@@ -14,6 +14,7 @@ import 'package:ywda_dashboard/widgets/youth_connect_textfield_widget.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
 import '../utils/firebase_util.dart';
+import '../utils/go_router_util.dart';
 import '../widgets/custom_button_widgets.dart';
 
 class EditAnnouncementScreen extends StatefulWidget {
@@ -38,7 +39,7 @@ class _EditAnnouncementScreenState extends State<EditAnnouncementScreen> {
     super.didChangeDependencies();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!hasLoggedInUser()) {
-        GoRouter.of(context).go('/login');
+        GoRouter.of(context).goNamed(GoRoutes.login);
         return;
       } else {
         getThisAnnouncement();
@@ -265,8 +266,8 @@ class _EditAnnouncementScreenState extends State<EditAnnouncementScreen> {
   Widget _announcementTitle() {
     return Column(children: [
       vertical10horizontal4(Row(children: [
-        AutoSizeText('Announcement Title',
-            style: GoogleFonts.inter(textStyle: const TextStyle(fontSize: 19))),
+        AutoSizeText('Announcement Title', style: interSize19()),
+        AutoSizeText('*', style: interSize19(textColor: Colors.red))
       ])),
       YouthConnectTextField(
           text: 'Announcement Title',
@@ -279,8 +280,8 @@ class _EditAnnouncementScreenState extends State<EditAnnouncementScreen> {
   Widget _announcementContent() {
     return Column(children: [
       vertical10horizontal4(Row(children: [
-        AutoSizeText('Announcement Content',
-            style: GoogleFonts.inter(textStyle: const TextStyle(fontSize: 19)))
+        AutoSizeText('Announcement Content', style: interSize19()),
+        AutoSizeText('*', style: interSize19(textColor: Colors.red))
       ])),
       YouthConnectTextField(
           text: 'Announcement Content',

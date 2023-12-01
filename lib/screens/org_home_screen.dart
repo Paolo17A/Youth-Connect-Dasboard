@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:ywda_dashboard/utils/go_router_util.dart';
 import 'package:ywda_dashboard/widgets/app_bar_widget.dart';
 import 'package:ywda_dashboard/widgets/custom_button_widgets.dart';
 import 'package:ywda_dashboard/widgets/custom_container_widgets.dart';
@@ -44,7 +45,7 @@ class _OrgHomeScreenState extends State<OrgHomeScreen> {
     super.didChangeDependencies();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!hasLoggedInUser()) {
-        GoRouter.of(context).go('/login');
+        GoRouter.of(context).goNamed(GoRoutes.login);
         return;
       }
       if (!_isInitialized) initializeOrgHome();
@@ -179,8 +180,8 @@ class _OrgHomeScreenState extends State<OrgHomeScreen> {
       appBar: orgAppBarWidget(context),
       body: Row(
         children: [
-          orgLeftNavigator(context, 0),
-          bodyWidgetWhiteBG(
+          orgLeftNavigator(context, GoRoutes.orgHome),
+          bodyWidgetMercuryBG(
               context,
               switchedLoadingContainer(
                   _isLoading,
@@ -244,9 +245,9 @@ class _OrgHomeScreenState extends State<OrgHomeScreen> {
     return Container(
       width: MediaQuery.of(context).size.width * 0.75,
       height: MediaQuery.of(context).size.height * 0.6,
-      decoration: BoxDecoration(
-          color: CustomColors.softBlue,
-          borderRadius: BorderRadius.circular(30)),
+      decoration: BoxDecoration(boxShadow: [
+        BoxShadow(offset: Offset(0, 3), color: Colors.grey.withOpacity(0.5))
+      ], color: Colors.white, borderRadius: BorderRadius.circular(30)),
       child: Padding(
         padding: EdgeInsets.all(15),
         child: Column(
@@ -277,8 +278,12 @@ class _OrgHomeScreenState extends State<OrgHomeScreen> {
                             List<dynamic> imageURLs = announcement['imageURLs'];
                             return GestureDetector(
                                 onTap: () {},
-                                child: announcementEntryContainer(imageURLs,
-                                    formattedDateAnnounced, title, content));
+                                child: announcementEntryContainer(
+                                    allAnnouncements[index],
+                                    imageURLs,
+                                    formattedDateAnnounced,
+                                    title,
+                                    content));
                           }),
                     ),
                   )
@@ -291,21 +296,30 @@ class _OrgHomeScreenState extends State<OrgHomeScreen> {
     );
   }
 
-  Widget announcementEntryContainer(List<dynamic> imageURLs,
-      String formattedDateAnnounced, String title, String content) {
+  Widget announcementEntryContainer(
+      DocumentSnapshot announcementDoc,
+      List<dynamic> imageURLs,
+      String formattedDateAnnounced,
+      String title,
+      String content) {
     return Padding(
         padding: EdgeInsets.all(10),
         child: Container(
             height: 100,
-            decoration: BoxDecoration(
-                color: Colors.white, borderRadius: BorderRadius.circular(15)),
-            child: Row(
-              children: [
-                if (imageURLs.isNotEmpty)
-                  allPadding4pix(_miniNetworkImage(imageURLs[0])),
-                announcementEntryTextContainer(
-                    imageURLs, formattedDateAnnounced, title, content)
-              ],
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(15)),
+            child: ElevatedButton(
+              onPressed: () => showAnnouncementDialog(announcementDoc),
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: CustomColors.mercury,
+                  foregroundColor: Colors.black),
+              child: Row(
+                children: [
+                  if (imageURLs.isNotEmpty)
+                    allPadding4pix(_miniNetworkImage(imageURLs[0])),
+                  announcementEntryTextContainer(
+                      imageURLs, formattedDateAnnounced, title, content)
+                ],
+              ),
             )));
   }
 
@@ -337,6 +351,77 @@ class _OrgHomeScreenState extends State<OrgHomeScreen> {
       height: 80,
       child: Image.network(src),
     );
+  }
+
+  void showAnnouncementDialog(DocumentSnapshot announcementDoc) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          final announcementData =
+              announcementDoc.data() as Map<dynamic, dynamic>;
+          String title = announcementData['title'];
+          String content = announcementData['content'];
+          Timestamp dateAdded = announcementData['dateAdded'];
+          DateTime dateAnnounced = dateAdded.toDate();
+          String formattedDateAnnounced =
+              DateFormat('dd MMM yyyy').format(dateAnnounced);
+          List<dynamic> imageURLs = announcementData['imageURLs'];
+          return AlertDialog(
+            content: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.7,
+              height: MediaQuery.of(context).size.height * 0.7,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AutoSizeText(title, style: blackBoldStyle(size: 40)),
+                          AutoSizeText(formattedDateAnnounced,
+                              style: TextStyle(color: Colors.black)),
+                          SingleChildScrollView(
+                            child: SizedBox(
+                                width: MediaQuery.of(context).size.width * 0.7,
+                                child: AutoSizeText(content,
+                                    style: blackThinStyle())),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.6,
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: imageURLs
+                                .map((image) => Container(
+                                      width: 200,
+                                      height: 200,
+                                      decoration: BoxDecoration(
+                                          border: Border.all(),
+                                          image: DecorationImage(
+                                              image: NetworkImage(image))),
+                                    ))
+                                .toList()),
+                      ),
+                      Gap(15),
+                      ElevatedButton(
+                          onPressed: () => GoRouter.of(context).pop(),
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: CustomColors.darkBlue),
+                          child: allPadding20Pix(
+                              AutoSizeText('CLOSE', style: whiteBoldStyle()))),
+                    ],
+                  )
+                ],
+              ),
+            ),
+          );
+        });
   }
 
   void _displayRenewOrgDialog() {

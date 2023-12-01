@@ -13,6 +13,7 @@ import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
 import '../utils/firebase_util.dart';
+import '../utils/go_router_util.dart';
 import '../widgets/custom_text_widgets.dart';
 
 class ViewAnnouncementScreen extends StatefulWidget {
@@ -34,7 +35,7 @@ class _ViewAnnouncementScreenState extends State<ViewAnnouncementScreen> {
     super.didChangeDependencies();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!hasLoggedInUser()) {
-        GoRouter.of(context).go('/login');
+        GoRouter.of(context).goNamed(GoRoutes.login);
         return;
       }
       getAllAnnouncements();
@@ -153,30 +154,15 @@ class _ViewAnnouncementScreenState extends State<ViewAnnouncementScreen> {
       context,
       children: [
         viewFlexTextCell('#',
-            flex: 1,
-            backgroundColor: Colors.grey,
-            borderColor: Colors.white,
-            textColor: Colors.white),
+            flex: 1, backgroundColor: Colors.grey.withOpacity(0.5)),
         viewFlexTextCell('Title',
-            flex: 2,
-            backgroundColor: Colors.grey,
-            borderColor: Colors.white,
-            textColor: Colors.white),
+            flex: 2, backgroundColor: Colors.grey.withOpacity(0.5)),
         viewFlexTextCell('Content',
-            flex: 5,
-            backgroundColor: Colors.grey,
-            borderColor: Colors.white,
-            textColor: Colors.white),
+            flex: 5, backgroundColor: Colors.grey.withOpacity(0.5)),
         viewFlexTextCell('Date Created',
-            flex: 2,
-            backgroundColor: Colors.grey,
-            borderColor: Colors.white,
-            textColor: Colors.white),
+            flex: 2, backgroundColor: Colors.grey.withOpacity(0.5)),
         viewFlexTextCell('Actions',
-            flex: 2,
-            backgroundColor: Colors.grey,
-            borderColor: Colors.white,
-            textColor: Colors.white),
+            flex: 2, backgroundColor: Colors.grey.withOpacity(0.5)),
       ],
     );
   }
@@ -189,9 +175,10 @@ class _ViewAnnouncementScreenState extends State<ViewAnnouncementScreen> {
           itemCount:
               pageNumber == maxPageNumber ? allAnnouncements.length % 10 : 10,
           itemBuilder: (context, index) {
-            Color entryColor = index % 2 == 0 ? Colors.black : Colors.white;
-            Color backgroundColor = index % 2 == 0 ? Colors.white : Colors.grey;
-            Color borderColor = index % 2 == 0 ? Colors.grey : Colors.white;
+            Color backgroundColor =
+                index % 2 == 0 ? Colors.white : Colors.grey.withOpacity(0.5);
+            Color borderColor =
+                index % 2 == 0 ? Colors.grey.withOpacity(0.5) : Colors.white;
             final announcementData =
                 allAnnouncements[index + ((pageNumber - 1) * 10)].data()
                     as Map<dynamic, dynamic>;
@@ -202,25 +189,13 @@ class _ViewAnnouncementScreenState extends State<ViewAnnouncementScreen> {
                 isLastEntry: index == allAnnouncements.length - 1,
                 children: [
                   viewFlexTextCell('${(index + 1) + ((pageNumber - 1) * 10)}',
-                      flex: 1,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),
+                      flex: 1, backgroundColor: backgroundColor),
                   viewFlexTextCell(announcementData['title'],
-                      flex: 2,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),
+                      flex: 2, backgroundColor: backgroundColor),
                   viewFlexTextCell(announcementData['content'],
-                      flex: 5,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),
+                      flex: 5, backgroundColor: backgroundColor),
                   viewFlexTextCell(convertedDateAdded,
-                      flex: 2,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),
+                      flex: 2, backgroundColor: backgroundColor),
                   viewFlexActionsCell([
                     editEntryButton(context, onPress: () {
                       GoRouter.of(context)
@@ -238,10 +213,7 @@ class _ViewAnnouncementScreenState extends State<ViewAnnouncementScreen> {
                               allAnnouncements[
                                   index + ((pageNumber - 1) * 10)]));
                     })
-                  ],
-                      flex: 2,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor)
+                  ], flex: 2, backgroundColor: backgroundColor)
                 ]);
           }),
     );

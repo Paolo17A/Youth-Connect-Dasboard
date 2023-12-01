@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../utils/firebase_util.dart';
+import '../utils/go_router_util.dart';
 import '../widgets/app_bar_widget.dart';
 import '../widgets/custom_button_widgets.dart';
 import '../widgets/custom_container_widgets.dart';
@@ -67,7 +68,7 @@ class _EditOrgHeadScreenState extends State<EditOrgHeadScreen> {
     super.didChangeDependencies();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!hasLoggedInUser()) {
-        GoRouter.of(context).go('/login');
+        GoRouter.of(context).goNamed(GoRoutes.login);
         return;
       }
       if (!_isInitialized) getOrgHeadData();
@@ -376,7 +377,8 @@ class _EditOrgHeadScreenState extends State<EditOrgHeadScreen> {
       child: Column(
         children: [
           Row(children: [
-            AutoSizeText('Family Name', style: blackBoldStyle(size: 10))
+            AutoSizeText('Family Name', style: blackBoldStyle(size: 10)),
+            AutoSizeText('*', style: interSize19(textColor: Colors.red))
           ]),
           YouthConnectTextField(
             text: '',
@@ -395,7 +397,8 @@ class _EditOrgHeadScreenState extends State<EditOrgHeadScreen> {
       child: Column(
         children: [
           Row(children: [
-            AutoSizeText('Given Name', style: blackBoldStyle(size: 10))
+            AutoSizeText('Given Name', style: blackBoldStyle(size: 10)),
+            AutoSizeText('*', style: interSize19(textColor: Colors.red))
           ]),
           YouthConnectTextField(
             text: '',
@@ -414,7 +417,8 @@ class _EditOrgHeadScreenState extends State<EditOrgHeadScreen> {
       child: Column(
         children: [
           Row(children: [
-            AutoSizeText('Middle Name', style: blackBoldStyle(size: 10))
+            AutoSizeText('Middle Name', style: blackBoldStyle(size: 10)),
+            AutoSizeText('*', style: interSize19(textColor: Colors.red))
           ]),
           YouthConnectTextField(
             text: '',
@@ -433,7 +437,8 @@ class _EditOrgHeadScreenState extends State<EditOrgHeadScreen> {
       child: Column(
         children: [
           Row(children: [
-            AutoSizeText('Contact Number', style: blackBoldStyle(size: 10))
+            AutoSizeText('Contact Number', style: blackBoldStyle(size: 10)),
+            AutoSizeText('*', style: interSize19(textColor: Colors.red))
           ]),
           YouthConnectTextField(
             text: '',
@@ -452,7 +457,8 @@ class _EditOrgHeadScreenState extends State<EditOrgHeadScreen> {
       child: Column(
         children: [
           Row(children: [
-            AutoSizeText('Email Address', style: blackBoldStyle(size: 10))
+            AutoSizeText('Email Address', style: blackBoldStyle(size: 10)),
+            AutoSizeText('*', style: interSize19(textColor: Colors.red))
           ]),
           YouthConnectTextField(
             text: '',
@@ -474,7 +480,8 @@ class _EditOrgHeadScreenState extends State<EditOrgHeadScreen> {
             padding: const EdgeInsets.all(10),
             child: Row(children: [
               AutoSizeText('Adviser of the Organization',
-                  style: blackBoldStyle())
+                  style: blackBoldStyle()),
+              AutoSizeText('*', style: interSize19(textColor: Colors.red))
             ]),
           ),
           _adviserFamilyName(),
@@ -493,7 +500,8 @@ class _EditOrgHeadScreenState extends State<EditOrgHeadScreen> {
       child: Column(
         children: [
           Row(children: [
-            AutoSizeText('Family Name', style: blackBoldStyle(size: 10))
+            AutoSizeText('Family Name', style: blackBoldStyle(size: 10)),
+            AutoSizeText('*', style: interSize19(textColor: Colors.red))
           ]),
           YouthConnectTextField(
             text: '',
@@ -512,7 +520,8 @@ class _EditOrgHeadScreenState extends State<EditOrgHeadScreen> {
       child: Column(
         children: [
           Row(children: [
-            AutoSizeText('Given Name', style: blackBoldStyle(size: 10))
+            AutoSizeText('Given Name', style: blackBoldStyle(size: 10)),
+            AutoSizeText('*', style: interSize19(textColor: Colors.red))
           ]),
           YouthConnectTextField(
             text: '',
@@ -531,7 +540,8 @@ class _EditOrgHeadScreenState extends State<EditOrgHeadScreen> {
       child: Column(
         children: [
           Row(children: [
-            AutoSizeText('Middle Name', style: blackBoldStyle(size: 10))
+            AutoSizeText('Middle Name', style: blackBoldStyle(size: 10)),
+            AutoSizeText('*', style: interSize19(textColor: Colors.red))
           ]),
           YouthConnectTextField(
             text: '',
@@ -550,7 +560,8 @@ class _EditOrgHeadScreenState extends State<EditOrgHeadScreen> {
       child: Column(
         children: [
           Row(children: [
-            AutoSizeText('Contact Number', style: blackBoldStyle(size: 10))
+            AutoSizeText('Contact Number', style: blackBoldStyle(size: 10)),
+            AutoSizeText('*', style: interSize19(textColor: Colors.red))
           ]),
           YouthConnectTextField(
             text: '',
@@ -569,7 +580,8 @@ class _EditOrgHeadScreenState extends State<EditOrgHeadScreen> {
       child: Column(
         children: [
           Row(children: [
-            AutoSizeText('Email Address', style: blackBoldStyle(size: 10))
+            AutoSizeText('Email Address', style: blackBoldStyle(size: 10)),
+            AutoSizeText('*', style: interSize19(textColor: Colors.red))
           ]),
           YouthConnectTextField(
             text: '',
@@ -606,7 +618,8 @@ class _EditOrgHeadScreenState extends State<EditOrgHeadScreen> {
         children: [
           Row(children: [
             AutoSizeText('Name of Organization',
-                style: blackBoldStyle(size: 10))
+                style: blackBoldStyle(size: 10)),
+            AutoSizeText('*', style: interSize19(textColor: Colors.red))
           ]),
           YouthConnectTextField(
             text: '',
@@ -627,7 +640,8 @@ class _EditOrgHeadScreenState extends State<EditOrgHeadScreen> {
         child: Column(
           children: [
             Row(children: [
-              AutoSizeText('Telephone No.', style: blackBoldStyle(size: 10))
+              AutoSizeText('Telephone No.', style: blackBoldStyle(size: 10)),
+              AutoSizeText('*', style: interSize19(textColor: Colors.red))
             ]),
             YouthConnectTextField(
               text: '',
@@ -649,7 +663,8 @@ class _EditOrgHeadScreenState extends State<EditOrgHeadScreen> {
         child: Column(
           children: [
             Row(children: [
-              AutoSizeText('Mobile No.', style: blackBoldStyle(size: 10))
+              AutoSizeText('Mobile No.', style: blackBoldStyle(size: 10)),
+              AutoSizeText('*', style: interSize19(textColor: Colors.red))
             ]),
             YouthConnectTextField(
               text: '',
@@ -669,7 +684,8 @@ class _EditOrgHeadScreenState extends State<EditOrgHeadScreen> {
         child: Column(
           children: [
             Row(children: [
-              AutoSizeText('Island', style: blackBoldStyle(size: 10))
+              AutoSizeText('Island', style: blackBoldStyle(size: 10)),
+              AutoSizeText('*', style: interSize19(textColor: Colors.red))
             ]),
             YouthConnectTextField(
                 text: 'LUZON',
@@ -687,7 +703,8 @@ class _EditOrgHeadScreenState extends State<EditOrgHeadScreen> {
         child: Column(
           children: [
             Row(children: [
-              AutoSizeText('Province', style: blackBoldStyle(size: 10))
+              AutoSizeText('Province', style: blackBoldStyle(size: 10)),
+              AutoSizeText('*', style: interSize19(textColor: Colors.red))
             ]),
             YouthConnectTextField(
               text: 'LAGUNA',
@@ -706,7 +723,8 @@ class _EditOrgHeadScreenState extends State<EditOrgHeadScreen> {
       child: Column(
         children: [
           Row(children: [
-            AutoSizeText('Barangay', style: blackBoldStyle(size: 10))
+            AutoSizeText('Barangay', style: blackBoldStyle(size: 10)),
+            AutoSizeText('*', style: interSize19(textColor: Colors.red))
           ]),
           YouthConnectTextField(
               text: '',
@@ -725,7 +743,8 @@ class _EditOrgHeadScreenState extends State<EditOrgHeadScreen> {
         children: [
           Row(children: [
             AutoSizeText('Major Classification',
-                style: blackBoldStyle(size: 10))
+                style: blackBoldStyle(size: 10)),
+            AutoSizeText('*', style: interSize19(textColor: Colors.red))
           ]),
           YouthConnectTextField(
               text: '',
@@ -762,7 +781,8 @@ class _EditOrgHeadScreenState extends State<EditOrgHeadScreen> {
       child: Column(
         children: [
           Row(children: [
-            AutoSizeText('Email Address', style: blackBoldStyle(size: 10))
+            AutoSizeText('Email Address', style: blackBoldStyle(size: 10)),
+            AutoSizeText('*', style: interSize19(textColor: Colors.red))
           ]),
           YouthConnectTextField(
             text: '',
@@ -783,7 +803,8 @@ class _EditOrgHeadScreenState extends State<EditOrgHeadScreen> {
         child: Column(
           children: [
             Row(children: [
-              AutoSizeText('No. of Members', style: blackBoldStyle(size: 10))
+              AutoSizeText('No. of Members', style: blackBoldStyle(size: 10)),
+              AutoSizeText('*', style: interSize19(textColor: Colors.red))
             ]),
             YouthConnectTextField(
               text: '',
@@ -805,7 +826,8 @@ class _EditOrgHeadScreenState extends State<EditOrgHeadScreen> {
         child: Column(
           children: [
             Row(children: [
-              AutoSizeText('Date Established', style: blackBoldStyle(size: 10))
+              AutoSizeText('Date Established', style: blackBoldStyle(size: 10)),
+              AutoSizeText('*', style: interSize19(textColor: Colors.red))
             ]),
             Container(
               width: MediaQuery.of(context).size.width * 0.1,
@@ -854,7 +876,8 @@ class _EditOrgHeadScreenState extends State<EditOrgHeadScreen> {
       child: Column(
         children: [
           Row(children: [
-            AutoSizeText('Municipality', style: blackBoldStyle(size: 10))
+            AutoSizeText('Municipality', style: blackBoldStyle(size: 10)),
+            AutoSizeText('*', style: interSize19(textColor: Colors.red))
           ]),
           YouthConnectTextField(
             text: '',
@@ -873,7 +896,8 @@ class _EditOrgHeadScreenState extends State<EditOrgHeadScreen> {
       child: Column(
         children: [
           Row(children: [
-            AutoSizeText('Sub Classification', style: blackBoldStyle(size: 10))
+            AutoSizeText('Sub Classification', style: blackBoldStyle(size: 10)),
+            AutoSizeText('*', style: interSize19(textColor: Colors.red))
           ]),
           YouthConnectTextField(
               text: '',
@@ -891,7 +915,8 @@ class _EditOrgHeadScreenState extends State<EditOrgHeadScreen> {
       child: Column(
         children: [
           Row(children: [
-            AutoSizeText('Org Description', style: blackBoldStyle(size: 10))
+            AutoSizeText('Org Description', style: blackBoldStyle(size: 10)),
+            AutoSizeText('*', style: interSize19(textColor: Colors.red))
           ]),
           YouthConnectTextField(
               text: '',

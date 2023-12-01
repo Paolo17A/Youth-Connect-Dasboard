@@ -15,6 +15,7 @@ import 'package:ywda_dashboard/widgets/dropdown_widget.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
 import '../utils/firebase_util.dart';
+import '../utils/go_router_util.dart';
 import '../widgets/custom_button_widgets.dart';
 import '../widgets/custom_text_widgets.dart';
 
@@ -43,7 +44,7 @@ class _AddOrgScreenState extends State<AddOrgScreen> {
     super.didChangeDependencies();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!hasLoggedInUser()) {
-        GoRouter.of(context).go('/login');
+        GoRouter.of(context).goNamed(GoRoutes.login);
         return;
       }
     });
@@ -242,8 +243,10 @@ class _AddOrgScreenState extends State<AddOrgScreen> {
 
   Widget _organizationNameWidget() {
     return Column(children: [
-      vertical10horizontal4(Row(
-          children: [AutoSizeText('Organization Name', style: interSize19())])),
+      vertical10horizontal4(Row(children: [
+        AutoSizeText('Organization Name', style: interSize19()),
+        AutoSizeText('*', style: interSize19(textColor: Colors.red))
+      ])),
       YouthConnectTextField(
           text: 'Organization Name',
           controller: _nameController,
@@ -267,7 +270,8 @@ class _AddOrgScreenState extends State<AddOrgScreen> {
     ];
     return Column(children: [
       Row(children: [
-        AutoSizeText('Organization Nature', style: interSize19())
+        AutoSizeText('Organization Nature', style: interSize19()),
+        AutoSizeText('*', style: interSize19(textColor: Colors.red))
       ]),
       dropdownWidget(_nature, (selected) {
         setState(() {
@@ -288,7 +292,8 @@ class _AddOrgScreenState extends State<AddOrgScreen> {
   Widget _organizationIntroWidget() {
     return Column(children: [
       vertical10horizontal4(Row(children: [
-        AutoSizeText('Organization Intro', style: interSize19())
+        AutoSizeText('Organization Intro', style: interSize19()),
+        AutoSizeText('*', style: interSize19(textColor: Colors.red))
       ])),
       YouthConnectTextField(
           text: 'Organization Intro',
@@ -300,8 +305,10 @@ class _AddOrgScreenState extends State<AddOrgScreen> {
 
   Widget _organizationContactDetailsWidget() {
     return Column(children: [
-      vertical10horizontal4(Row(
-          children: [AutoSizeText('Contact Details', style: interSize19())])),
+      vertical10horizontal4(Row(children: [
+        AutoSizeText('Contact Details', style: interSize19()),
+        AutoSizeText('*', style: interSize19(textColor: Colors.red))
+      ])),
       YouthConnectTextField(
           text: 'Contact Details',
           controller: _contactController,
@@ -312,8 +319,10 @@ class _AddOrgScreenState extends State<AddOrgScreen> {
 
   Widget _organizationSocMedWidget() {
     return Column(children: [
-      vertical10horizontal4(Row(
-          children: [AutoSizeText('Social Media Link', style: interSize19())])),
+      vertical10horizontal4(Row(children: [
+        AutoSizeText('Social Media Link', style: interSize19()),
+        AutoSizeText('*', style: interSize19(textColor: Colors.red))
+      ])),
       YouthConnectTextField(
           text: 'Social Media',
           controller: _socMedController,
@@ -385,9 +394,7 @@ class _AddOrgScreenState extends State<AddOrgScreen> {
 
   Widget _uploadImageButton(String label, Function selectImage) {
     return ElevatedButton(
-        onPressed: () {
-          selectImage();
-        },
+        onPressed: () => selectImage(),
         style: ElevatedButton.styleFrom(
             backgroundColor: const Color.fromARGB(255, 51, 86, 119),
             shape: RoundedRectangleBorder(
@@ -419,9 +426,7 @@ class _AddOrgScreenState extends State<AddOrgScreen> {
               SizedBox(
                 width: 90,
                 child: ElevatedButton(
-                    onPressed: () {
-                      deleteImage();
-                    },
+                    onPressed: () => deleteImage(),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 24, 44, 63),
                     ),

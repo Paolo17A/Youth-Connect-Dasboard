@@ -7,8 +7,11 @@ import 'package:ywda_dashboard/widgets/custom_container_widgets.dart';
 import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
+import '../utils/color_util.dart';
 import '../utils/delete_entry_dialog_util.dart';
 import '../utils/firebase_util.dart';
+import '../utils/go_router_util.dart';
+import '../utils/youth_information_dialog_util.dart';
 import '../widgets/custom_button_widgets.dart';
 import '../widgets/custom_miscellaneous_widgets.dart';
 import '../widgets/custom_text_widgets.dart';
@@ -27,6 +30,7 @@ class _ViewYouthGenderReportState extends State<ViewYouthGenderReportScreen> {
   bool _isInitialized = false;
   List<DocumentSnapshot> allUsers = [];
   List<DocumentSnapshot> filteredUsers = [];
+  List<DocumentSnapshot> orgDocs = [];
   String _selectedCategory = 'NO FILTER';
 
   int pageNumber = 1;
@@ -42,7 +46,7 @@ class _ViewYouthGenderReportState extends State<ViewYouthGenderReportScreen> {
     super.didChangeDependencies();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!hasLoggedInUser()) {
-        GoRouter.of(context).go('/login');
+        GoRouter.of(context).goNamed(GoRoutes.login);
         return;
       }
       getAllUsers();
@@ -87,6 +91,28 @@ class _ViewYouthGenderReportState extends State<ViewYouthGenderReportScreen> {
       allUsers = users.docs;
       filteredUsers = List.from(allUsers);
       maxPageNumber = (filteredUsers.length / 10).ceil();
+      allUsers.sort((a, b) {
+        final firstNameA =
+            (a.data() as Map<dynamic, dynamic>)['firstName'] as String;
+        final firstNameB =
+            (b.data() as Map<dynamic, dynamic>)['firstName'] as String;
+        return firstNameA.compareTo(firstNameB);
+      });
+
+      List<dynamic> orgIDs = [];
+      for (var user in allUsers) {
+        final userData = user.data() as Map<dynamic, dynamic>;
+        String organization = userData['organization'];
+        if (!orgIDs.contains(organization)) {
+          orgIDs.add(organization);
+        }
+      }
+
+      final orgs = await FirebaseFirestore.instance
+          .collection('orgs')
+          .where(FieldPath.documentId, whereIn: orgIDs)
+          .get();
+      orgDocs = orgs.docs;
       setState(() {
         _isInitialized = true;
         _isLoading = false;
@@ -145,7 +171,7 @@ class _ViewYouthGenderReportState extends State<ViewYouthGenderReportScreen> {
   Widget _genderReportHeaderWidget() {
     return Padding(
       padding: const EdgeInsets.all(25),
-      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+      child: Row(children: [
         SizedBox(
           width: MediaQuery.of(context).size.width * 0.4,
           child: dropdownWidget(_selectedCategory, (selected) {
@@ -162,7 +188,9 @@ class _ViewYouthGenderReportState extends State<ViewYouthGenderReportScreen> {
             'INTERSEX',
             'OTHERS'
           ], _selectedCategory, false),
-        )
+        ),
+        AutoSizeText('${filteredUsers.length} entries',
+            style: blackBoldStyle()),
       ]),
     );
   }
@@ -187,21 +215,14 @@ class _ViewYouthGenderReportState extends State<ViewYouthGenderReportScreen> {
 
   Widget _genderReportLabelRow() {
     return viewContentLabelRow(context, children: [
+      viewFlexTextCell('#',
+          flex: 1, backgroundColor: Colors.grey.withOpacity(0.5)),
       viewFlexTextCell('Name',
-          flex: 3,
-          backgroundColor: Colors.grey,
-          borderColor: Colors.white,
-          textColor: Colors.white),
+          flex: 3, backgroundColor: Colors.grey.withOpacity(0.5)),
       viewFlexTextCell('Gender',
-          flex: 2,
-          backgroundColor: Colors.grey,
-          borderColor: Colors.white,
-          textColor: Colors.white),
+          flex: 2, backgroundColor: Colors.grey.withOpacity(0.5)),
       viewFlexTextCell('Actions',
-          flex: 2,
-          backgroundColor: Colors.grey,
-          borderColor: Colors.white,
-          textColor: Colors.white)
+          flex: 2, backgroundColor: Colors.grey.withOpacity(0.5))
     ]);
   }
 
@@ -221,24 +242,28 @@ class _ViewYouthGenderReportState extends State<ViewYouthGenderReportScreen> {
                   '${userData['firstName']} ${userData['lastName']}';
               String gender = userData['gender'];
 
-              Color entryColor = index % 2 == 0 ? Colors.black : Colors.white;
               Color backgroundColor =
-                  index % 2 == 0 ? Colors.white : Colors.grey;
-              Color borderColor = index % 2 == 0 ? Colors.grey : Colors.white;
-
+                  index % 2 == 0 ? Colors.white : Colors.grey.withOpacity(0.5);
+              Color borderColor =
+                  index % 2 == 0 ? Colors.grey.withOpacity(0.5) : Colors.white;
+              DocumentSnapshot orgDoc = orgDocs
+                  .where((org) => org.id == userData['organization'])
+                  .first;
+              String orgName = (orgDoc.data() as Map<dynamic, dynamic>)['name'];
               return viewContentEntryRow(context,
                   children: [
+                    viewFlexTextCell('#${(index + 1).toString()}',
+                        flex: 1, backgroundColor: backgroundColor),
                     viewFlexTextCell(fullName.isNotEmpty ? fullName : 'N/A',
-                        flex: 3,
-                        backgroundColor: backgroundColor,
-                        borderColor: borderColor,
-                        textColor: entryColor),
+                        flex: 3, backgroundColor: backgroundColor),
                     viewFlexTextCell(gender,
-                        flex: 2,
-                        backgroundColor: backgroundColor,
-                        borderColor: borderColor,
-                        textColor: entryColor),
+                        flex: 2, backgroundColor: backgroundColor),
                     viewFlexActionsCell([
+                      viewEntryPopUpButton(context,
+                          onPress: () => showYouthInformationDialog(
+                              context,
+                              filteredUsers[index + ((pageNumber - 1) * 10)],
+                              orgName)),
                       editEntryButton(context,
                           onPress: () => GoRouter.of(context)
                                   .goNamed('editYouth', pathParameters: {
@@ -264,10 +289,7 @@ class _ViewYouthGenderReportState extends State<ViewYouthGenderReportScreen> {
                                 true);
                           });
                         })
-                    ],
-                        flex: 2,
-                        backgroundColor: backgroundColor,
-                        borderColor: borderColor)
+                    ], flex: 2, backgroundColor: backgroundColor)
                   ],
                   borderColor: borderColor,
                   isLastEntry: index == filteredUsers.length - 1);
@@ -277,35 +299,44 @@ class _ViewYouthGenderReportState extends State<ViewYouthGenderReportScreen> {
   }
 
   Widget _navigatorButtons() {
-    return SizedBox(
-        width: MediaQuery.of(context).size.height * 0.6,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            previousPageButton(context,
-                onPress: pageNumber == 1
-                    ? null
-                    : () {
-                        if (pageNumber == 1) {
-                          return;
-                        }
-                        setState(() {
-                          pageNumber--;
-                        });
-                      }),
-            AutoSizeText(pageNumber.toString(), style: blackBoldStyle()),
-            nextPageButton(context,
-                onPress: pageNumber == maxPageNumber
-                    ? null
-                    : () {
-                        if (pageNumber == maxPageNumber) {
-                          return;
-                        }
-                        setState(() {
-                          pageNumber++;
-                        });
-                      })
-          ],
-        ));
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          previousPageButton(context,
+              onPress: pageNumber == 1
+                  ? null
+                  : () {
+                      if (pageNumber == 1) {
+                        return;
+                      }
+                      setState(() {
+                        pageNumber--;
+                      });
+                    }),
+          Container(
+            decoration:
+                BoxDecoration(border: Border.all(color: CustomColors.darkBlue)),
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: AutoSizeText(pageNumber.toString(),
+                  style: TextStyle(color: CustomColors.darkBlue)),
+            ),
+          ),
+          nextPageButton(context,
+              onPress: pageNumber == maxPageNumber
+                  ? null
+                  : () {
+                      if (pageNumber == maxPageNumber) {
+                        return;
+                      }
+                      setState(() {
+                        pageNumber++;
+                      });
+                    })
+        ],
+      ),
+    );
   }
 }

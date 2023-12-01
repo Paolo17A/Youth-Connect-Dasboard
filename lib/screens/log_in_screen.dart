@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ywda_dashboard/utils/go_router_util.dart';
 import 'package:ywda_dashboard/widgets/app_bar_widget.dart';
 import 'package:ywda_dashboard/widgets/custom_container_widgets.dart';
 import 'package:ywda_dashboard/widgets/custom_text_widgets.dart';
@@ -107,11 +108,15 @@ class _LogInScreenState extends State<LogInScreen> {
         });
         return;
       }
-
+      setState(() {
+        _isLoading = false;
+        _emailController.clear();
+        _passwordController.clear();
+      });
       if (currentUserData.data()!['userType'] == 'ADMIN') {
-        goRouter.go('/home');
+        goRouter.goNamed(GoRoutes.home);
       } else if (currentUserData.data()!['userType'] == 'ORG HEAD') {
-        goRouter.go('/orgHome');
+        goRouter.goNamed(GoRoutes.orgHome);
       }
     } catch (error) {
       setState(() {
@@ -182,6 +187,11 @@ class _LogInScreenState extends State<LogInScreen> {
         controller: _passwordController,
         textInputType: TextInputType.visiblePassword,
         displayPrefixIcon: const Icon(Icons.lock),
+        onSubmit: () {
+          if (_passwordController.text.isEmpty || _emailController.text.isEmpty)
+            return;
+          loginUser();
+        },
       ),
     );
   }

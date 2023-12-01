@@ -14,8 +14,9 @@ import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 import 'dart:html' as html;
 
+import '../utils/color_util.dart';
 import '../utils/firebase_util.dart';
-import '../widgets/custom_text_widgets.dart';
+import '../utils/go_router_util.dart';
 
 class ViewFormsScreen extends StatefulWidget {
   const ViewFormsScreen({super.key});
@@ -36,7 +37,7 @@ class _ViewFormsScreenState extends State<ViewFormsScreen> {
     super.didChangeDependencies();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!hasLoggedInUser()) {
-        GoRouter.of(context).go('/login');
+        GoRouter.of(context).goNamed(GoRoutes.login);
         return;
       }
       getAllForms();
@@ -146,20 +147,11 @@ class _ViewFormsScreenState extends State<ViewFormsScreen> {
       context,
       children: [
         viewFlexTextCell('#',
-            flex: 1,
-            backgroundColor: Colors.grey,
-            borderColor: Colors.white,
-            textColor: Colors.white),
+            flex: 1, backgroundColor: Colors.grey.withOpacity(0.5)),
         viewFlexTextCell('File Name',
-            flex: 3,
-            backgroundColor: Colors.grey,
-            borderColor: Colors.white,
-            textColor: Colors.white),
+            flex: 3, backgroundColor: Colors.grey.withOpacity(0.5)),
         viewFlexTextCell('Actions',
-            flex: 2,
-            backgroundColor: Colors.grey,
-            borderColor: Colors.white,
-            textColor: Colors.white)
+            flex: 2, backgroundColor: Colors.grey.withOpacity(0.5))
       ],
     );
   }
@@ -173,21 +165,16 @@ class _ViewFormsScreenState extends State<ViewFormsScreen> {
           itemBuilder: (context, index) {
             final formData = allForms[index + ((pageNumber - 1) * 10)].data()
                 as Map<dynamic, dynamic>;
-            Color entryColor = index % 2 == 0 ? Colors.black : Colors.white;
-            Color backgroundColor = index % 2 == 0 ? Colors.white : Colors.grey;
-            Color borderColor = index % 2 == 0 ? Colors.grey : Colors.white;
+            Color backgroundColor =
+                index % 2 == 0 ? Colors.white : Colors.grey.withOpacity(0.5);
+            Color borderColor =
+                index % 2 == 0 ? Colors.grey.withOpacity(0.5) : Colors.white;
             return viewContentEntryRow(context,
                 children: [
                   viewFlexTextCell('${(index + 1) + ((pageNumber - 1) * 10)}',
-                      flex: 1,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),
+                      flex: 1, backgroundColor: backgroundColor),
                   viewFlexTextCell(formData['fileName'],
-                      flex: 3,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),
+                      flex: 3, backgroundColor: backgroundColor),
                   viewFlexActionsCell([
                     downloadFileButton(context, onPress: () {
                       downloadFile(formData['fileURL']);
@@ -199,10 +186,7 @@ class _ViewFormsScreenState extends State<ViewFormsScreen> {
                           deleteEntry: () => deleteFile(
                               allForms[index + ((pageNumber - 1) * 10)]));
                     })
-                  ],
-                      flex: 2,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor)
+                  ], flex: 2, backgroundColor: backgroundColor)
                 ],
                 borderColor: borderColor,
                 isLastEntry: index == allForms.length - 1);
@@ -213,36 +197,42 @@ class _ViewFormsScreenState extends State<ViewFormsScreen> {
   Widget _navigatorButtons() {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 20),
-      child: SizedBox(
-          width: MediaQuery.of(context).size.height * 0.6,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              previousPageButton(context,
-                  onPress: pageNumber == 1
-                      ? null
-                      : () {
-                          if (pageNumber == 1) {
-                            return;
-                          }
-                          setState(() {
-                            pageNumber--;
-                          });
-                        }),
-              AutoSizeText(pageNumber.toString(), style: blackBoldStyle()),
-              nextPageButton(context,
-                  onPress: pageNumber == maxPageNumber
-                      ? null
-                      : () {
-                          if (pageNumber == maxPageNumber) {
-                            return;
-                          }
-                          setState(() {
-                            pageNumber++;
-                          });
-                        })
-            ],
-          )),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          previousPageButton(context,
+              onPress: pageNumber == 1
+                  ? null
+                  : () {
+                      if (pageNumber == 1) {
+                        return;
+                      }
+                      setState(() {
+                        pageNumber--;
+                      });
+                    }),
+          Container(
+            decoration:
+                BoxDecoration(border: Border.all(color: CustomColors.darkBlue)),
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: AutoSizeText(pageNumber.toString(),
+                  style: TextStyle(color: CustomColors.darkBlue)),
+            ),
+          ),
+          nextPageButton(context,
+              onPress: pageNumber == maxPageNumber
+                  ? null
+                  : () {
+                      if (pageNumber == maxPageNumber) {
+                        return;
+                      }
+                      setState(() {
+                        pageNumber++;
+                      });
+                    })
+        ],
+      ),
     );
   }
 }

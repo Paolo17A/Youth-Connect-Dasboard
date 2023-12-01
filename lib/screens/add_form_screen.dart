@@ -14,6 +14,7 @@ import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
 import '../utils/firebase_util.dart';
+import '../utils/go_router_util.dart';
 import '../widgets/custom_button_widgets.dart';
 import '../widgets/custom_text_widgets.dart';
 
@@ -36,7 +37,7 @@ class _AddFormScreenState extends State<AddFormScreen> {
     super.didChangeDependencies();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!hasLoggedInUser()) {
-        GoRouter.of(context).go('/login');
+        GoRouter.of(context).goNamed(GoRoutes.login);
         return;
       }
     });
@@ -177,8 +178,10 @@ class _AddFormScreenState extends State<AddFormScreen> {
 
   Widget _formTitleWidget() {
     return Column(children: [
-      vertical10horizontal4(
-          Row(children: [AutoSizeText('Form Title', style: interSize19())])),
+      vertical10horizontal4(Row(children: [
+        AutoSizeText('Form Title', style: interSize19()),
+        AutoSizeText('*', style: interSize19(textColor: Colors.red))
+      ])),
       YouthConnectTextField(
           text: 'Form Title',
           controller: _fileTitleController,

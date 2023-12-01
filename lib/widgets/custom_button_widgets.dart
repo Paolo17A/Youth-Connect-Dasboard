@@ -151,43 +151,25 @@ Widget backToViewScreenButton(BuildContext context,
 }
 
 Widget previousPageButton(BuildContext context, {required Function? onPress}) {
-  return SizedBox(
-    width: MediaQuery.of(context).size.width * 0.1,
-    height: 75,
+  return Container(
+    decoration: BoxDecoration(border: Border.all(color: CustomColors.darkBlue)),
     child: Padding(
       padding: const EdgeInsets.all(10),
-      child: ElevatedButton(
+      child: TextButton(
           onPressed: onPress != null ? () => onPress() : null,
-          style: ElevatedButton.styleFrom(
-              backgroundColor: CustomColors.darkBlue,
-              disabledBackgroundColor: CustomColors.darkBlue.withOpacity(0.5),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10))),
-          child: AutoSizeText(
-            'PREV',
-            style: whiteBoldStyle(),
-          )),
+          child: AutoSizeText('PREV')),
     ),
   );
 }
 
 Widget nextPageButton(BuildContext context, {required Function? onPress}) {
-  return SizedBox(
-    width: MediaQuery.of(context).size.width * 0.1,
-    height: 75,
+  return Container(
+    decoration: BoxDecoration(border: Border.all(color: CustomColors.darkBlue)),
     child: Padding(
       padding: const EdgeInsets.all(10),
-      child: ElevatedButton(
+      child: TextButton(
           onPressed: onPress != null ? () => onPress() : null,
-          style: ElevatedButton.styleFrom(
-              backgroundColor: CustomColors.darkBlue,
-              disabledBackgroundColor: CustomColors.darkBlue.withOpacity(0.5),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10))),
-          child: AutoSizeText(
-            'NEXT',
-            style: whiteBoldStyle(),
-          )),
+          child: AutoSizeText('NEXT')),
     ),
   );
 }

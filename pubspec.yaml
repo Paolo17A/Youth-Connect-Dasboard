@@ -50,6 +50,7 @@ dependencies:
   pie_chart: ^5.3.2
   flutter_launcher_icons: ^0.13.1
   gap: ^3.0.1
+  syncfusion_flutter_gauges: ^23.2.6
 
 dev_dependencies:
   flutter_test:

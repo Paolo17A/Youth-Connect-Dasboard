@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,8 @@ import 'package:ywda_dashboard/widgets/youth_connect_textfield_widget.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
 import '../utils/firebase_util.dart';
+import '../utils/go_router_util.dart';
+import '../widgets/custom_text_widgets.dart';
 
 class AdminSettingsScreen extends StatefulWidget {
   const AdminSettingsScreen({super.key});
@@ -29,7 +32,7 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
     super.didChangeDependencies();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!hasLoggedInUser()) {
-        GoRouter.of(context).go('/login');
+        GoRouter.of(context).goNamed(GoRoutes.login);
         return;
       }
     });
@@ -134,16 +137,28 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                                               color: Colors.black,
                                               fontSize: 50,
                                               fontWeight: FontWeight.bold)))),
+                              Row(children: [
+                                AutoSizeText('*',
+                                    style: interSize19(textColor: Colors.red))
+                              ]),
                               YouthConnectTextField(
                                   text: 'Old Password',
                                   controller: currentPasswordController,
                                   textInputType: TextInputType.visiblePassword,
                                   displayPrefixIcon: const Icon(Icons.lock)),
+                              Row(children: [
+                                AutoSizeText('*',
+                                    style: interSize19(textColor: Colors.red))
+                              ]),
                               YouthConnectTextField(
                                   text: 'New Password',
                                   controller: newPasswordController,
                                   textInputType: TextInputType.visiblePassword,
                                   displayPrefixIcon: const Icon(Icons.lock)),
+                              Row(children: [
+                                AutoSizeText('*',
+                                    style: interSize19(textColor: Colors.red))
+                              ]),
                               YouthConnectTextField(
                                   text: 'Confirm New Password',
                                   controller: confirmNewPasswordController,

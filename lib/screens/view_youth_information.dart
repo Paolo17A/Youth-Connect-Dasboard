@@ -2,22 +2,23 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:ywda_dashboard/widgets/app_bar_widget.dart';
 import 'package:ywda_dashboard/widgets/custom_container_widgets.dart';
 import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
+import 'package:ywda_dashboard/widgets/custom_text_widgets.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
+import '../utils/color_util.dart';
 import '../utils/delete_entry_dialog_util.dart';
 import '../utils/firebase_util.dart';
+import '../utils/go_router_util.dart';
+import '../utils/youth_information_dialog_util.dart';
 import '../widgets/custom_button_widgets.dart';
 import '../widgets/custom_miscellaneous_widgets.dart';
-import '../widgets/custom_text_widgets.dart';
 import '../widgets/dropdown_widget.dart';
 
 class ViewYouthInformationScreen extends StatefulWidget {
-  final String category;
-  const ViewYouthInformationScreen({super.key, required this.category});
+  const ViewYouthInformationScreen({super.key});
 
   @override
   State<ViewYouthInformationScreen> createState() =>
@@ -29,6 +30,7 @@ class _ViewYouthInformationScreenState
   bool _isLoading = false;
   bool _isInitialized = false;
   List<DocumentSnapshot> allUsers = [];
+  List<DocumentSnapshot> filteredUsers = [];
   Map<String, String> associatedOrgs = {};
   String _selectedCategory = 'NO FILTER';
 
@@ -38,7 +40,6 @@ class _ViewYouthInformationScreenState
   @override
   void initState() {
     super.initState();
-    _selectedCategory = widget.category;
   }
 
   @override
@@ -46,7 +47,7 @@ class _ViewYouthInformationScreenState
     super.didChangeDependencies();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!hasLoggedInUser()) {
-        GoRouter.of(context).go('/login');
+        GoRouter.of(context).goNamed(GoRoutes.login);
         return;
       }
       await getAllUsers();
@@ -66,6 +67,14 @@ class _ViewYouthInformationScreenState
           .get();
       allUsers = users.docs;
       maxPageNumber = (allUsers.length / 10).ceil();
+      allUsers.sort((a, b) {
+        final firstNameA =
+            (a.data() as Map<dynamic, dynamic>)['firstName'] as String;
+        final firstNameB =
+            (b.data() as Map<dynamic, dynamic>)['firstName'] as String;
+        return firstNameA.compareTo(firstNameB);
+      });
+      filteredUsers = List.from(allUsers);
       for (var user in allUsers) {
         final userData = user.data() as Map<dynamic, dynamic>;
         if (associatedOrgs.containsKey(userData['organization'])) {
@@ -89,8 +98,17 @@ class _ViewYouthInformationScreenState
   }
 
   void _onSelectFilter() {
-    GoRouter.of(context).goNamed('youthInformation',
-        pathParameters: {'category': _selectedCategory});
+    setState(() {
+      if (_selectedCategory == 'NO FILTER') {
+        filteredUsers = allUsers;
+      } else {
+        filteredUsers = allUsers.where((user) {
+          final userData = user.data()! as Map<dynamic, dynamic>;
+          return userData['categoryGeneral'] == _selectedCategory;
+        }).toList();
+      }
+      maxPageNumber = (filteredUsers.length / 10).ceil();
+    });
   }
 
   Future setUserSuspendedState(String userID, bool isSuspended) async {
@@ -129,10 +147,7 @@ class _ViewYouthInformationScreenState
                         Column(
                           children: [
                             _youthInformationHeaderWidget(),
-                            if (_selectedCategory == 'NO FILTER')
-                              _unfilteredYouthInformationContainerWidget()
-                            else
-                              _filteredYouthInformationContainerWidget()
+                            _filteredYouthInformationContainerWidget()
                           ],
                         )),
                   )))
@@ -144,7 +159,7 @@ class _ViewYouthInformationScreenState
   Widget _youthInformationHeaderWidget() {
     return Padding(
       padding: const EdgeInsets.all(25),
-      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+      child: Row(children: [
         SizedBox(
           width: MediaQuery.of(context).size.width * 0.4,
           child: dropdownWidget(_selectedCategory, (selected) {
@@ -152,27 +167,11 @@ class _ViewYouthInformationScreenState
               _selectedCategory = selected!;
               _onSelectFilter();
             });
-          }, ['NO FILTER', 'EDUCATION', 'TOWN'], _selectedCategory, false),
+          }, ['NO FILTER', 'IN SCHOOL', 'OUT OF SCHOOL', 'LABOR FORCE'],
+              _selectedCategory, false),
         ),
+        AutoSizeText('${filteredUsers.length} entries', style: blackBoldStyle())
       ]),
-    );
-  }
-
-  Widget _unfilteredYouthInformationContainerWidget() {
-    return Column(
-      children: [
-        viewContentContainer(context,
-            child: Column(
-              children: [
-                _unfilteredUsersLabelRow(),
-                allUsers.isNotEmpty
-                    ? _unfilteredUserEntries()
-                    : viewContentUnavailable(context,
-                        text: 'NO YOUTH INFORMATION AVAILABLE')
-              ],
-            )),
-        if (allUsers.length > 10) _navigatorButtons()
-      ],
     );
   }
 
@@ -183,7 +182,7 @@ class _ViewYouthInformationScreenState
             child: Column(
               children: [
                 _filteredUsersLabelRow(),
-                allUsers.isNotEmpty
+                filteredUsers.isNotEmpty
                     ? _filteredUserEntries()
                     : viewContentUnavailable(context,
                         text: 'NO YOUTH INFORMATION AVAILABLE')
@@ -194,168 +193,17 @@ class _ViewYouthInformationScreenState
     );
   }
 
-  Widget _unfilteredUsersLabelRow() {
-    return viewContentLabelRow(context, children: [
-      viewFlexTextCell('Name',
-          flex: 2,
-          backgroundColor: Colors.grey,
-          borderColor: Colors.white,
-          textColor: Colors.white),
-      viewFlexTextCell('Town',
-          flex: 2,
-          backgroundColor: Colors.grey,
-          borderColor: Colors.white,
-          textColor: Colors.white),
-      viewFlexTextCell('Date of Birth',
-          flex: 2,
-          backgroundColor: Colors.grey,
-          borderColor: Colors.white,
-          textColor: Colors.white),
-      viewFlexTextCell('Gender',
-          flex: 2,
-          backgroundColor: Colors.grey,
-          borderColor: Colors.white,
-          textColor: Colors.white),
-      viewFlexTextCell('Status',
-          flex: 2,
-          backgroundColor: Colors.grey,
-          borderColor: Colors.white,
-          textColor: Colors.white),
-      viewFlexTextCell('School',
-          flex: 2,
-          backgroundColor: Colors.grey,
-          borderColor: Colors.white,
-          textColor: Colors.white),
-      viewFlexTextCell('Org',
-          flex: 2,
-          backgroundColor: Colors.grey,
-          borderColor: Colors.white,
-          textColor: Colors.white),
-      viewFlexTextCell('Youth Category',
-          flex: 2,
-          backgroundColor: Colors.grey,
-          borderColor: Colors.white,
-          textColor: Colors.white),
-      viewFlexTextCell('Actions',
-          flex: 2,
-          backgroundColor: Colors.grey,
-          borderColor: Colors.white,
-          textColor: Colors.white)
-    ]);
-  }
-
   Widget _filteredUsersLabelRow() {
     return viewContentLabelRow(context, children: [
+      viewFlexTextCell('#',
+          flex: 1, backgroundColor: Colors.grey.withOpacity(0.5)),
       viewFlexTextCell('Name',
-          flex: 2,
-          backgroundColor: Colors.grey,
-          borderColor: Colors.white,
-          textColor: Colors.white),
-      viewFlexTextCell(_selectedCategory,
-          flex: 3,
-          backgroundColor: Colors.grey,
-          borderColor: Colors.white,
-          textColor: Colors.white),
+          flex: 4, backgroundColor: Colors.grey.withOpacity(0.5)),
+      viewFlexTextCell('Education',
+          flex: 3, backgroundColor: Colors.grey.withOpacity(0.5)),
       viewFlexTextCell('Actions',
-          flex: 2,
-          backgroundColor: Colors.grey,
-          borderColor: Colors.white,
-          textColor: Colors.white)
+          flex: 2, backgroundColor: Colors.grey.withOpacity(0.5))
     ]);
-  }
-
-  Widget _unfilteredUserEntries() {
-    return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.52,
-      child: ListView.builder(
-          shrinkWrap: true,
-          itemCount: pageNumber == maxPageNumber ? allUsers.length % 10 : 10,
-          itemBuilder: (context, index) {
-            final userData = allUsers[index + ((pageNumber - 1) * 10)].data()
-                as Map<dynamic, dynamic>;
-            String fullName =
-                '${userData['firstName']} ${userData['lastName']}';
-            Color entryColor = index % 2 == 0 ? Colors.black : Colors.white;
-            Color backgroundColor = index % 2 == 0 ? Colors.white : Colors.grey;
-            Color borderColor = index % 2 == 0 ? Colors.grey : Colors.white;
-            return viewContentEntryRow(context,
-                children: [
-                  viewFlexTextCell(fullName.isNotEmpty ? fullName : 'N/A',
-                      flex: 2,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),
-                  viewFlexTextCell(userData['city'],
-                      flex: 2,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),
-                  viewFlexTextCell(
-                      DateFormat('dd MMM yyyy')
-                          .format((userData['birthday'] as Timestamp).toDate()),
-                      flex: 2,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),
-                  viewFlexTextCell(userData['gender'],
-                      flex: 2,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),
-                  viewFlexTextCell(userData['civilStatus'],
-                      flex: 2,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),
-                  viewFlexTextCell(userData['school'],
-                      flex: 2,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),
-                  viewFlexTextCell(associatedOrgs[userData['organization']]!,
-                      flex: 2,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),
-                  viewFlexTextCell(userData['categoryGeneral'] ?? '',
-                      flex: 2,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),
-                  viewFlexActionsCell([
-                    editEntryButton(context,
-                        onPress: () => GoRouter.of(context)
-                                .goNamed('editYouth', pathParameters: {
-                              'returnPoint': '1',
-                              'youthID':
-                                  allUsers[index + ((pageNumber - 1) * 10)].id
-                            })),
-                    if (userData['isSuspended'] == true)
-                      restoreEntryButton(context, onPress: () {
-                        setUserSuspendedState(
-                            allUsers[index + ((pageNumber - 1) * 10)].id,
-                            false);
-                      })
-                    else if (userData['isSuspended'] == false)
-                      deleteEntryButton(context, onPress: () {
-                        displayDeleteEntryDialog(context,
-                            message:
-                                'Are you sure you want to suspend this user?',
-                            deleteWord: 'Suspend', deleteEntry: () {
-                          setUserSuspendedState(
-                              allUsers[index + ((pageNumber - 1) * 10)].id,
-                              true);
-                        });
-                      })
-                  ],
-                      flex: 2,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor)
-                ],
-                borderColor: borderColor,
-                isLastEntry: index == allUsers.length - 1);
-          }),
-    );
   }
 
   Widget _filteredUserEntries() {
@@ -363,38 +211,33 @@ class _ViewYouthInformationScreenState
       height: MediaQuery.of(context).size.height * 0.52,
       child: ListView.builder(
           shrinkWrap: true,
-          itemCount: pageNumber == maxPageNumber ? allUsers.length % 10 : 10,
+          itemCount:
+              pageNumber == maxPageNumber ? filteredUsers.length % 10 : 10,
           itemBuilder: (context, index) {
-            final userData = allUsers[index + ((pageNumber - 1) * 10)].data()
-                as Map<dynamic, dynamic>;
+            final userData = filteredUsers[index + ((pageNumber - 1) * 10)]
+                .data() as Map<dynamic, dynamic>;
             String fullName =
                 '${userData['firstName']} ${userData['lastName']}';
-            String education = userData['categorySpecific'];
-            String city = userData['city'];
-            Color entryColor = index % 2 == 0 ? Colors.black : Colors.white;
-            Color backgroundColor = index % 2 == 0 ? Colors.white : Colors.grey;
-            Color borderColor = index % 2 == 0 ? Colors.grey : Colors.white;
+            String education = userData['categoryGeneral'];
+            Color backgroundColor =
+                index % 2 == 0 ? Colors.white : Colors.grey.withOpacity(0.5);
+            Color borderColor =
+                index % 2 == 0 ? Colors.grey.withOpacity(0.5) : Colors.white;
 
             return viewContentEntryRow(context,
                 children: [
+                  viewFlexTextCell('#${(index + 1).toString()}',
+                      flex: 1, backgroundColor: backgroundColor),
                   viewFlexTextCell(fullName.isNotEmpty ? fullName : 'N/A',
-                      flex: 2,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),
-                  if (_selectedCategory == 'EDUCATION')
-                    viewFlexTextCell(education,
-                        flex: 3,
-                        backgroundColor: backgroundColor,
-                        borderColor: borderColor,
-                        textColor: entryColor)
-                  else if (_selectedCategory == 'TOWN')
-                    viewFlexTextCell(city,
-                        flex: 3,
-                        backgroundColor: backgroundColor,
-                        borderColor: borderColor,
-                        textColor: entryColor),
+                      flex: 4, backgroundColor: backgroundColor),
+                  viewFlexTextCell(education,
+                      flex: 3, backgroundColor: backgroundColor),
                   viewFlexActionsCell([
+                    viewEntryPopUpButton(context,
+                        onPress: () => showYouthInformationDialog(
+                            context,
+                            filteredUsers[index + ((pageNumber - 1) * 10)],
+                            associatedOrgs[userData['organization']]!)),
                     editEntryButton(context, onPress: () {}),
                     if (userData['isSuspended'] == true)
                       restoreEntryButton(context, onPress: () {
@@ -407,19 +250,15 @@ class _ViewYouthInformationScreenState
                         displayDeleteEntryDialog(context,
                             message:
                                 'Are you sure you want to suspend this user?',
-                            deleteWord: 'Suspend', deleteEntry: () {
-                          setUserSuspendedState(
-                              allUsers[index + ((pageNumber - 1) * 10)].id,
-                              true);
-                        });
+                            deleteWord: 'Suspend',
+                            deleteEntry: () => setUserSuspendedState(
+                                allUsers[index + ((pageNumber - 1) * 10)].id,
+                                true));
                       })
-                  ],
-                      flex: 2,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor)
+                  ], flex: 2, backgroundColor: backgroundColor)
                 ],
                 borderColor: borderColor,
-                isLastEntry: index == allUsers.length - 1);
+                isLastEntry: index == filteredUsers.length - 1);
           }),
     );
   }
@@ -427,36 +266,42 @@ class _ViewYouthInformationScreenState
   Widget _navigatorButtons() {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 20),
-      child: SizedBox(
-          width: MediaQuery.of(context).size.height * 0.6,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              previousPageButton(context,
-                  onPress: pageNumber == 1
-                      ? null
-                      : () {
-                          if (pageNumber == 1) {
-                            return;
-                          }
-                          setState(() {
-                            pageNumber--;
-                          });
-                        }),
-              AutoSizeText(pageNumber.toString(), style: blackBoldStyle()),
-              nextPageButton(context,
-                  onPress: pageNumber == maxPageNumber
-                      ? null
-                      : () {
-                          if (pageNumber == maxPageNumber) {
-                            return;
-                          }
-                          setState(() {
-                            pageNumber++;
-                          });
-                        })
-            ],
-          )),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          previousPageButton(context,
+              onPress: pageNumber == 1
+                  ? null
+                  : () {
+                      if (pageNumber == 1) {
+                        return;
+                      }
+                      setState(() {
+                        pageNumber--;
+                      });
+                    }),
+          Container(
+            decoration:
+                BoxDecoration(border: Border.all(color: CustomColors.darkBlue)),
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: AutoSizeText(pageNumber.toString(),
+                  style: TextStyle(color: CustomColors.darkBlue)),
+            ),
+          ),
+          nextPageButton(context,
+              onPress: pageNumber == maxPageNumber
+                  ? null
+                  : () {
+                      if (pageNumber == maxPageNumber) {
+                        return;
+                      }
+                      setState(() {
+                        pageNumber++;
+                      });
+                    })
+        ],
+      ),
     );
   }
 }

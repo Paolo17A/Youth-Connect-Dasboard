@@ -10,8 +10,9 @@ import 'package:ywda_dashboard/widgets/custom_miscellaneous_widgets.dart';
 import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
+import '../utils/color_util.dart';
 import '../utils/firebase_util.dart';
-import '../widgets/custom_text_widgets.dart';
+import '../utils/go_router_util.dart';
 
 class ViewFAQSscreen extends StatefulWidget {
   const ViewFAQSscreen({super.key});
@@ -33,7 +34,7 @@ class _ViewFAQsScreenState extends State<ViewFAQSscreen> {
     super.didChangeDependencies();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!hasLoggedInUser()) {
-        GoRouter.of(context).go('/login');
+        GoRouter.of(context).goNamed(GoRoutes.login);
         return;
       }
       if (!_isInitialized) getAllFAQs();
@@ -132,21 +133,14 @@ class _ViewFAQsScreenState extends State<ViewFAQSscreen> {
     return viewContentLabelRow(
       context,
       children: [
+        viewFlexTextCell('#',
+            flex: 1, backgroundColor: Colors.grey.withOpacity(0.5)),
         viewFlexTextCell('Question',
-            flex: 3,
-            backgroundColor: Colors.grey,
-            borderColor: Colors.white,
-            textColor: Colors.white),
+            flex: 3, backgroundColor: Colors.grey.withOpacity(0.5)),
         viewFlexTextCell('Answer',
-            flex: 5,
-            backgroundColor: Colors.grey,
-            borderColor: Colors.white,
-            textColor: Colors.white),
+            flex: 5, backgroundColor: Colors.grey.withOpacity(0.5)),
         viewFlexTextCell('Actions',
-            flex: 2,
-            backgroundColor: Colors.grey,
-            borderColor: Colors.white,
-            textColor: Colors.white),
+            flex: 2, backgroundColor: Colors.grey.withOpacity(0.5)),
       ],
     );
   }
@@ -158,25 +152,22 @@ class _ViewFAQsScreenState extends State<ViewFAQSscreen> {
           shrinkWrap: true,
           itemCount: pageNumber == maxPageNumber ? allFAQs.length % 10 : 10,
           itemBuilder: (context, index) {
-            Color entryColor = index % 2 == 0 ? Colors.black : Colors.white;
-            Color backgroundColor = index % 2 == 0 ? Colors.white : Colors.grey;
-            Color borderColor = index % 2 == 0 ? Colors.grey : Colors.white;
+            Color backgroundColor =
+                index % 2 == 0 ? Colors.white : Colors.grey.withOpacity(0.5);
+            Color borderColor =
+                index % 2 == 0 ? Colors.grey.withOpacity(0.5) : Colors.white;
             final announcementData = allFAQs[index + ((pageNumber - 1) * 10)]
                 .data() as Map<dynamic, dynamic>;
             return viewContentEntryRow(context,
                 borderColor: borderColor,
                 isLastEntry: index == allFAQs.length - 1,
                 children: [
+                  viewFlexTextCell('#${(index + 1).toString()}',
+                      flex: 1, backgroundColor: backgroundColor),
                   viewFlexTextCell(announcementData['question'],
-                      flex: 3,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),
+                      flex: 3, backgroundColor: backgroundColor),
                   viewFlexTextCell(announcementData['answer'],
-                      flex: 5,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),
+                      flex: 5, backgroundColor: backgroundColor),
                   viewFlexActionsCell([
                     editEntryButton(context,
                         onPress: () => GoRouter.of(context)
@@ -191,10 +182,7 @@ class _ViewFAQsScreenState extends State<ViewFAQSscreen> {
                           deleteEntry: () => deleteThisFAQ(
                               allFAQs[index + ((pageNumber - 1) * 10)]));
                     })
-                  ],
-                      flex: 2,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor)
+                  ], flex: 2, backgroundColor: backgroundColor)
                 ]);
           }),
     );
@@ -203,36 +191,42 @@ class _ViewFAQsScreenState extends State<ViewFAQSscreen> {
   Widget _navigatorButtons() {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 20),
-      child: SizedBox(
-          width: MediaQuery.of(context).size.height * 0.6,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              previousPageButton(context,
-                  onPress: pageNumber == 1
-                      ? null
-                      : () {
-                          if (pageNumber == 1) {
-                            return;
-                          }
-                          setState(() {
-                            pageNumber--;
-                          });
-                        }),
-              AutoSizeText(pageNumber.toString(), style: blackBoldStyle()),
-              nextPageButton(context,
-                  onPress: pageNumber == maxPageNumber
-                      ? null
-                      : () {
-                          if (pageNumber == maxPageNumber) {
-                            return;
-                          }
-                          setState(() {
-                            pageNumber++;
-                          });
-                        })
-            ],
-          )),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          previousPageButton(context,
+              onPress: pageNumber == 1
+                  ? null
+                  : () {
+                      if (pageNumber == 1) {
+                        return;
+                      }
+                      setState(() {
+                        pageNumber--;
+                      });
+                    }),
+          Container(
+            decoration:
+                BoxDecoration(border: Border.all(color: CustomColors.darkBlue)),
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: AutoSizeText(pageNumber.toString(),
+                  style: TextStyle(color: CustomColors.darkBlue)),
+            ),
+          ),
+          nextPageButton(context,
+              onPress: pageNumber == maxPageNumber
+                  ? null
+                  : () {
+                      if (pageNumber == maxPageNumber) {
+                        return;
+                      }
+                      setState(() {
+                        pageNumber++;
+                      });
+                    })
+        ],
+      ),
     );
   }
 }

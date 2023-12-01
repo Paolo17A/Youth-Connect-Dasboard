@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:ywda_dashboard/utils/go_router_util.dart';
 
 import 'package:ywda_dashboard/utils/url_util.dart';
 import 'package:ywda_dashboard/widgets/app_bar_widget.dart';
@@ -11,6 +12,7 @@ import 'package:ywda_dashboard/widgets/custom_container_widgets.dart';
 import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
+import '../utils/color_util.dart';
 import '../utils/firebase_util.dart';
 import '../widgets/custom_button_widgets.dart';
 import '../widgets/custom_miscellaneous_widgets.dart';
@@ -41,7 +43,7 @@ class _ViewRenewalHistoryScreenState extends State<ViewRenewalHistoryScreen> {
     super.didChangeDependencies();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!hasLoggedInUser()) {
-        GoRouter.of(context).go('/login');
+        GoRouter.of(context).goNamed(GoRoutes.login);
         return;
       }
       if (!isInitialized) getRenewalHistory();
@@ -93,9 +95,9 @@ class _ViewRenewalHistoryScreenState extends State<ViewRenewalHistoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBarWidget(context),
+      appBar: orgAppBarWidget(context),
       body: Row(children: [
-        orgLeftNavigator(context, 1),
+        orgLeftNavigator(context, GoRoutes.orgRenewalHistory),
         bodyWidgetWhiteBG(
             context,
             switchedLoadingContainer(
@@ -123,6 +125,8 @@ class _ViewRenewalHistoryScreenState extends State<ViewRenewalHistoryScreen> {
             _onSelectFilter();
           }, ['NO FILTER', 'DISAPPROVED', 'PENDING', 'APPROVED'], '', false),
         ),
+        AutoSizeText('${filteredRenewalRequests.length} entries',
+            style: blackBoldStyle()),
       ]),
     );
   }
@@ -150,30 +154,15 @@ class _ViewRenewalHistoryScreenState extends State<ViewRenewalHistoryScreen> {
       context,
       children: [
         viewFlexTextCell('#',
-            flex: 1,
-            backgroundColor: Colors.grey,
-            borderColor: Colors.white,
-            textColor: Colors.white),
+            flex: 1, backgroundColor: Colors.grey.withOpacity(0.5)),
         viewFlexTextCell('Accreditation Form',
-            flex: 2,
-            backgroundColor: Colors.grey,
-            borderColor: Colors.white,
-            textColor: Colors.white),
+            flex: 2, backgroundColor: Colors.grey.withOpacity(0.5)),
         viewFlexTextCell('Status',
-            flex: 2,
-            backgroundColor: Colors.grey,
-            borderColor: Colors.white,
-            textColor: Colors.white),
+            flex: 2, backgroundColor: Colors.grey.withOpacity(0.5)),
         viewFlexTextCell('Certification',
-            flex: 2,
-            backgroundColor: Colors.grey,
-            borderColor: Colors.white,
-            textColor: Colors.white),
+            flex: 2, backgroundColor: Colors.grey.withOpacity(0.5)),
         viewFlexTextCell('Approved/Disapproved Date',
-            flex: 2,
-            backgroundColor: Colors.grey,
-            borderColor: Colors.white,
-            textColor: Colors.white),
+            flex: 2, backgroundColor: Colors.grey.withOpacity(0.5))
       ],
     );
   }
@@ -197,17 +186,15 @@ class _ViewRenewalHistoryScreenState extends State<ViewRenewalHistoryScreen> {
             String formattedDate = finalizedDate.year != 1970
                 ? DateFormat('dd MMM yyyy').format(finalizedDate)
                 : 'N/A';
-            Color entryColor = index % 2 == 0 ? Colors.black : Colors.white;
-            Color backgroundColor = index % 2 == 0 ? Colors.white : Colors.grey;
-            Color borderColor = index % 2 == 0 ? Colors.grey : Colors.white;
+            Color backgroundColor =
+                index % 2 == 0 ? Colors.white : Colors.grey.withOpacity(0.5);
+            Color borderColor =
+                index % 2 == 0 ? Colors.grey.withOpacity(0.5) : Colors.white;
 
             return viewContentEntryRow(context,
                 children: [
                   viewFlexTextCell('#${(index + 1) + ((pageNumber - 1) * 10)}',
-                      flex: 1,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),
+                      flex: 1, backgroundColor: backgroundColor),
                   viewFlexActionsCell([
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.13,
@@ -224,15 +211,9 @@ class _ViewRenewalHistoryScreenState extends State<ViewRenewalHistoryScreen> {
                                 decoration: TextDecoration.underline),
                           )),
                     )
-                  ],
-                      flex: 2,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor),
+                  ], flex: 2, backgroundColor: backgroundColor),
                   viewFlexTextCell(accredData['status'],
-                      flex: 2,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),
+                      flex: 2, backgroundColor: backgroundColor),
                   viewFlexActionsCell([
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.13,
@@ -257,15 +238,9 @@ class _ViewRenewalHistoryScreenState extends State<ViewRenewalHistoryScreen> {
                                     : null),
                           )),
                     ),
-                  ],
-                      flex: 2,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor),
+                  ], flex: 2, backgroundColor: backgroundColor),
                   viewFlexTextCell(formattedDate,
-                      flex: 2,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),
+                      flex: 2, backgroundColor: backgroundColor),
                 ],
                 borderColor: borderColor,
                 isLastEntry: index == filteredRenewalRequests.length - 1);
@@ -276,36 +251,42 @@ class _ViewRenewalHistoryScreenState extends State<ViewRenewalHistoryScreen> {
   Widget _navigatorButtons() {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 20),
-      child: SizedBox(
-          width: MediaQuery.of(context).size.height * 0.6,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              previousPageButton(context,
-                  onPress: pageNumber == 1
-                      ? null
-                      : () {
-                          if (pageNumber == 1) {
-                            return;
-                          }
-                          setState(() {
-                            pageNumber--;
-                          });
-                        }),
-              AutoSizeText(pageNumber.toString(), style: blackBoldStyle()),
-              nextPageButton(context,
-                  onPress: pageNumber == maxPageNumber
-                      ? null
-                      : () {
-                          if (pageNumber == maxPageNumber) {
-                            return;
-                          }
-                          setState(() {
-                            pageNumber++;
-                          });
-                        })
-            ],
-          )),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          previousPageButton(context,
+              onPress: pageNumber == 1
+                  ? null
+                  : () {
+                      if (pageNumber == 1) {
+                        return;
+                      }
+                      setState(() {
+                        pageNumber--;
+                      });
+                    }),
+          Container(
+            decoration:
+                BoxDecoration(border: Border.all(color: CustomColors.darkBlue)),
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: AutoSizeText(pageNumber.toString(),
+                  style: TextStyle(color: CustomColors.darkBlue)),
+            ),
+          ),
+          nextPageButton(context,
+              onPress: pageNumber == maxPageNumber
+                  ? null
+                  : () {
+                      if (pageNumber == maxPageNumber) {
+                        return;
+                      }
+                      setState(() {
+                        pageNumber++;
+                      });
+                    })
+        ],
+      ),
     );
   }
 }

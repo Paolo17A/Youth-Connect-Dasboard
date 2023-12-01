@@ -15,6 +15,7 @@ import 'package:ywda_dashboard/widgets/dropdown_widget.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
 import '../utils/firebase_util.dart';
+import '../utils/go_router_util.dart';
 import '../widgets/custom_button_widgets.dart';
 import '../widgets/custom_text_widgets.dart';
 
@@ -57,7 +58,7 @@ class _EditOrgScreenState extends State<EditOrgScreen> {
     super.didChangeDependencies();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!hasLoggedInUser()) {
-        GoRouter.of(context).go('/login');
+        GoRouter.of(context).goNamed(GoRoutes.login);
         return;
       }
       getThisOrg();
@@ -285,6 +286,7 @@ class _EditOrgScreenState extends State<EditOrgScreen> {
     return Column(children: [
       vertical10horizontal4(Row(children: [
         AutoSizeText('Organization Name', style: interSize19()),
+        AutoSizeText('*', style: interSize19(textColor: Colors.red))
       ])),
       YouthConnectTextField(
           text: 'Organization Name',
@@ -298,7 +300,8 @@ class _EditOrgScreenState extends State<EditOrgScreen> {
   Widget _organizationNatureWidget() {
     return Column(children: [
       Row(children: [
-        AutoSizeText('Organization Nature', style: interSize19())
+        AutoSizeText('Organization Nature', style: interSize19()),
+        AutoSizeText('*', style: interSize19(textColor: Colors.red))
       ]),
       dropdownWidget(_nature, (selected) {
         setState(() {
@@ -319,7 +322,8 @@ class _EditOrgScreenState extends State<EditOrgScreen> {
   Widget _organizationIntroWidget() {
     return Column(children: [
       vertical10horizontal4(Row(children: [
-        AutoSizeText('Organization Intro', style: interSize19())
+        AutoSizeText('Organization Intro', style: interSize19()),
+        AutoSizeText('*', style: interSize19(textColor: Colors.red))
       ])),
       YouthConnectTextField(
           text: 'Organization Intro',
@@ -331,8 +335,10 @@ class _EditOrgScreenState extends State<EditOrgScreen> {
 
   Widget _organizationContactDetailsWidget() {
     return Column(children: [
-      vertical10horizontal4(Row(
-          children: [AutoSizeText('Contact Details', style: interSize19())])),
+      vertical10horizontal4(Row(children: [
+        AutoSizeText('Contact Details', style: interSize19()),
+        AutoSizeText('*', style: interSize19(textColor: Colors.red))
+      ])),
       YouthConnectTextField(
           text: 'Contact Details',
           controller: _contactController,
@@ -343,8 +349,10 @@ class _EditOrgScreenState extends State<EditOrgScreen> {
 
   Widget _organizationSocMedWidget() {
     return Column(children: [
-      vertical10horizontal4(Row(
-          children: [AutoSizeText('Social Media Link', style: interSize19())])),
+      vertical10horizontal4(Row(children: [
+        AutoSizeText('Social Media Link', style: interSize19()),
+        AutoSizeText('*', style: interSize19(textColor: Colors.red))
+      ])),
       YouthConnectTextField(
           text: 'Social Media',
           controller: _socMedController,

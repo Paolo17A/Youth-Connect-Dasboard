@@ -11,6 +11,7 @@ import 'package:ywda_dashboard/widgets/youth_connect_textfield_widget.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
 import '../utils/firebase_util.dart';
+import '../utils/go_router_util.dart';
 import '../widgets/custom_button_widgets.dart';
 import '../widgets/custom_text_widgets.dart';
 
@@ -33,7 +34,7 @@ class _EditFAQScreenState extends State<EditFAQScreen> {
     super.didChangeDependencies();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!hasLoggedInUser()) {
-        GoRouter.of(context).go('/login');
+        GoRouter.of(context).goNamed(GoRoutes.login);
         return;
       }
       if (!_isInitialzied) getThisFAQ();
@@ -164,8 +165,10 @@ class _EditFAQScreenState extends State<EditFAQScreen> {
 
   Widget _questionWidget() {
     return Column(children: [
-      vertical10horizontal4(
-          Row(children: [AutoSizeText('Question', style: interSize19())])),
+      vertical10horizontal4(Row(children: [
+        AutoSizeText('Question', style: interSize19()),
+        AutoSizeText('*', style: interSize19(textColor: Colors.red))
+      ])),
       YouthConnectTextField(
           text: 'Question',
           controller: _questionController,
@@ -177,8 +180,10 @@ class _EditFAQScreenState extends State<EditFAQScreen> {
 
   Widget _answerWidget() {
     return Column(children: [
-      vertical10horizontal4(
-          Row(children: [AutoSizeText('Answer', style: interSize19())])),
+      vertical10horizontal4(Row(children: [
+        AutoSizeText('Answer', style: interSize19()),
+        AutoSizeText('*', style: interSize19(textColor: Colors.red))
+      ])),
       YouthConnectTextField(
           text: 'Answer',
           controller: _answerController,

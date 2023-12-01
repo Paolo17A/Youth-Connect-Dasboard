@@ -14,7 +14,7 @@ import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
 import '../utils/firebase_util.dart';
-import '../widgets/custom_text_widgets.dart';
+import '../utils/go_router_util.dart';
 
 class ViewSubmissionsScreen extends StatefulWidget {
   const ViewSubmissionsScreen({super.key});
@@ -36,7 +36,7 @@ class _ViewSubmissionsScreenState extends State<ViewSubmissionsScreen> {
     super.didChangeDependencies();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!hasLoggedInUser()) {
-        GoRouter.of(context).go('/login');
+        GoRouter.of(context).goNamed(GoRoutes.login);
         return;
       }
       getAllUsers();
@@ -160,25 +160,13 @@ class _ViewSubmissionsScreenState extends State<ViewSubmissionsScreen> {
       context,
       children: [
         viewFlexTextCell('#',
-            flex: 1,
-            backgroundColor: Colors.grey,
-            borderColor: Colors.white,
-            textColor: Colors.white),
+            flex: 1, backgroundColor: Colors.grey.withOpacity(0.5)),
         viewFlexTextCell('Name',
-            flex: 2,
-            backgroundColor: Colors.grey,
-            borderColor: Colors.white,
-            textColor: Colors.white),
+            flex: 2, backgroundColor: Colors.grey.withOpacity(0.5)),
         viewFlexTextCell('Assessment Skill',
-            flex: 2,
-            backgroundColor: Colors.grey,
-            borderColor: Colors.white,
-            textColor: Colors.white),
+            flex: 2, backgroundColor: Colors.grey.withOpacity(0.5)),
         viewFlexTextCell('View Entry',
-            flex: 2,
-            backgroundColor: Colors.grey,
-            borderColor: Colors.white,
-            textColor: Colors.white)
+            flex: 2, backgroundColor: Colors.grey.withOpacity(0.5))
       ],
     );
   }
@@ -193,29 +181,22 @@ class _ViewSubmissionsScreenState extends State<ViewSubmissionsScreen> {
           itemBuilder: (context, index) {
             Map<dynamic, dynamic> submissionData =
                 allSubmissions[index + ((pageNumber - 1) * 10)];
-            Color entryColor = index % 2 == 0 ? Colors.black : Colors.white;
-            Color backgroundColor = index % 2 == 0 ? Colors.white : Colors.grey;
-            Color borderColor = index % 2 == 0 ? Colors.grey : Colors.white;
+            Color backgroundColor =
+                index % 2 == 0 ? Colors.white : Colors.grey.withOpacity(0.5);
+            Color borderColor =
+                index % 2 == 0 ? Colors.grey.withOpacity(0.5) : Colors.white;
             return viewContentEntryRow(context,
                 children: [
                   viewFlexTextCell('#${(index + 1) + ((pageNumber - 1) * 10)}',
-                      flex: 1,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),
+                      flex: 1, backgroundColor: backgroundColor),
                   viewFlexTextCell(submissionData['name'],
-                      flex: 2,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),
+                      flex: 2, backgroundColor: backgroundColor),
                   viewFlexTextCell(
                       submissionData['parameter'] == 'personalShield'
                           ? 'PERSONAL SHIELD'
                           : 'TWENTY STATEMENTS',
                       flex: 2,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      textColor: entryColor),
+                      backgroundColor: backgroundColor),
                   viewFlexActionsCell([
                     viewEntryPopUpButton(context, onPress: () {
                       if (submissionData['parameter'] == 'personalShield') {
@@ -241,10 +222,7 @@ class _ViewSubmissionsScreenState extends State<ViewSubmissionsScreen> {
                               submissionData['clientID'],
                               submissionData['badgeBool'],
                               submissionData['accepted']))
-                  ],
-                      flex: 2,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor)
+                  ], flex: 2, backgroundColor: backgroundColor)
                 ],
                 borderColor: borderColor,
                 isLastEntry: index == allSubmissions.length - 1);
@@ -255,36 +233,42 @@ class _ViewSubmissionsScreenState extends State<ViewSubmissionsScreen> {
   Widget _navigatorButtons() {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 20),
-      child: SizedBox(
-          width: MediaQuery.of(context).size.height * 0.6,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              previousPageButton(context,
-                  onPress: pageNumber == 1
-                      ? null
-                      : () {
-                          if (pageNumber == 1) {
-                            return;
-                          }
-                          setState(() {
-                            pageNumber--;
-                          });
-                        }),
-              AutoSizeText(pageNumber.toString(), style: blackBoldStyle()),
-              nextPageButton(context,
-                  onPress: pageNumber == maxPageNumber
-                      ? null
-                      : () {
-                          if (pageNumber == maxPageNumber) {
-                            return;
-                          }
-                          setState(() {
-                            pageNumber++;
-                          });
-                        })
-            ],
-          )),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          previousPageButton(context,
+              onPress: pageNumber == 1
+                  ? null
+                  : () {
+                      if (pageNumber == 1) {
+                        return;
+                      }
+                      setState(() {
+                        pageNumber--;
+                      });
+                    }),
+          Container(
+            decoration:
+                BoxDecoration(border: Border.all(color: CustomColors.darkBlue)),
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: AutoSizeText(pageNumber.toString(),
+                  style: TextStyle(color: CustomColors.darkBlue)),
+            ),
+          ),
+          nextPageButton(context,
+              onPress: pageNumber == maxPageNumber
+                  ? null
+                  : () {
+                      if (pageNumber == maxPageNumber) {
+                        return;
+                      }
+                      setState(() {
+                        pageNumber++;
+                      });
+                    })
+        ],
+      ),
     );
   }
 

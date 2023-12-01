@@ -37,7 +37,6 @@ import 'package:ywda_dashboard/screens/view_user_accounts_screen.dart';
 import 'package:ywda_dashboard/screens/view_youth_age_report.dart';
 import 'package:ywda_dashboard/screens/view_youth_gender_report.dart';
 import 'package:ywda_dashboard/screens/view_youth_information.dart';
-import 'package:ywda_dashboard/screens/welcome_screen.dart';
 import 'package:ywda_dashboard/utils/color_util.dart';
 import 'firebase_options.dart';
 import 'screens/view_org_heads_screen.dart';
@@ -54,21 +53,22 @@ void main() async {
 class MyApp extends StatelessWidget {
   MyApp({super.key});
 
-  final GoRouter _routes = GoRouter(initialLocation: '/login', routes: [
+  final GoRouter _routes = GoRouter(initialLocation: '/', routes: [
     GoRoute(
+        name: GoRoutes.login,
         path: '/',
-        builder: (context, state) => const WelcomeScreen(),
+        builder: (context, state) => const LogInScreen(),
         routes: [
           GoRoute(
               path: 'register',
               pageBuilder: (context, state) {
                 return customTransition(context, state, const RegisterScreen());
               }),
-          GoRoute(
+          /*GoRoute(
               path: 'login',
               pageBuilder: (context, state) {
                 return customTransition(context, state, const LogInScreen());
-              }),
+              }),*/
           GoRoute(
               path: 'forgotPassword',
               pageBuilder: (context, state) {
@@ -77,6 +77,7 @@ class MyApp extends StatelessWidget {
               }),
           //ADMIN SCREENS
           GoRoute(
+              name: GoRoutes.home,
               path: 'home',
               pageBuilder: (context, state) {
                 return customTransition(context, state, const HomeScreen());
@@ -93,14 +94,11 @@ class MyApp extends StatelessWidget {
                         youthID: state.pathParameters['youthID']!));
               }),
           GoRoute(
-              path: 'youthInformation/:category',
+              path: 'youthInformation',
               name: 'youthInformation',
               pageBuilder: (context, state) {
                 return customTransition(
-                    context,
-                    state,
-                    ViewYouthInformationScreen(
-                        category: state.pathParameters['category']!));
+                    context, state, ViewYouthInformationScreen());
               }),
           GoRoute(
               path: 'ageReport',
@@ -317,14 +315,8 @@ class MyApp extends StatelessWidget {
           GoRoute(
               path: 'users',
               pageBuilder: (context, state) {
-                return CustomTransitionPage(
-                    fullscreenDialog: true,
-                    key: state.pageKey,
-                    child: ViewUserAccountsScreen(),
-                    transitionsBuilder:
-                        (context, animation, secondaryAnimation, child) {
-                      return easeInOutCircTransition(animation, child);
-                    });
+                return customTransition(
+                    context, state, const ViewUserAccountsScreen());
               }),
           GoRoute(
               path: 'faqs',
@@ -344,58 +336,50 @@ class MyApp extends StatelessWidget {
                     EditFAQScreen(faqID: state.pathParameters['faqID']!));
               }),
           GoRoute(
+              name: GoRoutes.adminSettings,
               path: 'adminSettings',
-              pageBuilder: (context, state) {
-                return customTransition(
-                    context, state, const AdminSettingsScreen());
-              }),
+              pageBuilder: (context, state) => customTransition(
+                  context, state, const AdminSettingsScreen())),
+
           //  ORG HEAD SCREENS
           GoRoute(
+              name: GoRoutes.orgHome,
               path: 'orgHome',
-              pageBuilder: (context, state) {
-                return customTransition(context, state, const OrgHomeScreen());
-              }),
+              pageBuilder: (context, state) =>
+                  customTransition(context, state, const OrgHomeScreen())),
           GoRoute(
+              name: GoRoutes.orgRenewalHistory,
               path: 'orgRenewalHistory',
-              pageBuilder: (context, state) {
-                return customTransition(
-                    context, state, const ViewRenewalHistoryScreen());
-              }),
+              pageBuilder: (context, state) => customTransition(
+                  context, state, const ViewRenewalHistoryScreen())),
           GoRoute(
+              name: GoRoutes.orgProjects,
               path: 'orgProjects',
-              pageBuilder: (context, state) {
-                return customTransition(
-                    context, state, const ViewOrgProjectsScreen());
-              }),
+              pageBuilder: (context, state) => customTransition(
+                  context, state, const ViewOrgProjectsScreen())),
           GoRoute(
+              name: GoRoutes.addOrgProject,
               path: 'orgProjects/add',
-              pageBuilder: (context, state) {
-                return customTransition(
-                    context, state, const AddOrgProjectScreen());
-              }),
+              pageBuilder: (context, state) => customTransition(
+                  context, state, const AddOrgProjectScreen())),
           GoRoute(
-              name: 'editOrgProject',
+              name: GoRoutes.editOrgProject,
               path: 'orgProjects/edit/:projectID',
-              pageBuilder: (context, state) {
-                return customTransition(
-                    context,
-                    state,
-                    EditOrgProjectScreen(
-                        projectID: state.pathParameters['projectID']!));
-              }),
+              pageBuilder: (context, state) => customTransition(
+                  context,
+                  state,
+                  EditOrgProjectScreen(
+                      projectID: state.pathParameters['projectID']!))),
           GoRoute(
-            path: 'editOwnOrgHead',
-            pageBuilder: (context, state) {
-              return customTransition(
-                  context, state, const EditOwnOrgHeadScreen());
-            },
-          ),
+              name: GoRoutes.editOwnOrgHead,
+              path: 'editOwnOrgHead',
+              pageBuilder: (context, state) => customTransition(
+                  context, state, const EditOwnOrgHeadScreen())),
           GoRoute(
+              name: GoRoutes.orgProfile,
               path: 'orgProfile',
-              pageBuilder: (context, state) {
-                return customTransition(
-                    context, state, const EditOrgProfileScreen());
-              })
+              pageBuilder: (context, state) => customTransition(
+                  context, state, const EditOrgProfileScreen()))
         ])
   ]);
 

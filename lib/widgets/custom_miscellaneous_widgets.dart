@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'package:ywda_dashboard/utils/color_util.dart';
 import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
 
@@ -58,48 +59,47 @@ Widget analyticReportWidget(BuildContext context,
     child: Container(
         width: MediaQuery.of(context).size.width * 0.15,
         height: MediaQuery.of(context).size.height * 0.15,
-        decoration: BoxDecoration(
-          color: CustomColors.softBlue,
-        ),
-        child: Row(children: [
-          SizedBox(
-            width: MediaQuery.of(context).size.width * 0.1,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                AutoSizeText(count,
-                    maxLines: 2,
-                    style:
-                        GoogleFonts.inter(textStyle: blackBoldStyle(size: 40))),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.07,
-                  height: 45,
-                  child: ElevatedButton(
-                    onPressed: () => onPress(),
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        )),
-                    child: Center(
-                      child: AutoSizeText(demographic,
-                          textAlign: TextAlign.center,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.inter(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 15)),
+        child: ElevatedButton(
+          onPressed: () => onPress(),
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
+          child: vertical10horizontal4(
+            Row(children: [
+              SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.02,
+                  child: displayIcon),
+              VerticalDivider(),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.08,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.07,
+                      height: 45,
+                      child: Center(
+                        child: AutoSizeText(demographic,
+                            textAlign: TextAlign.center,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.inter(
+                                textStyle: blackBoldStyle(size: 40))),
+                      ),
                     ),
-                  ),
-                )
-              ],
-            ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        AutoSizeText(count,
+                            maxLines: 2,
+                            style: GoogleFonts.inter(
+                                textStyle: blackThinStyle(size: 30))),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ]),
           ),
-          SizedBox(
-              width: MediaQuery.of(context).size.width * 0.05,
-              child: Transform.scale(scale: 2, child: displayIcon))
-        ])),
+        )),
   );
 }
 
@@ -115,17 +115,22 @@ Widget orgDashboardWidget(BuildContext context,
         width: MediaQuery.of(context).size.width * 0.2,
         height: MediaQuery.of(context).size.height * 0.2,
         decoration: BoxDecoration(
-            color: CustomColors.softBlue,
-            borderRadius: BorderRadius.circular(30)),
+            color: Colors.white, borderRadius: BorderRadius.circular(30)),
         child: Row(children: [
           SizedBox(
-            width: MediaQuery.of(context).size.width * 0.15,
+              width: MediaQuery.of(context).size.width * 0.05,
+              child: Transform.scale(scale: 2, child: displayIcon)),
+          VerticalDivider(),
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.13,
             child: allPadding8Pix(
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   AutoSizeText(label,
                       textAlign: TextAlign.center,
+                      minFontSize: 13,
+                      maxFontSize: 18,
                       style: GoogleFonts.inter(textStyle: blackBoldStyle())),
                   if (!willHideButton)
                     SizedBox(
@@ -134,7 +139,7 @@ Widget orgDashboardWidget(BuildContext context,
                       child: ElevatedButton(
                         onPressed: () => onPress(),
                         style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
+                            backgroundColor: CustomColors.mercury,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             )),
@@ -155,9 +160,6 @@ Widget orgDashboardWidget(BuildContext context,
               ),
             ),
           ),
-          SizedBox(
-              width: MediaQuery.of(context).size.width * 0.05,
-              child: Transform.scale(scale: 2, child: displayIcon))
         ])),
   );
 }
@@ -201,6 +203,66 @@ Widget percentBarWidget(
           ),
         )
       ]));
+}
+
+Widget semiCirclePercentWidget(
+    BuildContext context, double percentValue, String label) {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    crossAxisAlignment: CrossAxisAlignment.end,
+    children: [
+      ClipRRect(
+        child: Align(
+          alignment: Alignment.bottomCenter,
+          heightFactor: 0.5,
+          child: ClipRRect(
+            child: Align(
+              alignment: Alignment.topCenter,
+              heightFactor: 0.6,
+              widthFactor: 0.5,
+              child: SfRadialGauge(
+                //backgroundColor: Colors.green,
+                axes: [
+                  RadialAxis(
+                    showLabels: false,
+                    showTicks: false,
+                    startAngle: 180,
+                    endAngle: 0,
+                    radiusFactor: 0.4,
+                    canScaleToFit: false,
+                    axisLineStyle: AxisLineStyle(
+                      thickness: 0.2,
+                      color: Colors.yellow.withOpacity(0.65),
+                      thicknessUnit: GaugeSizeUnit.factor,
+                      cornerStyle: CornerStyle.startCurve,
+                    ),
+                    pointers: <GaugePointer>[
+                      RangePointer(
+                        value: percentValue * 100,
+                        cornerStyle: CornerStyle.bothCurve,
+                        color: Color.fromARGB(255, 230, 215, 84),
+                        width: 0.2,
+                        sizeUnit: GaugeSizeUnit.factor,
+                      )
+                    ],
+                    annotations: [
+                      GaugeAnnotation(
+                          widget: Text(
+                              '${(percentValue * 100).toStringAsFixed(2)}%\n',
+                              style: blackBoldStyle()))
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+      SizedBox(
+          width: MediaQuery.of(context).size.width * 0.09,
+          child: AutoSizeText('$label\n\n', style: blackBoldStyle()))
+    ],
+  );
 }
 
 Widget registerHeader() {

@@ -10,6 +10,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker_web/image_picker_web.dart';
 import 'package:intl/intl.dart';
 import 'package:ywda_dashboard/utils/color_util.dart';
+import 'package:ywda_dashboard/utils/go_router_util.dart';
 import 'package:ywda_dashboard/widgets/custom_container_widgets.dart';
 import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
 import 'package:ywda_dashboard/widgets/app_bar_widget.dart';
@@ -45,7 +46,7 @@ class _EditOrgProjectScreenState extends State<EditOrgProjectScreen> {
     super.didChangeDependencies();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!hasLoggedInUser()) {
-        GoRouter.of(context).go('/login');
+        GoRouter.of(context).goNamed(GoRoutes.login);
         return;
       }
       getThisProject();
@@ -241,7 +242,7 @@ class _EditOrgProjectScreenState extends State<EditOrgProjectScreen> {
         appBar: appBarWidget(context),
         body: Row(
           children: [
-            orgLeftNavigator(context, 2),
+            orgLeftNavigator(context, GoRoutes.orgProjects),
             bodyWidgetWhiteBG(
                 context,
                 stackedLoadingContainer(

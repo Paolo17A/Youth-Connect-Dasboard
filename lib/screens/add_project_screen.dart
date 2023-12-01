@@ -19,6 +19,7 @@ import 'package:ywda_dashboard/widgets/youth_connect_textfield_widget.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
 import '../utils/firebase_util.dart';
+import '../utils/go_router_util.dart';
 import '../utils/string_util.dart';
 import '../widgets/custom_button_widgets.dart';
 
@@ -45,7 +46,7 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
     super.didChangeDependencies();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!hasLoggedInUser()) {
-        GoRouter.of(context).go('/login');
+        GoRouter.of(context).goNamed(GoRoutes.login);
         return;
       }
     });
@@ -241,6 +242,7 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
           AutoSizeText('Project Title',
               style:
                   GoogleFonts.inter(textStyle: const TextStyle(fontSize: 19))),
+          AutoSizeText('*', style: interSize19(textColor: Colors.red))
         ],
       )),
       YouthConnectTextField(
@@ -258,6 +260,7 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
           AutoSizeText('Project Content',
               style:
                   GoogleFonts.inter(textStyle: const TextStyle(fontSize: 19))),
+          AutoSizeText('*', style: interSize19(textColor: Colors.red))
         ],
       )),
       YouthConnectTextField(
