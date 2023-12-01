@@ -75,7 +75,8 @@ Widget leftNavigator(BuildContext context, double index) {
                         borderRadius: BorderRadius.circular(15)),
                     child: ListTile(
                         title: Text('Towns', style: whiteThinStyle()),
-                        onTap: () {})),
+                        onTap: () =>
+                            GoRouter.of(context).goNamed(GoRoutes.townReport))),
                 Container(
                     decoration: BoxDecoration(
                         color: index == 5 ? CustomColors.softBlue : null,

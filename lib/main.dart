@@ -37,6 +37,7 @@ import 'package:ywda_dashboard/screens/view_user_accounts_screen.dart';
 import 'package:ywda_dashboard/screens/view_youth_age_report.dart';
 import 'package:ywda_dashboard/screens/view_youth_gender_report.dart';
 import 'package:ywda_dashboard/screens/view_youth_information.dart';
+import 'package:ywda_dashboard/screens/view_youth_town_report_screen.dart';
 import 'package:ywda_dashboard/utils/color_util.dart';
 import 'firebase_options.dart';
 import 'screens/view_org_heads_screen.dart';
@@ -111,6 +112,13 @@ class MyApp extends StatelessWidget {
               pageBuilder: (context, state) {
                 return customTransition(
                     context, state, const ViewYouthGenderReportScreen());
+              }),
+          GoRoute(
+              name: GoRoutes.townReport,
+              path: 'townReport',
+              pageBuilder: (context, state) {
+                return customTransition(
+                    context, state, const ViewYouthTownReportScreen());
               }),
           GoRoute(
               path: 'orgHeads',

@@ -10,6 +10,7 @@ class GoRoutes {
   //  Admin
   static const String home = 'home';
   static const String youthInformation = 'youthInformation';
+  static const String townReport = 'townReport';
   static const String adminSettings = 'adminSettings';
 
   //  Org Head
