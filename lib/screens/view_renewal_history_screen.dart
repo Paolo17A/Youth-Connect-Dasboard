@@ -98,7 +98,7 @@ class _ViewRenewalHistoryScreenState extends State<ViewRenewalHistoryScreen> {
       appBar: orgAppBarWidget(context),
       body: Row(children: [
         orgLeftNavigator(context, GoRoutes.orgRenewalHistory),
-        bodyWidgetWhiteBG(
+        bodyWidgetMercuryBG(
             context,
             switchedLoadingContainer(
                 isLoading,
@@ -193,7 +193,7 @@ class _ViewRenewalHistoryScreenState extends State<ViewRenewalHistoryScreen> {
 
             return viewContentEntryRow(context,
                 children: [
-                  viewFlexTextCell('#${(index + 1) + ((pageNumber - 1) * 10)}',
+                  viewFlexTextCell('${(index + 1) + ((pageNumber - 1) * 10)}',
                       flex: 1, backgroundColor: backgroundColor),
                   viewFlexActionsCell([
                     SizedBox(
@@ -269,7 +269,7 @@ class _ViewRenewalHistoryScreenState extends State<ViewRenewalHistoryScreen> {
             decoration:
                 BoxDecoration(border: Border.all(color: CustomColors.darkBlue)),
             child: Padding(
-              padding: const EdgeInsets.all(14),
+              padding: const EdgeInsets.all(5.5),
               child: AutoSizeText(pageNumber.toString(),
                   style: TextStyle(color: CustomColors.darkBlue)),
             ),

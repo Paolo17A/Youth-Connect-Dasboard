@@ -134,7 +134,7 @@ class _AddAnnouncementScreenState extends State<AddAnnouncementScreen> {
         body: Row(
           children: [
             leftNavigator(context, 6),
-            bodyWidgetWhiteBG(
+            bodyWidgetMercuryBG(
                 context,
                 stackedLoadingContainer(
                   context,

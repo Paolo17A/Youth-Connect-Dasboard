@@ -232,7 +232,7 @@ class _EditOrgProfileScreenState extends State<EditOrgProfileScreen> {
         body: Row(
           children: [
             orgLeftNavigator(context, GoRoutes.orgProfile),
-            bodyWidgetWhiteBG(
+            bodyWidgetMercuryBG(
               context,
               stackedLoadingContainer(
                   context,

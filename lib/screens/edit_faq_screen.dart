@@ -116,7 +116,7 @@ class _EditFAQScreenState extends State<EditFAQScreen> {
         body: Row(
           children: [
             leftNavigator(context, 6),
-            bodyWidgetWhiteBG(
+            bodyWidgetMercuryBG(
                 context,
                 stackedLoadingContainer(
                     context,

@@ -54,6 +54,12 @@ class _ViewYouthTownReportScreenState extends State<ViewYouthTownReportScreen> {
     });
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    townController.dispose();
+  }
+
   void getAllUsers() async {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     try {
@@ -131,7 +137,7 @@ class _ViewYouthTownReportScreenState extends State<ViewYouthTownReportScreen> {
       body: Row(
         children: [
           leftNavigator(context, 1.3),
-          bodyWidgetWhiteBG(
+          bodyWidgetMercuryBG(
               context,
               switchedLoadingContainer(
                   _isLoading,
@@ -220,7 +226,7 @@ class _ViewYouthTownReportScreenState extends State<ViewYouthTownReportScreen> {
 
               return viewContentEntryRow(context,
                   children: [
-                    viewFlexTextCell('#${(index + 1).toString()}',
+                    viewFlexTextCell('${(index + 1).toString()}',
                         flex: 1, backgroundColor: backgroundColor),
                     viewFlexTextCell(filteredTowns[index],
                         flex: 4, backgroundColor: backgroundColor),
@@ -260,7 +266,7 @@ class _ViewYouthTownReportScreenState extends State<ViewYouthTownReportScreen> {
             decoration:
                 BoxDecoration(border: Border.all(color: CustomColors.darkBlue)),
             child: Padding(
-              padding: const EdgeInsets.all(14),
+              padding: const EdgeInsets.all(5.5),
               child: AutoSizeText(pageNumber.toString(),
                   style: TextStyle(color: CustomColors.darkBlue)),
             ),
@@ -294,7 +300,7 @@ class _ViewYouthTownReportScreenState extends State<ViewYouthTownReportScreen> {
                   children: [
                     Column(children: [
                       AutoSizeText('Youth Residing in $town',
-                          style: blackBoldStyle(size: 40)),
+                          style: blackBoldStyle(size: 30)),
                       Gap(15),
                       Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -304,7 +310,7 @@ class _ViewYouthTownReportScreenState extends State<ViewYouthTownReportScreen> {
                               child: Center(
                                 child: AutoSizeText('YOUTH',
                                     textAlign: TextAlign.center,
-                                    style: blackBoldStyle()),
+                                    style: blackBoldStyle(size: 17)),
                               ),
                             ),
                             Container(
@@ -312,7 +318,7 @@ class _ViewYouthTownReportScreenState extends State<ViewYouthTownReportScreen> {
                               child: Center(
                                 child: AutoSizeText('ORGANIZATION',
                                     textAlign: TextAlign.center,
-                                    style: blackBoldStyle()),
+                                    style: blackBoldStyle(size: 17)),
                               ),
                             )
                           ]),

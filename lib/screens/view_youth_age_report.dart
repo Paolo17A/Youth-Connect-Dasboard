@@ -163,7 +163,7 @@ class _ViewYouthAgeReportState extends State<ViewYouthAgeReportScreen> {
       body: Row(
         children: [
           leftNavigator(context, 1.1),
-          bodyWidgetWhiteBG(
+          bodyWidgetMercuryBG(
               context,
               switchedLoadingContainer(
                   _isLoading,
@@ -262,7 +262,7 @@ class _ViewYouthAgeReportState extends State<ViewYouthAgeReportScreen> {
 
             return viewContentEntryRow(context,
                 children: [
-                  viewFlexTextCell('#${(index + 1).toString()}',
+                  viewFlexTextCell('${(index + 1).toString()}',
                       flex: 1, backgroundColor: backgroundColor),
                   viewFlexTextCell(fullName.isNotEmpty ? fullName : 'N/A',
                       flex: 3, backgroundColor: backgroundColor),
@@ -327,7 +327,7 @@ class _ViewYouthAgeReportState extends State<ViewYouthAgeReportScreen> {
             decoration:
                 BoxDecoration(border: Border.all(color: CustomColors.darkBlue)),
             child: Padding(
-              padding: const EdgeInsets.all(14),
+              padding: const EdgeInsets.all(5.5),
               child: AutoSizeText(pageNumber.toString(),
                   style: TextStyle(color: CustomColors.darkBlue)),
             ),

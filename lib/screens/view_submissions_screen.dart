@@ -126,7 +126,7 @@ class _ViewSubmissionsScreenState extends State<ViewSubmissionsScreen> {
         body: Row(
           children: [
             leftNavigator(context, 7),
-            bodyWidgetWhiteBG(
+            bodyWidgetMercuryBG(
                 context,
                 switchedLoadingContainer(
                     _isLoading,
@@ -187,7 +187,7 @@ class _ViewSubmissionsScreenState extends State<ViewSubmissionsScreen> {
                 index % 2 == 0 ? Colors.grey.withOpacity(0.5) : Colors.white;
             return viewContentEntryRow(context,
                 children: [
-                  viewFlexTextCell('#${(index + 1) + ((pageNumber - 1) * 10)}',
+                  viewFlexTextCell('${(index + 1) + ((pageNumber - 1) * 10)}',
                       flex: 1, backgroundColor: backgroundColor),
                   viewFlexTextCell(submissionData['name'],
                       flex: 2, backgroundColor: backgroundColor),
@@ -251,7 +251,7 @@ class _ViewSubmissionsScreenState extends State<ViewSubmissionsScreen> {
             decoration:
                 BoxDecoration(border: Border.all(color: CustomColors.darkBlue)),
             child: Padding(
-              padding: const EdgeInsets.all(14),
+              padding: const EdgeInsets.all(5.5),
               child: AutoSizeText(pageNumber.toString(),
                   style: TextStyle(color: CustomColors.darkBlue)),
             ),

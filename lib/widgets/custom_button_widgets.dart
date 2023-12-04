@@ -154,7 +154,7 @@ Widget previousPageButton(BuildContext context, {required Function? onPress}) {
   return Container(
     decoration: BoxDecoration(border: Border.all(color: CustomColors.darkBlue)),
     child: Padding(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       child: TextButton(
           onPressed: onPress != null ? () => onPress() : null,
           child: AutoSizeText('PREV')),
@@ -166,7 +166,7 @@ Widget nextPageButton(BuildContext context, {required Function? onPress}) {
   return Container(
     decoration: BoxDecoration(border: Border.all(color: CustomColors.darkBlue)),
     child: Padding(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       child: TextButton(
           onPressed: onPress != null ? () => onPress() : null,
           child: AutoSizeText('NEXT')),

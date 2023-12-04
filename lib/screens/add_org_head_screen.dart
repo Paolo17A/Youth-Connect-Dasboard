@@ -527,7 +527,7 @@ class _AddOrgHeadScreenState extends State<AddOrgHeadScreen> {
       body: Row(
         children: [
           leftNavigator(context, 2),
-          bodyWidgetWhiteBG(
+          bodyWidgetMercuryBG(
               context,
               stackedLoadingContainer(
                   context,

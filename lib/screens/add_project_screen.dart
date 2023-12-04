@@ -186,7 +186,7 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
         body: Row(
           children: [
             leftNavigator(context, 5),
-            bodyWidgetWhiteBG(
+            bodyWidgetMercuryBG(
                 context,
                 stackedLoadingContainer(
                     context,

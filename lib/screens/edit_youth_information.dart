@@ -185,7 +185,7 @@ class _EditYouthInformationScreenState
         children: [
           leftNavigator(context,
               widget.returnPoint == '1' ? 1 : double.parse(widget.returnPoint)),
-          bodyWidgetWhiteBG(
+          bodyWidgetMercuryBG(
               context,
               stackedLoadingContainer(
                   context,

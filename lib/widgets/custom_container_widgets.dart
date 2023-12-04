@@ -55,8 +55,15 @@ Container viewContentContainer(BuildContext context, {required Widget child}) {
   return Container(
       width: MediaQuery.of(context).size.width * 0.7,
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.black),
-      ),
+          border: Border.all(color: Colors.black),
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black.withOpacity(0.3),
+                blurRadius: 10,
+                spreadRadius: 4,
+                offset: Offset(0, 3))
+          ],
+          color: Colors.white),
       child: child);
 }
 

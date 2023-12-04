@@ -12,9 +12,9 @@ import 'package:ywda_dashboard/widgets/custom_miscellaneous_widgets.dart';
 import 'package:ywda_dashboard/widgets/custom_padding_widgets.dart';
 import 'package:ywda_dashboard/widgets/left_navigation_bar_widget.dart';
 
+import '../utils/color_util.dart';
 import '../utils/firebase_util.dart';
 import '../utils/go_router_util.dart';
-import '../widgets/custom_text_widgets.dart';
 
 class ViewAnnouncementScreen extends StatefulWidget {
   const ViewAnnouncementScreen({super.key});
@@ -50,6 +50,9 @@ class _ViewAnnouncementScreenState extends State<ViewAnnouncementScreen> {
       allAnnouncements = announcements.docs;
       allAnnouncements.reversed.toList();
       maxPageNumber = (allAnnouncements.length / 10).ceil();
+      if (!mounted) {
+        return;
+      }
       setState(() {
         _isLoading = false;
       });
@@ -104,7 +107,7 @@ class _ViewAnnouncementScreenState extends State<ViewAnnouncementScreen> {
         appBar: appBarWidget(context),
         body: Row(children: [
           leftNavigator(context, 6),
-          bodyWidgetWhiteBG(
+          bodyWidgetMercuryBG(
               context,
               switchedLoadingContainer(
                   _isLoading,
@@ -238,7 +241,15 @@ class _ViewAnnouncementScreenState extends State<ViewAnnouncementScreen> {
                             pageNumber--;
                           });
                         }),
-              AutoSizeText(pageNumber.toString(), style: blackBoldStyle()),
+              Container(
+                decoration: BoxDecoration(
+                    border: Border.all(color: CustomColors.darkBlue)),
+                child: Padding(
+                  padding: const EdgeInsets.all(5.5),
+                  child: AutoSizeText(pageNumber.toString(),
+                      style: TextStyle(color: CustomColors.darkBlue)),
+                ),
+              ),
               nextPageButton(context,
                   onPress: pageNumber == maxPageNumber
                       ? null

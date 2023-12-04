@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ywda_dashboard/widgets/custom_container_widgets.dart';
@@ -111,7 +112,7 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
       appBar: appBarWidget(context),
       body: Row(children: [
         leftNavigator(context, 0),
-        bodyWidgetWhiteBG(
+        bodyWidgetMercuryBG(
             context,
             stackedLoadingContainer(
                 context,
@@ -121,7 +122,7 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                     Center(
                       child: Container(
                         width: MediaQuery.of(context).size.width * 0.7,
-                        height: MediaQuery.of(context).size.height * 0.7,
+                        height: MediaQuery.of(context).size.height * 0.9,
                         decoration: BoxDecoration(
                             border: Border.all(color: Colors.black, width: 3)),
                         child: horizontalPadding5Percent(
@@ -182,7 +183,29 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                                                     color: Colors.white,
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 28))),
-                                      )))
+                                      ))),
+                              Gap(30),
+                              ElevatedButton(
+                                  onPressed: () {
+                                    FirebaseAuth.instance
+                                        .signOut()
+                                        .then((value) {
+                                      GoRouter.of(context)
+                                          .goNamed(GoRoutes.login);
+                                    });
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color.fromARGB(
+                                          255, 34, 52, 189),
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(30))),
+                                  child: Text('LOG OUT',
+                                      style: GoogleFonts.poppins(
+                                          textStyle: const TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 20)))),
                             ],
                           ),
                         ),

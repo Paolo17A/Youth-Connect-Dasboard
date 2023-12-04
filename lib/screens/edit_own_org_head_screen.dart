@@ -285,7 +285,7 @@ class _EditOwnOrgHeadScreenState extends State<EditOwnOrgHeadScreen> {
       body: Row(
         children: [
           orgLeftNavigator(context, GoRoutes.orgHome),
-          bodyWidgetWhiteBG(
+          bodyWidgetMercuryBG(
               context,
               stackedLoadingContainer(
                   context,

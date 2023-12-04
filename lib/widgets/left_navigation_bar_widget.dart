@@ -20,34 +20,34 @@ Widget leftNavigator(BuildContext context, double index) {
                 Container(
                     decoration: BoxDecoration(
                         color: index == 0 ? CustomColors.softBlue : null,
-                        borderRadius: BorderRadius.circular(15)),
+                        borderRadius: BorderRadius.circular(4)),
                     child: ListTile(
                         title: Text('Dashboard', style: whiteThinStyle()),
                         onTap: () => GoRouter.of(context).go('/home'))),
                 Container(
                     decoration: BoxDecoration(
                         color: index == 4 ? CustomColors.softBlue : null,
-                        borderRadius: BorderRadius.circular(15)),
+                        borderRadius: BorderRadius.circular(4)),
                     child: ListTile(
                         title: Text('User Accounts', style: whiteThinStyle()),
                         onTap: () => GoRouter.of(context).go('/users'))),
                 Container(
                     decoration: BoxDecoration(
                         color: index == 3 ? CustomColors.softBlue : null,
-                        borderRadius: BorderRadius.circular(15)),
+                        borderRadius: BorderRadius.circular(4)),
                     child: ListTile(
                         title: Text('Forms', style: whiteThinStyle()),
                         onTap: () => GoRouter.of(context).go('/forms'))),
                 Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                   _whiteLine(),
                   horizontalPadding5pix(AutoSizeText('Youth Management',
-                      style: whiteThinStyle())),
+                      style: whiteThinStyle(size: 12))),
                   _whiteLine()
                 ]),
                 Container(
                     decoration: BoxDecoration(
                         color: index == 1 ? CustomColors.softBlue : null,
-                        borderRadius: BorderRadius.circular(15)),
+                        borderRadius: BorderRadius.circular(4)),
                     child: ListTile(
                         title: Text(
                           'Youth Information',
@@ -58,21 +58,21 @@ Widget leftNavigator(BuildContext context, double index) {
                 Container(
                     decoration: BoxDecoration(
                         color: index == 1.1 ? CustomColors.softBlue : null,
-                        borderRadius: BorderRadius.circular(15)),
+                        borderRadius: BorderRadius.circular(4)),
                     child: ListTile(
                         title: Text('Age Report', style: whiteThinStyle()),
                         onTap: () => GoRouter.of(context).go('/ageReport'))),
                 Container(
                     decoration: BoxDecoration(
                         color: index == 1.2 ? CustomColors.softBlue : null,
-                        borderRadius: BorderRadius.circular(15)),
+                        borderRadius: BorderRadius.circular(4)),
                     child: ListTile(
                         title: Text('Gender Report', style: whiteThinStyle()),
                         onTap: () => GoRouter.of(context).go('/genderReport'))),
                 Container(
                     decoration: BoxDecoration(
                         color: index == 1.3 ? CustomColors.softBlue : null,
-                        borderRadius: BorderRadius.circular(15)),
+                        borderRadius: BorderRadius.circular(4)),
                     child: ListTile(
                         title: Text('Towns', style: whiteThinStyle()),
                         onTap: () =>
@@ -80,70 +80,59 @@ Widget leftNavigator(BuildContext context, double index) {
                 Container(
                     decoration: BoxDecoration(
                         color: index == 5 ? CustomColors.softBlue : null,
-                        borderRadius: BorderRadius.circular(15)),
+                        borderRadius: BorderRadius.circular(4)),
                     child: ListTile(
                         title: Text('Projects', style: whiteThinStyle()),
                         onTap: () => GoRouter.of(context).go('/project'))),
                 Container(
                     decoration: BoxDecoration(
                         color: index == 7 ? CustomColors.softBlue : null,
-                        borderRadius: BorderRadius.circular(15)),
+                        borderRadius: BorderRadius.circular(4)),
                     child: ListTile(
                         title: Text('Tasks', style: whiteThinStyle()),
                         onTap: () => GoRouter.of(context).go('/submissions'))),
                 Container(
                     decoration: BoxDecoration(
                         color: index == 8 ? CustomColors.softBlue : null,
-                        borderRadius: BorderRadius.circular(15)),
+                        borderRadius: BorderRadius.circular(4)),
                     child: ListTile(
                         title: Text('FAQs', style: whiteThinStyle()),
                         onTap: () => GoRouter.of(context).go('/faqs'))),
                 Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                   _whiteLine(),
                   horizontalPadding5pix(AutoSizeText('Organizations Management',
-                      style: whiteThinStyle())),
+                      style: whiteThinStyle(size: 12))),
                   _whiteLine()
                 ]),
                 Container(
                     decoration: BoxDecoration(
                         color: index == 2 ? CustomColors.softBlue : null,
-                        borderRadius: BorderRadius.circular(15)),
+                        borderRadius: BorderRadius.circular(4)),
                     child: ListTile(
                         title: Text('Organizations', style: whiteThinStyle()),
                         onTap: () => GoRouter.of(context).go('/orgHeads'))),
                 Container(
                     decoration: BoxDecoration(
                         color: index == 2.1 ? CustomColors.softBlue : null,
-                        borderRadius: BorderRadius.circular(15)),
+                        borderRadius: BorderRadius.circular(4)),
                     child: ListTile(
                         title: Text('Renewal', style: whiteThinStyle()),
                         onTap: () => GoRouter.of(context).go('/orgRenewals'))),
                 Container(
                     decoration: BoxDecoration(
                         color: index == 2.2 ? CustomColors.softBlue : null,
-                        borderRadius: BorderRadius.circular(15)),
+                        borderRadius: BorderRadius.circular(4)),
                     child: ListTile(
                         title: Text('Profiles', style: whiteThinStyle()),
                         onTap: () => GoRouter.of(context).go('/orgs'))),
                 Container(
                     decoration: BoxDecoration(
                         color: index == 6 ? CustomColors.softBlue : null,
-                        borderRadius: BorderRadius.circular(15)),
+                        borderRadius: BorderRadius.circular(4)),
                     child: ListTile(
                         title: Text('Announcements', style: whiteThinStyle()),
                         onTap: () => GoRouter.of(context).go('/announcement'))),
               ])),
-          ListTile(
-              leading: const Icon(
-                Icons.exit_to_app,
-                color: Colors.white,
-              ),
-              title: Text('Log Out', style: whiteThinStyle()),
-              onTap: () {
-                FirebaseAuth.instance.signOut().then((value) {
-                  GoRouter.of(context).goNamed(GoRoutes.login);
-                });
-              })
         ]),
       ));
 }
@@ -160,7 +149,7 @@ Widget orgLeftNavigator(BuildContext context, String section) {
                 allPadding4pix(
                   Container(
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
+                          borderRadius: BorderRadius.circular(4),
                           color: section == GoRoutes.orgHome
                               ? CustomColors.softBlue
                               : null),
@@ -172,7 +161,7 @@ Widget orgLeftNavigator(BuildContext context, String section) {
                 allPadding4pix(
                   Container(
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
+                          borderRadius: BorderRadius.circular(4),
                           color: section == GoRoutes.orgRenewalHistory
                               ? CustomColors.softBlue
                               : null),
@@ -187,7 +176,7 @@ Widget orgLeftNavigator(BuildContext context, String section) {
                 allPadding4pix(
                   Container(
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
+                          borderRadius: BorderRadius.circular(4),
                           color: section == GoRoutes.orgProjects
                               ? CustomColors.softBlue
                               : null),
@@ -199,7 +188,7 @@ Widget orgLeftNavigator(BuildContext context, String section) {
                 allPadding4pix(
                   Container(
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
+                          borderRadius: BorderRadius.circular(4),
                           color: section == GoRoutes.orgProfile
                               ? CustomColors.softBlue
                               : null),

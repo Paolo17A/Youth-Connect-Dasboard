@@ -137,7 +137,7 @@ class _ViewYouthInformationScreenState
       body: Row(
         children: [
           leftNavigator(context, 1),
-          bodyWidgetWhiteBG(
+          bodyWidgetMercuryBG(
               context,
               switchedLoadingContainer(
                   _isLoading,
@@ -208,7 +208,7 @@ class _ViewYouthInformationScreenState
 
   Widget _filteredUserEntries() {
     return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.52,
+      height: 500,
       child: ListView.builder(
           shrinkWrap: true,
           itemCount:
@@ -226,7 +226,7 @@ class _ViewYouthInformationScreenState
 
             return viewContentEntryRow(context,
                 children: [
-                  viewFlexTextCell('#${(index + 1).toString()}',
+                  viewFlexTextCell('${(index + 1).toString()}',
                       flex: 1, backgroundColor: backgroundColor),
                   viewFlexTextCell(fullName.isNotEmpty ? fullName : 'N/A',
                       flex: 4, backgroundColor: backgroundColor),
@@ -284,7 +284,7 @@ class _ViewYouthInformationScreenState
             decoration:
                 BoxDecoration(border: Border.all(color: CustomColors.darkBlue)),
             child: Padding(
-              padding: const EdgeInsets.all(14),
+              padding: const EdgeInsets.all(5.5),
               child: AutoSizeText(pageNumber.toString(),
                   style: TextStyle(color: CustomColors.darkBlue)),
             ),

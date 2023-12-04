@@ -65,11 +65,6 @@ class MyApp extends StatelessWidget {
               pageBuilder: (context, state) {
                 return customTransition(context, state, const RegisterScreen());
               }),
-          /*GoRoute(
-              path: 'login',
-              pageBuilder: (context, state) {
-                return customTransition(context, state, const LogInScreen());
-              }),*/
           GoRoute(
               path: 'forgotPassword',
               pageBuilder: (context, state) {

@@ -26,7 +26,7 @@ Widget viewContentUnavailable(BuildContext context, {required String text}) {
 Widget viewHeaderAddButton(
     {required Function addFunction, required String addLabel}) {
   return Padding(
-    padding: const EdgeInsets.all(25),
+    padding: const EdgeInsets.all(15),
     child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
       ElevatedButton(
           onPressed: () {
@@ -37,12 +37,12 @@ Widget viewHeaderAddButton(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30))),
           child: Padding(
-            padding: const EdgeInsets.all(11),
+            padding: const EdgeInsets.all(5),
             child: AutoSizeText(addLabel,
                 style: GoogleFonts.poppins(
                     textStyle: const TextStyle(
                         color: Colors.white,
-                        fontSize: 18,
+                        fontSize: 15,
                         fontWeight: FontWeight.bold))),
           ))
     ]),
@@ -58,7 +58,7 @@ Widget analyticReportWidget(BuildContext context,
     padding: const EdgeInsets.all(8),
     child: Container(
         width: MediaQuery.of(context).size.width * 0.15,
-        height: MediaQuery.of(context).size.height * 0.15,
+        height: MediaQuery.of(context).size.height * 0.1,
         child: ElevatedButton(
           onPressed: () => onPress(),
           style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
@@ -75,14 +75,14 @@ Widget analyticReportWidget(BuildContext context,
                   children: [
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.07,
-                      height: 45,
+                      height: 25,
                       child: Center(
                         child: AutoSizeText(demographic,
                             textAlign: TextAlign.center,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: GoogleFonts.inter(
-                                textStyle: blackBoldStyle(size: 40))),
+                                textStyle: blackBoldStyle(size: 25))),
                       ),
                     ),
                     Row(
@@ -91,7 +91,7 @@ Widget analyticReportWidget(BuildContext context,
                         AutoSizeText(count,
                             maxLines: 2,
                             style: GoogleFonts.inter(
-                                textStyle: blackThinStyle(size: 30))),
+                                textStyle: blackThinStyle(size: 20))),
                       ],
                     ),
                   ],
@@ -113,13 +113,13 @@ Widget orgDashboardWidget(BuildContext context,
     padding: const EdgeInsets.all(8),
     child: Container(
         width: MediaQuery.of(context).size.width * 0.2,
-        height: MediaQuery.of(context).size.height * 0.2,
+        height: MediaQuery.of(context).size.height * 0.13,
         decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(30)),
+            color: Colors.white, borderRadius: BorderRadius.circular(10)),
         child: Row(children: [
           SizedBox(
               width: MediaQuery.of(context).size.width * 0.05,
-              child: Transform.scale(scale: 2, child: displayIcon)),
+              child: Transform.scale(scale: 1.3, child: displayIcon)),
           VerticalDivider(),
           SizedBox(
             width: MediaQuery.of(context).size.width * 0.13,
@@ -135,7 +135,7 @@ Widget orgDashboardWidget(BuildContext context,
                   if (!willHideButton)
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.07,
-                      height: 45,
+                      height: 30,
                       child: ElevatedButton(
                         onPressed: () => onPress(),
                         style: ElevatedButton.styleFrom(

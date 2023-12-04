@@ -189,7 +189,7 @@ class _AddOrgScreenState extends State<AddOrgScreen> {
         appBar: appBarWidget(context),
         body: Row(children: [
           leftNavigator(context, 2),
-          bodyWidgetWhiteBG(
+          bodyWidgetMercuryBG(
               context,
               stackedLoadingContainer(
                   context,

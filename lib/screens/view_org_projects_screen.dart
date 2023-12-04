@@ -93,7 +93,9 @@ class _ViewOrgProjectsScreenState extends State<ViewOrgProjectsScreen> {
             .get();
         orgDocs = orgs.docs;
       }
-
+      if (!mounted) {
+        return;
+      }
       setState(() {
         _isLoading = false;
       });
@@ -150,7 +152,7 @@ class _ViewOrgProjectsScreenState extends State<ViewOrgProjectsScreen> {
         appBar: orgAppBarWidget(context),
         body: Row(children: [
           orgLeftNavigator(context, GoRoutes.orgProjects),
-          bodyWidgetWhiteBG(
+          bodyWidgetMercuryBG(
               context,
               switchedLoadingContainer(
                   _isLoading,
@@ -304,7 +306,7 @@ class _ViewOrgProjectsScreenState extends State<ViewOrgProjectsScreen> {
             decoration:
                 BoxDecoration(border: Border.all(color: CustomColors.darkBlue)),
             child: Padding(
-              padding: const EdgeInsets.all(14),
+              padding: const EdgeInsets.all(5.5),
               child: AutoSizeText(pageNumber.toString(),
                   style: TextStyle(color: CustomColors.darkBlue)),
             ),

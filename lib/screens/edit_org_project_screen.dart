@@ -243,7 +243,7 @@ class _EditOrgProjectScreenState extends State<EditOrgProjectScreen> {
         body: Row(
           children: [
             orgLeftNavigator(context, GoRoutes.orgProjects),
-            bodyWidgetWhiteBG(
+            bodyWidgetMercuryBG(
                 context,
                 stackedLoadingContainer(
                     context,

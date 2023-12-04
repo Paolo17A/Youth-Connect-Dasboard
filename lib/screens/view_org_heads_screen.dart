@@ -70,7 +70,9 @@ class _ViewOrgHeadsScreenState extends State<ViewOrgHeadsScreen> {
         final orgData = org.data() as Map<dynamic, dynamic>;
         associatedOrgs[orgID] = orgData;
       }
-
+      if (!mounted) {
+        return;
+      }
       setState(() {
         _isLoading = false;
         _isInitialized = true;
@@ -112,7 +114,7 @@ class _ViewOrgHeadsScreenState extends State<ViewOrgHeadsScreen> {
       body: Row(
         children: [
           leftNavigator(context, 2),
-          bodyWidgetWhiteBG(
+          bodyWidgetMercuryBG(
               context,
               switchedLoadingContainer(
                   _isLoading,
@@ -374,7 +376,7 @@ class _ViewOrgHeadsScreenState extends State<ViewOrgHeadsScreen> {
             decoration:
                 BoxDecoration(border: Border.all(color: CustomColors.darkBlue)),
             child: Padding(
-              padding: const EdgeInsets.all(14),
+              padding: const EdgeInsets.all(5.5),
               child: AutoSizeText(pageNumber.toString(),
                   style: TextStyle(color: CustomColors.darkBlue)),
             ),

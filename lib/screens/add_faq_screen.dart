@@ -82,7 +82,7 @@ class _AddFAQScreenState extends State<AddFAQScreen> {
       body: Row(
         children: [
           leftNavigator(context, 3),
-          bodyWidgetWhiteBG(
+          bodyWidgetMercuryBG(
               context,
               stackedLoadingContainer(
                   context,

@@ -50,7 +50,9 @@ class _ViewFormsScreenState extends State<ViewFormsScreen> {
       final forms = await FirebaseFirestore.instance.collection('forms').get();
       allForms = forms.docs;
       maxPageNumber = (allForms.length / 10).ceil();
-
+      if (!mounted) {
+        return;
+      }
       setState(() {
         _isLoading = false;
       });
@@ -104,7 +106,7 @@ class _ViewFormsScreenState extends State<ViewFormsScreen> {
         appBar: appBarWidget(context),
         body: Row(children: [
           leftNavigator(context, 3),
-          bodyWidgetWhiteBG(
+          bodyWidgetMercuryBG(
               context,
               switchedLoadingContainer(
                   _isLoading,
@@ -215,7 +217,7 @@ class _ViewFormsScreenState extends State<ViewFormsScreen> {
             decoration:
                 BoxDecoration(border: Border.all(color: CustomColors.darkBlue)),
             child: Padding(
-              padding: const EdgeInsets.all(14),
+              padding: const EdgeInsets.all(5.5),
               child: AutoSizeText(pageNumber.toString(),
                   style: TextStyle(color: CustomColors.darkBlue)),
             ),

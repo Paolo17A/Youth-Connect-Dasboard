@@ -48,6 +48,9 @@ class _ViewFAQsScreenState extends State<ViewFAQSscreen> {
           await FirebaseFirestore.instance.collection('faqs').get();
       allFAQs = announcements.docs;
       maxPageNumber = (allFAQs.length / 10).ceil();
+      if (!mounted) {
+        return;
+      }
       setState(() {
         _isLoading = false;
         _isInitialized = true;
@@ -87,7 +90,7 @@ class _ViewFAQsScreenState extends State<ViewFAQSscreen> {
         appBar: appBarWidget(context),
         body: Row(children: [
           leftNavigator(context, 8),
-          bodyWidgetWhiteBG(
+          bodyWidgetMercuryBG(
               context,
               switchedLoadingContainer(
                   _isLoading,
@@ -162,7 +165,7 @@ class _ViewFAQsScreenState extends State<ViewFAQSscreen> {
                 borderColor: borderColor,
                 isLastEntry: index == allFAQs.length - 1,
                 children: [
-                  viewFlexTextCell('#${(index + 1).toString()}',
+                  viewFlexTextCell('${(index + 1) + ((pageNumber - 1) * 10)}',
                       flex: 1, backgroundColor: backgroundColor),
                   viewFlexTextCell(announcementData['question'],
                       flex: 3, backgroundColor: backgroundColor),
@@ -209,7 +212,7 @@ class _ViewFAQsScreenState extends State<ViewFAQSscreen> {
             decoration:
                 BoxDecoration(border: Border.all(color: CustomColors.darkBlue)),
             child: Padding(
-              padding: const EdgeInsets.all(14),
+              padding: const EdgeInsets.all(5.5),
               child: AutoSizeText(pageNumber.toString(),
                   style: TextStyle(color: CustomColors.darkBlue)),
             ),

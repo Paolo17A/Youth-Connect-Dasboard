@@ -133,7 +133,7 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
       body: Row(
         children: [
           leftNavigator(context, 4),
-          bodyWidgetWhiteBG(
+          bodyWidgetMercuryBG(
               context,
               switchedLoadingContainer(
                   _isLoading,
@@ -203,6 +203,8 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
 
   Widget _usersLabelRow() {
     return viewContentLabelRow(context, children: [
+      viewFlexTextCell('#',
+          flex: 1, backgroundColor: Colors.grey.withOpacity(0.5)),
       viewFlexTextCell('Name',
           flex: 3, backgroundColor: Colors.grey.withOpacity(0.5)),
       viewFlexTextCell('Username',
@@ -233,6 +235,8 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
 
             return viewContentEntryRow(context,
                 children: [
+                  viewFlexTextCell('${(index + 1).toString()}',
+                      flex: 1, backgroundColor: backgroundColor),
                   viewFlexTextCell(fullName.isNotEmpty ? fullName : 'N/A',
                       flex: 3, backgroundColor: backgroundColor),
                   viewFlexTextCell(userData['username'],
@@ -298,7 +302,7 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
             decoration:
                 BoxDecoration(border: Border.all(color: CustomColors.darkBlue)),
             child: Padding(
-              padding: const EdgeInsets.all(14),
+              padding: const EdgeInsets.all(5.5),
               child: AutoSizeText(pageNumber.toString(),
                   style: TextStyle(color: CustomColors.darkBlue)),
             ),

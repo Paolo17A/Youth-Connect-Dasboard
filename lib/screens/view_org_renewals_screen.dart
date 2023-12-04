@@ -124,7 +124,9 @@ class _ViewOrgRenewalsScreenState extends State<ViewOrgRenewalsScreen> {
             .get();
         associatedOrgs[orgID] = thisOrg.data();
       }
-
+      if (!mounted) {
+        return;
+      }
       setState(() {
         isLoading = false;
         isInitialized = true;
@@ -223,7 +225,7 @@ class _ViewOrgRenewalsScreenState extends State<ViewOrgRenewalsScreen> {
       appBar: appBarWidget(context),
       body: Row(children: [
         leftNavigator(context, 2.1),
-        bodyWidgetWhiteBG(
+        bodyWidgetMercuryBG(
             context,
             switchedLoadingContainer(
                 isLoading,
@@ -313,7 +315,7 @@ class _ViewOrgRenewalsScreenState extends State<ViewOrgRenewalsScreen> {
 
             return viewContentEntryRow(context,
                 children: [
-                  viewFlexTextCell('#${(index + 1) + ((pageNumber - 1) * 10)}',
+                  viewFlexTextCell('${(index + 1) + ((pageNumber - 1) * 10)}',
                       flex: 1, backgroundColor: backgroundColor),
                   viewFlexTextCell(orgData['name'],
                       flex: 3, backgroundColor: backgroundColor),
@@ -462,7 +464,7 @@ class _ViewOrgRenewalsScreenState extends State<ViewOrgRenewalsScreen> {
             decoration:
                 BoxDecoration(border: Border.all(color: CustomColors.darkBlue)),
             child: Padding(
-              padding: const EdgeInsets.all(14),
+              padding: const EdgeInsets.all(5.5),
               child: AutoSizeText(pageNumber.toString(),
                   style: TextStyle(color: CustomColors.darkBlue)),
             ),

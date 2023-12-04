@@ -185,7 +185,7 @@ class _EditAnnouncementScreenState extends State<EditAnnouncementScreen> {
         body: Row(
           children: [
             leftNavigator(context, 6),
-            bodyWidgetWhiteBG(
+            bodyWidgetMercuryBG(
                 context,
                 stackedLoadingContainer(
                     context,

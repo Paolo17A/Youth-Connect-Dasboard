@@ -62,7 +62,9 @@ class _ViewOrgsScreenState extends State<ViewOrgsScreen> {
       });
       filteredOrgs = List.from(allOrgs);
       maxPageNumber = (filteredOrgs.length / 10).ceil();
-
+      if (!mounted) {
+        return;
+      }
       setState(() {
         _isLoading = false;
         _isInitialized = true;
@@ -116,7 +118,7 @@ class _ViewOrgsScreenState extends State<ViewOrgsScreen> {
         appBar: appBarWidget(context),
         body: Row(children: [
           leftNavigator(context, 2.2),
-          bodyWidgetWhiteBG(
+          bodyWidgetMercuryBG(
               context,
               switchedLoadingContainer(
                   _isLoading,
@@ -234,7 +236,7 @@ class _ViewOrgsScreenState extends State<ViewOrgsScreen> {
 
             return viewContentEntryRow(context,
                 children: [
-                  viewFlexTextCell('#${(index + 1) + ((pageNumber - 1) * 10)}',
+                  viewFlexTextCell('${(index + 1) + ((pageNumber - 1) * 10)}',
                       flex: 1, backgroundColor: backgroundColor),
                   viewFlexTextCell(orgData['name'],
                       flex: 3, backgroundColor: backgroundColor),
@@ -298,7 +300,7 @@ class _ViewOrgsScreenState extends State<ViewOrgsScreen> {
             decoration:
                 BoxDecoration(border: Border.all(color: CustomColors.darkBlue)),
             child: Padding(
-              padding: const EdgeInsets.all(14),
+              padding: const EdgeInsets.all(5.5),
               child: AutoSizeText(pageNumber.toString(),
                   style: TextStyle(color: CustomColors.darkBlue)),
             ),

@@ -217,7 +217,7 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
         appBar: appBarWidget(context),
         body: Row(children: [
           leftNavigator(context, 5),
-          bodyWidgetWhiteBG(
+          bodyWidgetMercuryBG(
               context,
               switchedLoadingContainer(
                   _isLoading,
@@ -298,7 +298,7 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
         viewFlexTextCell('End Date',
             flex: 2, backgroundColor: Colors.grey.withOpacity(0.5)),
         viewFlexTextCell('Actions',
-            flex: 2, backgroundColor: Colors.grey.withOpacity(0.5))
+            flex: 3, backgroundColor: Colors.grey.withOpacity(0.5))
       ],
     );
   }
@@ -369,7 +369,7 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
                           deleteEntry: () => deleteThisProject(filteredProjects[
                               index + ((pageNumber - 1) * 10)]));
                     })
-                  ], flex: 2, backgroundColor: backgroundColor)
+                  ], flex: 3, backgroundColor: backgroundColor)
                 ],
                 borderColor: borderColor,
                 isLastEntry: index == filteredProjects.length - 1);
@@ -398,7 +398,7 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
             decoration:
                 BoxDecoration(border: Border.all(color: CustomColors.darkBlue)),
             child: Padding(
-              padding: const EdgeInsets.all(14),
+              padding: const EdgeInsets.all(5.5),
               child: AutoSizeText(pageNumber.toString(),
                   style: TextStyle(color: CustomColors.darkBlue)),
             ),

@@ -232,7 +232,7 @@ class _EditProjectScreenState extends State<EditProjectScreen> {
         body: Row(
           children: [
             leftNavigator(context, 5),
-            bodyWidgetWhiteBG(
+            bodyWidgetMercuryBG(
                 context,
                 stackedLoadingContainer(
                     context,

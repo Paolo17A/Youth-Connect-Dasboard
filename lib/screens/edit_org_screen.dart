@@ -230,7 +230,7 @@ class _EditOrgScreenState extends State<EditOrgScreen> {
         body: Row(
           children: [
             leftNavigator(context, 2.2),
-            bodyWidgetWhiteBG(
+            bodyWidgetMercuryBG(
               context,
               stackedLoadingContainer(
                   context,
