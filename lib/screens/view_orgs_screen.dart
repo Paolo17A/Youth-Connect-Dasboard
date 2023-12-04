@@ -223,8 +223,9 @@ class _ViewOrgsScreenState extends State<ViewOrgsScreen> {
       height: 500,
       child: ListView.builder(
           shrinkWrap: true,
-          itemCount:
-              pageNumber == maxPageNumber ? filteredOrgs.length % 10 : 10,
+          itemCount: pageNumber == maxPageNumber && filteredOrgs.length != 10
+              ? filteredOrgs.length % 10
+              : 10,
           itemBuilder: (context, index) {
             final orgData = filteredOrgs[index + ((pageNumber - 1) * 10)].data()
                 as Map<dynamic, dynamic>;

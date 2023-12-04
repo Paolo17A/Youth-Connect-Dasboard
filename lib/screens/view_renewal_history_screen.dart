@@ -172,7 +172,8 @@ class _ViewRenewalHistoryScreenState extends State<ViewRenewalHistoryScreen> {
       height: 500,
       child: ListView.builder(
           shrinkWrap: true,
-          itemCount: pageNumber == maxPageNumber
+          itemCount: pageNumber == maxPageNumber &&
+                  filteredRenewalRequests.length != 10
               ? filteredRenewalRequests.length % 10
               : 10,
           itemBuilder: (context, index) {

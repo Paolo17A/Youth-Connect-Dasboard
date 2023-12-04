@@ -222,7 +222,9 @@ class _ViewOrgProjectsScreenState extends State<ViewOrgProjectsScreen> {
       height: 500,
       child: ListView.builder(
           shrinkWrap: true,
-          itemCount: pageNumber == maxPageNumber ? allProjects.length % 10 : 10,
+          itemCount: pageNumber == maxPageNumber && allProjects.length != 10
+              ? allProjects.length % 10
+              : 10,
           itemBuilder: (context, index) {
             Color backgroundColor =
                 index % 2 == 0 ? Colors.white : Colors.grey.withOpacity(0.5);

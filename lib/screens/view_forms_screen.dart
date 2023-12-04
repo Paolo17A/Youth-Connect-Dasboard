@@ -163,7 +163,9 @@ class _ViewFormsScreenState extends State<ViewFormsScreen> {
       height: 500,
       child: ListView.builder(
           shrinkWrap: true,
-          itemCount: pageNumber == maxPageNumber ? allForms.length % 10 : 10,
+          itemCount: pageNumber == maxPageNumber && allForms.length != 10
+              ? allForms.length % 10
+              : 10,
           itemBuilder: (context, index) {
             final formData = allForms[index + ((pageNumber - 1) * 10)].data()
                 as Map<dynamic, dynamic>;

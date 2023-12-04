@@ -165,8 +165,7 @@ class _EditYouthInformationScreenState
         returnPath = '/users';
       }
       widget.returnPoint == '1'
-          ? GoRouter.of(context).goNamed('youthInformation',
-              pathParameters: {'category': 'NO FILTER'})
+          ? GoRouter.of(context).goNamed('youthInformation')
           : GoRouter.of(context).go(returnPath);
     } catch (error) {
       scaffoldMessenger.showSnackBar(
@@ -231,8 +230,7 @@ class _EditYouthInformationScreenState
     return Row(children: [
       backToViewScreenButton(context,
           onPress: () => widget.returnPoint == '1'
-              ? GoRouter.of(context).goNamed('youthInformation',
-                  pathParameters: {'category': 'NO FILTER'})
+              ? GoRouter.of(context).goNamed('youthInformation')
               : GoRouter.of(context).go(returnPath))
     ]);
   }

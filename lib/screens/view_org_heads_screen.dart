@@ -187,7 +187,9 @@ class _ViewOrgHeadsScreenState extends State<ViewOrgHeadsScreen> {
       height: 500,
       child: ListView.builder(
           shrinkWrap: true,
-          itemCount: pageNumber == maxPageNumber ? allOrgheads.length % 10 : 10,
+          itemCount: pageNumber == maxPageNumber && allOrgheads.length != 10
+              ? allOrgheads.length % 10
+              : 10,
           itemBuilder: (context, index) {
             final orgHeadData = allOrgheads[index + ((pageNumber - 1) * 10)]
                 .data() as Map<dynamic, dynamic>;

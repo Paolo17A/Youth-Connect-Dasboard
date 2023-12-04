@@ -176,8 +176,9 @@ class _ViewSubmissionsScreenState extends State<ViewSubmissionsScreen> {
       height: 500,
       child: ListView.builder(
           shrinkWrap: true,
-          itemCount:
-              pageNumber == maxPageNumber ? allSubmissions.length % 10 : 10,
+          itemCount: pageNumber == maxPageNumber && allSubmissions.length != 10
+              ? allSubmissions.length % 10
+              : 10,
           itemBuilder: (context, index) {
             Map<dynamic, dynamic> submissionData =
                 allSubmissions[index + ((pageNumber - 1) * 10)];

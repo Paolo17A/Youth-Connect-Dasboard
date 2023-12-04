@@ -301,8 +301,9 @@ class _ViewOrgRenewalsScreenState extends State<ViewOrgRenewalsScreen> {
       height: 500,
       child: ListView.builder(
           shrinkWrap: true,
-          itemCount:
-              pageNumber == maxPageNumber ? filteredAccreds.length % 10 : 10,
+          itemCount: pageNumber == maxPageNumber && filteredAccreds.length != 10
+              ? filteredAccreds.length % 10
+              : 10,
           itemBuilder: (context, index) {
             final accredData = filteredAccreds[index + ((pageNumber - 1) * 10)]
                 .data() as Map<dynamic, dynamic>;

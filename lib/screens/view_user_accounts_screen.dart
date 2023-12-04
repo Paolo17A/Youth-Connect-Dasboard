@@ -1,5 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ywda_dashboard/utils/color_util.dart';
@@ -107,22 +108,79 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
     }
   }
 
-  Future setUserSuspendedState(String userID, bool isSuspended) async {
+  Future deleteUser(DocumentSnapshot userDoc) async {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      //  Remove client from related orgs
+      final QuerySnapshot relevantOrgsQuery = await FirebaseFirestore.instance
+          .collection('orgs')
+          .where('members', arrayContains: userDoc.id)
+          .get();
+
+      List<DocumentSnapshot> relevantOrgs = relevantOrgsQuery.docs;
+
+      for (DocumentSnapshot orgSnapshot in relevantOrgs) {
+        // Use FieldValue.arrayRemove to remove userDoc.id from 'members' field
+        await orgSnapshot.reference.update({
+          'members': FieldValue.arrayRemove([userDoc.id])
+        });
+      }
+
+      //  Remove client from related projects
+      final QuerySnapshot relevantProjectsQuery = await FirebaseFirestore
+          .instance
+          .collection('projects')
+          .where('participants', arrayContains: userDoc.id)
+          .get();
+
+      List<DocumentSnapshot> relevantParticipants = relevantProjectsQuery.docs;
+
+      for (DocumentSnapshot participantSnapshot in relevantParticipants) {
+        // Use FieldValue.arrayRemove to remove userDoc.id from 'members' field
+        await participantSnapshot.reference.update({
+          'participants': FieldValue.arrayRemove([userDoc.id])
+        });
+      }
+
+      //  Proceed with acutal account deletion
+      final adminData = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .get();
+      final adminEmail = adminData['email'];
+      final adminPassword = adminData['password'];
+      await FirebaseAuth.instance.signOut();
+
+      final userData = userDoc.data() as Map<dynamic, dynamic>;
+      final userEmail = userData['email'];
+      final userPassword = userData['password'];
+
+      final userToDelete = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: userEmail, password: userPassword);
+
       await FirebaseFirestore.instance
           .collection('users')
-          .doc(userID)
-          .update({'isSuspended': isSuspended});
+          .doc(userToDelete.user!.uid)
+          .delete();
+
+      await FirebaseAuth.instance.currentUser!.delete();
+
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: adminEmail, password: adminPassword);
+      scaffoldMessenger.showSnackBar(
+          SnackBar(content: Text('Successfully deleted this user!')));
       _isInitialized = false;
-      scaffoldMessenger.showSnackBar(SnackBar(
-          content: Text(!isSuspended
-              ? 'Successfully reinstated user.'
-              : 'Successfully suspended user.')));
       getAllUsers();
     } catch (error) {
       scaffoldMessenger.showSnackBar(
           SnackBar(content: Text('Error setting org active state: $error')));
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -167,18 +225,6 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
         ),
         AutoSizeText('${filteredUsers.length} entries',
             style: blackBoldStyle()),
-        /*ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 88, 147, 201),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30))),
-            child: Padding(
-              padding: const EdgeInsets.all(11),
-              child: AutoSizeText('NEW USER',
-                  style:
-                      GoogleFonts.poppins(textStyle: whiteBoldStyle(size: 18))),
-            ))*/
       ]),
     );
   }
@@ -249,30 +295,30 @@ class _ViewUserAccountsScreenState extends State<ViewUserAccountsScreen> {
                       backgroundColor: backgroundColor),
                   viewFlexActionsCell([
                     //viewEntryPopUpButton(context, onPress: () {}),
-                    editEntryButton(context,
-                        onPress: () => GoRouter.of(context)
-                                .goNamed('editYouth', pathParameters: {
-                              'returnPoint': '4',
-                              'youthID':
-                                  allUsers[index + ((pageNumber - 1) * 10)].id
-                            })),
-                    if (userData['isSuspended'] == true)
-                      restoreEntryButton(context, onPress: () {
-                        setUserSuspendedState(
-                            filteredUsers[index + ((pageNumber - 1) * 10)].id,
-                            false);
-                      })
-                    else if (userData['isSuspended'] == false)
-                      deleteEntryButton(context, onPress: () {
-                        displayDeleteEntryDialog(context,
-                            message:
-                                'Are you sure you want to suspend this user?',
-                            deleteWord: 'Delete', deleteEntry: () {
-                          setUserSuspendedState(
+                    editEntryButton(context, onPress: () {
+                      if (userData['userType'] == 'ORG HEAD') {
+                        GoRouter.of(context)
+                            .goNamed('editOrgHead', pathParameters: {
+                          'orgHeadID':
                               filteredUsers[index + ((pageNumber - 1) * 10)].id,
-                              true);
+                          'orgID': userData['organization']
                         });
-                      })
+                      } else {
+                        GoRouter.of(context)
+                            .goNamed('editYouth', pathParameters: {
+                          'returnPoint': '4',
+                          'youthID':
+                              filteredUsers[index + ((pageNumber - 1) * 10)].id
+                        });
+                      }
+                    }),
+                    deleteEntryButton(context, onPress: () {
+                      displayDeleteEntryDialog(context,
+                          message: 'Are you sure you want to delete this user?',
+                          deleteWord: 'Delete',
+                          deleteEntry: () => deleteUser(
+                              filteredUsers[index + ((pageNumber - 1) * 10)]));
+                    })
                   ], flex: 2, backgroundColor: backgroundColor)
                 ],
                 borderColor: borderColor,

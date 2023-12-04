@@ -153,7 +153,9 @@ class _ViewFAQsScreenState extends State<ViewFAQSscreen> {
       height: 500,
       child: ListView.builder(
           shrinkWrap: true,
-          itemCount: pageNumber == maxPageNumber ? allFAQs.length % 10 : 10,
+          itemCount: pageNumber == maxPageNumber && allFAQs.length != 10
+              ? allFAQs.length % 10
+              : 10,
           itemBuilder: (context, index) {
             Color backgroundColor =
                 index % 2 == 0 ? Colors.white : Colors.grey.withOpacity(0.5);

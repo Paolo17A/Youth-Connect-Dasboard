@@ -210,8 +210,9 @@ class _ViewYouthTownReportScreenState extends State<ViewYouthTownReportScreen> {
         height: 500,
         child: ListView.builder(
             shrinkWrap: true,
-            itemCount:
-                pageNumber == maxPageNumber ? filteredTowns.length % 10 : 10,
+            itemCount: pageNumber == maxPageNumber && filteredTowns.length != 10
+                ? filteredTowns.length % 10
+                : 10,
             itemBuilder: (context, index) {
               Color backgroundColor =
                   index % 2 == 0 ? Colors.white : Colors.grey.withOpacity(0.5);

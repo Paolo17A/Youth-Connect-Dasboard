@@ -309,7 +309,9 @@ class _ViewProjectsScreenState extends State<ViewProjectsScreen> {
       child: ListView.builder(
           shrinkWrap: true,
           itemCount:
-              pageNumber == maxPageNumber ? filteredProjects.length % 10 : 10,
+              pageNumber == maxPageNumber && filteredProjects.length != 10
+                  ? filteredProjects.length % 10
+                  : 10,
           itemBuilder: (context, index) {
             Color backgroundColor =
                 index % 2 == 0 ? Colors.white : Colors.grey.withOpacity(0.5);
